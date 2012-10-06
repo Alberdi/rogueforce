@@ -10,8 +10,8 @@ class Entity(object):
 
   def move(self, dx, dy):
     next_tile = self.bg.tiles[(self.x+dx, self.y+dy)]
-    if next_tile.is_passable:
-      self.bg.tiles[(self.x+dx, self.y+dy)].entity = None
+    if next_tile.is_passable():
+      self.bg.tiles[(self.x, self.y)].entity = None
       next_tile.entity = self
       self.x += dx
       self.y += dy

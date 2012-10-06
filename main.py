@@ -1,6 +1,8 @@
 from battleground import Battleground
 from minion import Minion
+
 import libtcodpy as libtcod
+import random
 
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 50
@@ -13,9 +15,13 @@ con = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
 
 bg = Battleground(60, 40)
 l = []
-for x in range(10,15):
+for x in [11,13,15]:
   for y in range(10,30):
-    l.append(Minion(bg, x, y, 0, "human"))
+    l.append(Minion(bg, x, y, 1, "human"))
+for x in [41,43,45]:
+  for y in range(10,30):
+    l.append(Minion(bg, x, y, -1, "monkey"))
+random.shuffle(l)
 
 while not libtcod.console_is_window_closed():
   for m in l:
@@ -26,4 +32,4 @@ while not libtcod.console_is_window_closed():
 
   libtcod.console_blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
   libtcod.console_flush()
-    
+   

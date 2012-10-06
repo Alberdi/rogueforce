@@ -10,7 +10,7 @@ class Tile(object):
     self.y = y
 
   def is_passable(self):
-    return self.entity == None and self.passable
+    return self.entity == None# and self.passable
 
   def draw(self, con):
     libtcod.console_set_default_foreground(con, self.color)
