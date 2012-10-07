@@ -7,6 +7,7 @@ class Entity(object):
     self.y = y
     self.char = char
     self.color = libtcod.white
+    self.bg.tiles[(x, y)].entity = self
 
   def move(self, dx, dy):
     next_tile = self.bg.tiles[(self.x+dx, self.y+dy)]
@@ -15,8 +16,4 @@ class Entity(object):
       next_tile.entity = self
       self.x += dx
       self.y += dy
-
-  def draw(self, con):
-    libtcod.console_set_default_foreground(con, self.color)
-    libtcod.console_put_char(con, self.x, self.y, self.char, libtcod.BKGND_NONE)
 
