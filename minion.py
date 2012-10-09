@@ -28,7 +28,8 @@ class Minion(Entity):
     self.update_color()
 
   def enemy_reachable(self):
-    # TODO may crash if entity has no side (neutral) and it's not complete
+    # TODO may crash if entity has no side (neutral)
+    # TODO only attacks forward
     enemy = self.bg.tiles[(self.x+self.side, self.y)].entity
     if enemy != None and enemy.side != self.side: return enemy
     else: return None

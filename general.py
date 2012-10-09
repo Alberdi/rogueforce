@@ -8,11 +8,11 @@ class General(Minion):
     self.max_hp = 100
     self.hp = 100
     self.max_cd1 = 100
-    self.cd1 = 100
+    self.cd1 = 0
 
   def update(self):
     if not self.alive: return
-    self.cd1 -= 1 
+    if self.cd1 < self.max_cd1: self.cd1 += 1 
     if self.next_action <= 0:
       self.next_action = 20
       enemy = self.enemy_reachable()
@@ -23,8 +23,9 @@ class General(Minion):
     key = libtcod.Key()
     mouse = libtcod.Mouse()
     libtcod.sys_check_for_event(libtcod.EVENT_ANY, key, mouse)
-    if self.cd1 <= 0:
+    if self.cd1 >= self.max_cd1:
       self.cd1 = self.max_cd1
       minion = self.bg.tiles[(mouse.cx-16, mouse.cy)].entity
-      if minion.side == self.side:
+      if minion is not None and minion.side == self.side and minion != self:
+        self.cd1 = 0
         minion.get_healed(100)
