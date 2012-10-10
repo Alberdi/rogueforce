@@ -7,7 +7,7 @@ class Minion(Entity):
     super(Minion, self).__init__(battleground, x, y, name[0])
     self.name = name
     self.side = side
-    self.next_action = 20
+    self.next_action = 5
     self.max_hp = 20
     self.hp = 20
     self.power = 5
@@ -37,7 +37,7 @@ class Minion(Entity):
   def update(self):
     if not self.alive: return
     if self.next_action <= 0:
-      self.next_action = 20
+      self.next_action = 5
       enemy = self.enemy_reachable()
       if enemy != None:
         enemy.get_attacked(self)
