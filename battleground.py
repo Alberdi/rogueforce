@@ -4,6 +4,8 @@ class Battleground(object):
   def __init__(self, width, height):
     self.height = height
     self.width = width
+    self.minions = []
+    self.generals = []
     self.tiles = {}
     for x in range(width):
       for y in range(height):

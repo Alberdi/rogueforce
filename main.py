@@ -20,9 +20,15 @@ BG_OFFSET_Y = 0
 
 LIMIT_FPS = 20
 
+KEYMAP = "QWERTDFG"
+
 class Gui(object):
-  def __init__(self, host, port):
-    self.network = Network(host, port)
+  def __init__(self, side, host = None, port = None):
+    if host is not None:
+      self.network = Network(host, port)
+    else:
+      self.network = None
+    self.side = side
     libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
     libtcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, 'Rogue Force')
     libtcod.sys_set_fps(LIMIT_FPS)
@@ -32,72 +38,56 @@ class Gui(object):
     self.con_panels = [libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT), libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT)]
 
     self.bg = Battleground(BG_WIDTH, BG_HEIGHT)
-    self.entities = []
     for x in range(10,5,-1):
       for y in range(10,31):
-        self.entities.append(Minion(self.bg, x, y, 1, "human"))
+        self.bg.minions.append(Minion(self.bg, x, y, 1, "human"))
     for x in range(49,54):
       for y in range(10,31):
-        self.entities.append(Minion(self.bg, x, y, -1, "monkey"))
+        self.bg.minions.append(Minion(self.bg, x, y, -1, "monkey"))
 
-    self.generals = [General(self.bg, 3, 20, 1, "Gemekaa"), General(self.bg, 56, 20, -1, "Fapencio")]
+    self.bg.generals = [General(self.bg, 3, 20, 1, "Gemekaa"), General(self.bg, 56, 20, -1, "Fapencio")]
+    self.keymap = KEYMAP[0:len(self.bg.generals[self.side].skills)]
+    self.render_all()
 
   def loop(self):
-    key = libtcod.Key()
-    mouse = libtcod.Mouse()
-    while not libtcod.console_is_window_closed():
-      libtcod.sys_check_for_event(libtcod.EVENT_ANY, key, mouse)
-      if BG_OFFSET_X <= mouse.cx < BG_WIDTH + BG_OFFSET_X and BG_OFFSET_Y <= mouse.cy < BG_HEIGHT + BG_OFFSET_Y:
-        self.bg.tile_hovered(mouse.cx-BG_OFFSET_X, mouse.cy-BG_OFFSET_Y)
-      if key.c == ord('q'):
-        self.generals[0].skill1()
-      elif key.c == ord('w'):
-        self.generals[0].skill2(self.entities)
-      elif key.vk == libtcod.KEY_ESCAPE:
-        exit()
-
-      self.update_all()
-      self.render_all()
-
-  def loop2(self):
     turn = 0
     turn_time = 0.1
     key = libtcod.Key()
     mouse = libtcod.Mouse()
     while True:
-      messages = ""
+      messages = ["", ""]
       start = time.time()
       while time.time() - start < turn_time:
         if BG_OFFSET_X <= mouse.cx < BG_WIDTH + BG_OFFSET_X and BG_OFFSET_Y <= mouse.cy < BG_HEIGHT + BG_OFFSET_Y:
           self.bg.tile_hovered(mouse.cx-BG_OFFSET_X, mouse.cy-BG_OFFSET_Y)
         libtcod.sys_check_for_event(libtcod.EVENT_ANY, key, mouse)
-        if key.c == ord('q'):
-          messages += "skill1\n"
-          #self.generals[0].skill1()
-        elif key.c == ord('w'):
-          messages += "skill2\n"
+        n = self.keymap.find(chr(key.c).upper()) # Number of the skill pressed
+        if n != -1:
+          messages[self.side] += "skill" + str(n) + "\n"
         elif key.vk == libtcod.KEY_ESCAPE:
           exit()
+      messages[self.side] += "DONE\n"
 
-      messages += "DONE\n"
-      self.network.send(messages)
-      messages += self.network.recv()
+      if self.network != None:
+        self.network.send(messages[self.side])
+        messages[(self.side+1)%2] = self.network.recv()
+      else:
+        messages[(self.side+1)%2] = "DONE\n"
+
       turn +=1
-      #turn_time = something
       self.process_messages(messages)
       self.update_all()
       self.render_all()
 
   def process_messages(self, messages):
-    for m in messages.split("\n"):
-      if m == "skill2":
-        self.generals[0].skill2(self.entities)
-      #elif m == "DONE":
-        #return
+    for i in [0,1]:
+      for m in messages[i].split("\n"):
+        if m.startswith("skill"):
+          self.bg.generals[i].use_skill(int(m[5]))
 
   def render_all(self):
     self.bg.draw(self.con_bg)
-    self.render_left_panel()
+    self.render_panels()
     libtcod.console_blit(self.con_bg, 0, 0, BG_WIDTH, BG_HEIGHT, self.con_root, BG_OFFSET_X, BG_OFFSET_Y)
     for i in [0,1]:
       libtcod.console_blit(self.con_panels[i], 0, 0, PANEL_WIDTH, PANEL_HEIGHT, self.con_root, (PANEL_WIDTH+BG_WIDTH)*i, 0)
@@ -113,22 +103,23 @@ class Gui(object):
     libtcod.console_set_default_background(con, text_color)
     libtcod.console_print_rect(con, x+1, y, w, 1, "%03d / %03d" % (value, max_value))
 
-  def render_left_panel(self):
+  def render_panels(self):
     bar_length = 11
     bar_offset_x = 4
     for i in [0,1]:
       libtcod.console_set_default_foreground(self.con_panels[i], libtcod.black)
-      self.render_bar(self.con_panels[i], bar_offset_x, 1, bar_length, self.generals[i].hp, self.generals[i].max_hp,
+      self.render_bar(self.con_panels[i], bar_offset_x, 1, bar_length, self.bg.generals[i].hp, self.bg.generals[i].max_hp,
         libtcod.red, libtcod.yellow, libtcod.black)
-      self.render_bar(self.con_panels[i], bar_offset_x, 3, bar_length, self.generals[i].cd1, self.generals[i].max_cd1,
-        libtcod.dark_blue, libtcod.sky, libtcod.black)
-      self.render_bar(self.con_panels[i], bar_offset_x, 5, bar_length, self.generals[i].cd2, self.generals[i].max_cd2,
-        libtcod.dark_blue, libtcod.sky, libtcod.black)
+      line = 3
+      for s in range(0, len(self.bg.generals[i].skills)):
+        self.render_bar(self.con_panels[i], bar_offset_x, line, bar_length, self.bg.generals[i].cd[s], self.bg.generals[i].max_cd[s],
+          libtcod.dark_blue, libtcod.sky, libtcod.black)
+        line += 2
 
   def update_all(self):
-    for e in self.entities:
+    for e in self.bg.minions:
       e.update()
-    for g in self.generals:
+    for g in self.bg.generals:
       g.update()
 
 class Network(object):
@@ -144,5 +135,8 @@ class Network(object):
 
 
 if __name__=="__main__":
-  gui = Gui(sys.argv[1], int(sys.argv[2]))
-  gui.loop2()
+  if len(sys.argv) == 4: 
+    gui = Gui(int(sys.argv[1]), sys.argv[2], int(sys.argv[3]))
+  else:
+    gui = Gui(int(sys.argv[1]))
+  gui.loop()
