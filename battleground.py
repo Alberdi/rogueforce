@@ -30,13 +30,12 @@ class Tile(object):
     self.char = char
     self.fg_color = libtcod.Color(50, 50, 150)
     self.bg_color = libtcod.black
-
     self.entity = None
     self.x = x
     self.y = y
 
-  def is_passable(self):
-    return self.passable and self.entity == None
+  def is_passable(self, passenger):
+    return self.passable and (self.entity == None or self.entity.is_ally(passenger))
 
   def draw(self, con):
     char = self.char if self.entity == None else self.entity.char

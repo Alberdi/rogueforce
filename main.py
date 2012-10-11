@@ -20,7 +20,8 @@ BG_OFFSET_Y = 0
 
 LIMIT_FPS = 20
 
-KEYMAP = "QWERTDFG"
+KEYMAP_SKILLS = "QWERTYUIOP"
+KEYMAP_TACTICS = "ZXCVBNM"
 
 class Gui(object):
   def __init__(self, side, host = None, port = None):
@@ -46,7 +47,8 @@ class Gui(object):
         self.bg.minions.append(Minion(self.bg, x, y, -1, "monkey"))
 
     self.bg.generals = [General(self.bg, 3, 20, 1, "Gemekaa"), General(self.bg, 56, 20, -1, "Fapencio")]
-    self.keymap = KEYMAP[0:len(self.bg.generals[self.side].skills)]
+    self.keymap_skills = KEYMAP_SKILLS[0:len(self.bg.generals[self.side].skills)]
+    self.keymap_tactics = KEYMAP_TACTICS[0:len(self.bg.generals[self.side].tactics)]
     self.render_all()
 
   def loop(self):
@@ -61,11 +63,14 @@ class Gui(object):
         if BG_OFFSET_X <= mouse.cx < BG_WIDTH + BG_OFFSET_X and BG_OFFSET_Y <= mouse.cy < BG_HEIGHT + BG_OFFSET_Y:
           self.bg.tile_hovered(mouse.cx-BG_OFFSET_X, mouse.cy-BG_OFFSET_Y)
         libtcod.sys_check_for_event(libtcod.EVENT_ANY, key, mouse)
-        n = self.keymap.find(chr(key.c).upper()) # Number of the skill pressed
-        if n != -1:
-          messages[self.side] += "skill" + str(n) + "\n"
-        elif key.vk == libtcod.KEY_ESCAPE:
+        if key.vk == libtcod.KEY_ESCAPE:
           exit()
+        n = self.keymap_skills.find(chr(key.c).upper()) # Number of the skill pressed
+        if n != -1: 
+          messages[self.side] += "skill" + str(n) + "\n"
+        n = self.keymap_tactics.find(chr(key.c).upper()) # Number of the tactic pressed
+        if n != -1: 
+          messages[self.side] += "tactic" + str(n) + "\n"
       messages[self.side] += "DONE\n"
 
       if self.network != None:
@@ -84,6 +89,8 @@ class Gui(object):
       for m in messages[i].split("\n"):
         if m.startswith("skill"):
           self.bg.generals[i].use_skill(int(m[5]))
+        elif m.startswith("tactic"):
+          self.bg.generals[i].command_tactic(int(m[6]))
 
   def render_all(self):
     self.bg.draw(self.con_bg)
@@ -112,13 +119,14 @@ class Gui(object):
         libtcod.red, libtcod.yellow, libtcod.black)
       line = 3
       for s in range(0, len(self.bg.generals[i].skills)):
+        libtcod.console_put_char_ex(self.con_panels[i], bar_offset_x-1, line, KEYMAP_SKILLS[s], libtcod.white, libtcod.black)
         self.render_bar(self.con_panels[i], bar_offset_x, line, bar_length, self.bg.generals[i].cd[s], self.bg.generals[i].max_cd[s],
           libtcod.dark_blue, libtcod.sky, libtcod.black)
         line += 2
 
   def update_all(self):
-    for e in self.bg.minions:
-      e.update()
+    for m in self.bg.minions:
+      m.update()
     for g in self.bg.generals:
       g.update()
 
