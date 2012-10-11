@@ -41,12 +41,12 @@ class Gui(object):
     self.bg = Battleground(BG_WIDTH, BG_HEIGHT)
     for x in range(10,5,-1):
       for y in range(10,31):
-        self.bg.minions.append(Minion(self.bg, x, y, 1, "human"))
+        self.bg.minions.append(Minion(self.bg, x, y, 0, "human"))
     for x in range(49,54):
       for y in range(10,31):
-        self.bg.minions.append(Minion(self.bg, x, y, -1, "monkey"))
+        self.bg.minions.append(Minion(self.bg, x, y, 1, "monkey"))
 
-    self.bg.generals = [General(self.bg, 3, 20, 1, "Gemekaa"), General(self.bg, 56, 20, -1, "Fapencio")]
+    self.bg.generals = [General(self.bg, 3, 20, 0, "Gemekaa"), General(self.bg, 56, 20, 1, "Fapencio")]
     self.keymap_skills = KEYMAP_SKILLS[0:len(self.bg.generals[self.side].skills)]
     self.keymap_tactics = KEYMAP_TACTICS[0:len(self.bg.generals[self.side].tactics)]
     self.render_all()

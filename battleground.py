@@ -38,7 +38,7 @@ class Tile(object):
     return self.passable and (self.entity == None or self.entity.is_ally(passenger))
 
   def draw(self, con):
-    char = self.char if self.entity == None else self.entity.char
+    char = self.char if self.entity == None else self.entity.char #str(self.entity.next_action)
     color = self.fg_color if self.entity == None else self.entity.color
     libtcod.console_put_char_ex(con, self.x, self.y, char, color, self.bg_color)
 

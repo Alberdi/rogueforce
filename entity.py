@@ -1,15 +1,22 @@
 import libtcodpy as libtcod
 
+NEUTRAL_SIDE = 555
+
 class Entity(object):
-  def __init__(self, battleground, x, y, side, char):
+  def __init__(self, battleground, x, y, side, char = ' ', color = libtcod.white):
     self.bg = battleground
     self.x = x
     self.y = y
     self.side = side
     self.char = char
-    self.color = libtcod.white
+    self.color = color
     self.bg.tiles[(x, y)].entity = self
+    self.default_next_action = 5
+    self.next_action = self.default_next_action
     self.pushed = False
+
+  def get_attacked(self, attacker):
+    pass
 
   def move(self, dx, dy):
     if self.pushed:
@@ -35,3 +42,15 @@ class Entity(object):
 
   def is_ally(self, entity):
     return self.side == entity.side
+
+  def reset_action(self):
+    self.next_action = self.default_next_action
+
+class Mine(Entity):
+  def __init__(self, battleground, x, y):
+    super(Mine, self).__init__(battleground, x, y, NEUTRAL_SIDE, 'X', libtcod.red)
+    self.power = 50
+
+  def get_attacked(self, attacker):
+    attacker.get_attacked(self)
+    self.bg.tiles[(self.x, self.y)].entity = None
