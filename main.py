@@ -123,6 +123,16 @@ class Gui(object):
         self.render_bar(self.con_panels[i], bar_offset_x, line, bar_length, self.bg.generals[i].cd[s], self.bg.generals[i].max_cd[s],
           libtcod.dark_blue, libtcod.sky, libtcod.black)
         line += 2
+      self.render_tactics(i)
+
+  def render_tactics(self, i):
+    bar_offset_x = 3
+    line = 9 + len(self.bg.generals[i].skills)
+    for s in range(0, len(self.bg.generals[i].tactics)):
+      libtcod.console_set_default_foreground(self.con_panels[i],
+        libtcod.red if self.bg.generals[i].tactics[s] == self.bg.generals[i].selected_tactic else libtcod.white)
+      libtcod.console_print(self.con_panels[i], bar_offset_x, line, KEYMAP_TACTICS[s] + ": " + self.bg.generals[i].tactics[s].capitalize())
+      line += 2
 
   def update_all(self):
     for m in self.bg.minions:

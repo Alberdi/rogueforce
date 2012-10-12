@@ -11,12 +11,14 @@ class General(Minion):
     self.cd = []
     self.skills = [self.heal_target_minion, self.heal_all_minions, self.heal_all_minions, self.mine]
     self.tactics = ["forward", "stop", "go_sides", "go_center"]
+    self.selected_tactic = self.tactics[0]
     self.strategies = []
     for i in range(0, len(self.skills)):
       self.max_cd.append(50)
       self.cd.append(0)
 
   def command_tactic(self, i):
+    self.selected_tactic = self.tactics[i]
     for m in self.bg.minions:
       if m.side == self.side:
         m.tactic = self.tactics[i]
