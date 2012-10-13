@@ -8,16 +8,21 @@ class Minion(Entity):
     self.max_hp = 20
     self.hp = 20
     self.power = 5
-    self.alive = True
     self.tactic = "forward"
+
+  def can_be_attacked(self):
+    return True
 
   def enemy_reachable(self):
     # Order: forward, backward, up, down
     enemy = self.bg.tiles[(self.x + (1 if self.side == 0 else -1), self.y)].entity
-    if enemy is None or self.is_ally(enemy): enemy = self.bg.tiles[(self.x + (-1 if self.side == 0 else 1), self.y)].entity
-    if enemy is None or self.is_ally(enemy): enemy = self.bg.tiles[(self.x, self.y-1)].entity
-    if enemy is None or self.is_ally(enemy): enemy = self.bg.tiles[(self.x, self.y+1)].entity
-    if enemy != None and enemy.side != self.side: return enemy
+    if enemy is None or self.is_ally(enemy) or not enemy.can_be_attacked():
+      enemy = self.bg.tiles[(self.x + (-1 if self.side == 0 else 1), self.y)].entity
+    if enemy is None or self.is_ally(enemy) or not enemy.can_be_attacked():
+      enemy = self.bg.tiles[(self.x, self.y-1)].entity
+    if enemy is None or self.is_ally(enemy) or not enemy.can_be_attacked():
+      enemy = self.bg.tiles[(self.x, self.y+1)].entity
+    if enemy != None and not self.is_ally(enemy) and enemy.can_be_attacked(): return enemy
     else: return None
  
   def follow_tactic(self):

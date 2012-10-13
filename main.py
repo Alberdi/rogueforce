@@ -135,10 +135,12 @@ class Gui(object):
       line += 2
 
   def update_all(self):
-    for m in self.bg.minions:
-      m.update()
     for g in self.bg.generals:
       g.update()
+    for e in self.bg.effects:
+      e.update()
+    for m in self.bg.minions:
+      m.update()
 
 class Network(object):
   def __init__(self, host, port):

@@ -4,6 +4,7 @@ class Battleground(object):
   def __init__(self, width, height):
     self.height = height
     self.width = width
+    self.effects = []
     self.minions = []
     self.generals = []
     self.tiles = {}
@@ -28,9 +29,10 @@ class Tile(object):
   def __init__(self, x, y, char = ".", passable = True):
     self.passable = passable
     self.char = char
-    self.fg_color = libtcod.Color(50, 50, 150)
+    self.color = libtcod.Color(50, 50, 150)
     self.bg_color = libtcod.black
     self.entity = None
+    self.effects = []
     self.x = x
     self.y = y
 
@@ -38,10 +40,11 @@ class Tile(object):
     return self.passable and (self.entity == None or self.entity.is_ally(passenger))
 
   def draw(self, con):
-    char = self.char if self.entity == None else self.entity.char #str(self.entity.next_action)
-    color = self.fg_color if self.entity == None else self.entity.color
-    libtcod.console_put_char_ex(con, self.x, self.y, char, color, self.bg_color)
-
+    if len(self.effects) > 0: drawable = self.effects[-1]
+    elif self.entity is not None: drawable = self.entity
+    else: drawable = self
+    libtcod.console_put_char_ex(con, self.x, self.y, drawable.char, drawable.color, self.bg_color)
+  
   def hover(self):
     self.bg_color = libtcod.blue
 

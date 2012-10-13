@@ -14,9 +14,10 @@ class Entity(object):
     self.default_next_action = 5
     self.next_action = self.default_next_action
     self.pushed = False
+    self.alive = True
 
-  def get_attacked(self, attacker):
-    pass
+  def can_be_attacked(self):
+    return False
 
   def move(self, dx, dy):
     if self.pushed:
@@ -46,11 +47,56 @@ class Entity(object):
   def reset_action(self):
     self.next_action = self.default_next_action
 
+  def update(self):
+    pass
+
+class Effect(Entity):
+  def __init__(self, battleground, x, y, side, char = ' ', color = libtcod.white):
+    saved = battleground.tiles[(x, y)].entity
+    super(Effect, self).__init__(battleground, x, y, side, '~', libtcod.light_blue)
+    self.bg.tiles[(x, y)].entity = saved
+    self.bg.tiles[(x, y)].effects.append(self)
+
+  def can_be_pushed(self):
+    return False
+
+  def move(self, dx, dy):
+    self.bg.tiles[(self.x, self.y)].effects.remove(self)
+    self.x += dx
+    self.y += dy
+    self.bg.tiles[(self.x, self.y)].effects.append(self)
+
 class Mine(Entity):
   def __init__(self, battleground, x, y):
     super(Mine, self).__init__(battleground, x, y, NEUTRAL_SIDE, 'X', libtcod.red)
     self.power = 50
 
+  def can_be_attacked(self):
+    return True
+
   def get_attacked(self, attacker):
     attacker.get_attacked(self)
     self.bg.tiles[(self.x, self.y)].entity = None
+
+class Wave(Effect):
+  def __init__(self, battleground, x, y, side):
+    super(Wave, self).__init__(battleground, x, y, side, '~', libtcod.light_blue)
+    self.power = 10
+    self.entities_attacked = []
+    self.do_attack()
+ 
+  def do_attack(self):
+    entity = self.bg.tiles[(self.x, self.y)].entity
+    if entity is not None and entity not in self.entities_attacked and entity.can_be_attacked():
+      entity.get_attacked(self)
+      self.entities_attacked.append(entity)
+
+  def update(self):
+    if not self.alive: return
+    if self.x >= self.bg.width-1:
+      self.bg.tiles[(self.x, self.y)].effects.remove(self)
+      self.alive = False
+      return
+    self.do_attack()
+    self.move(1, 0)
+    self.do_attack()

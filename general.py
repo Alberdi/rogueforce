@@ -1,4 +1,4 @@
-from entity import Mine
+from entity import Mine, Wave
 from minion import Minion
 import libtcodpy as libtcod
 
@@ -9,7 +9,7 @@ class General(Minion):
     self.hp = 100
     self.max_cd = []
     self.cd = []
-    self.skills = [self.heal_target_minion, self.heal_all_minions, self.heal_all_minions, self.mine]
+    self.skills = [self.heal_target_minion, self.heal_all_minions, self.heal_all_minions, self.mine, self.sonic_wave]
     self.tactics = ["forward", "stop", "go_sides", "go_center"]
     self.selected_tactic = self.tactics[0]
     self.strategies = []
@@ -60,3 +60,9 @@ class General(Minion):
     if self.bg.tiles[(x, y)].entity is not None: return False
     Mine(self.bg, x, y)
     return True 
+ 
+  def sonic_wave(self):
+    self.bg.effects.append(Wave(self.bg, self.x, self.y+1, self.side))
+    self.bg.effects.append(Wave(self.bg, self.x+1, self.y, self.side))
+    self.bg.effects.append(Wave(self.bg, self.x, self.y-1, self.side))
+    return True
