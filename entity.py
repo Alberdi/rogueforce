@@ -93,10 +93,10 @@ class Wave(Effect):
 
   def update(self):
     if not self.alive: return
-    if self.x >= self.bg.width-1:
+    if self.x >= self.bg.width-1 or self.x <= 0:
       self.bg.tiles[(self.x, self.y)].effects.remove(self)
       self.alive = False
       return
     self.do_attack()
-    self.move(1, 0)
+    self.move(1 if self.side == 0 else -1, 0)
     self.do_attack()

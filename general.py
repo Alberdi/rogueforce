@@ -63,6 +63,6 @@ class General(Minion):
  
   def sonic_wave(self):
     self.bg.effects.append(Wave(self.bg, self.x, self.y+1, self.side))
-    self.bg.effects.append(Wave(self.bg, self.x+1, self.y, self.side))
+    self.bg.effects.append(Wave(self.bg, self.x+1 if self.side == 0 else self.x-1, self.y, self.side))
     self.bg.effects.append(Wave(self.bg, self.x, self.y-1, self.side))
     return True
