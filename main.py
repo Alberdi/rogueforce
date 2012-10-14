@@ -6,6 +6,7 @@ import libtcodpy as libtcod
 
 import copy
 import random
+import re
 import socket
 import sys
 import time
@@ -24,6 +25,8 @@ LIMIT_FPS = 20
 
 KEYMAP_SKILLS = "QWERTYUIOP"
 KEYMAP_TACTICS = "ZXCVBNM"
+
+SKILL_PATTERN = re.compile("skill(\d) \((-?\d+),(-?\d+)\)")
 
 class Gui(object):
   def __init__(self, side, host = None, port = None):
@@ -70,17 +73,16 @@ class Gui(object):
       messages = ["", ""]
       start = time.time()
       while time.time() - start < turn_time:
-        if BG_OFFSET_X <= mouse.cx < BG_WIDTH + BG_OFFSET_X and BG_OFFSET_Y <= mouse.cy < BG_HEIGHT + BG_OFFSET_Y:
-          self.bg.tile_hovered(mouse.cx-BG_OFFSET_X, mouse.cy-BG_OFFSET_Y)
         libtcod.sys_check_for_event(libtcod.EVENT_ANY, key, mouse)
-        if key.vk == libtcod.KEY_ESCAPE:
-          exit()
+        (x, y) = (mouse.cx-BG_OFFSET_X, mouse.cy-BG_OFFSET_Y)
+        if self.bg.is_inside(x,y): self.bg.tile_hovered(x, y)
+        if key.vk == libtcod.KEY_ESCAPE: exit()
         n = self.keymap_skills.find(chr(key.c).upper()) # Number of the skill pressed
         if n != -1: 
-          messages[self.side] += "skill" + str(n) + "\n"
+          messages[self.side] += "skill{0} ({1},{2})\n".format(n, x, y)
         n = self.keymap_tactics.find(chr(key.c).upper()) # Number of the tactic pressed
         if n != -1: 
-          messages[self.side] += "tactic" + str(n) + "\n"
+          messages[self.side] += "tactic{0}\n".format(n)
       messages[self.side] += "DONE\n"
 
       if self.network != None:
@@ -88,7 +90,6 @@ class Gui(object):
         messages[(self.side+1)%2] = self.network.recv()
       else:
         messages[(self.side+1)%2] = "DONE\n"
-
       turn +=1
       self.process_messages(messages)
       self.update_all()
@@ -98,8 +99,9 @@ class Gui(object):
   def process_messages(self, messages):
     for i in [0,1]:
       for m in messages[i].split("\n"):
-        if m.startswith("skill"):
-          self.bg.generals[i].use_skill(int(m[5]))
+        match = SKILL_PATTERN.match(m)
+        if match is not None:
+          self.bg.generals[i].use_skill(*map(int, match.groups()))
         elif m.startswith("tactic"):
           self.bg.generals[i].command_tactic(int(m[6]))
 

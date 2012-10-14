@@ -20,6 +20,9 @@ class Battleground(object):
     for pos in self.tiles:
       self.tiles[pos].draw(con)
 
+  def is_inside(self, x, y):
+    return 0 <= x < self.width and 0 <= y < self.height
+
   def tile_hovered(self, x, y):
     if self.hovered is not None: self.hovered.unhover()
     self.hovered = self.tiles[(x, y)]

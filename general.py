@@ -1,6 +1,9 @@
 from entity import Mine, Wave
 from minion import Minion
+
 import libtcodpy as libtcod
+
+import inspect
 
 class General(Minion):
   def __init__(self, battleground, x, y, side, name):
@@ -9,7 +12,7 @@ class General(Minion):
     self.hp = 100
     self.max_cd = []
     self.cd = []
-    self.skills = [self.heal_target_minion, self.heal_all_minions, self.heal_all_minions, self.mine, self.sonic_wave]
+    self.skills = [self.heal_target_minion, self.heal_all_minions, self.mine, self.sonic_wave]
     self.tactics = ["forward", "stop", "backward", "sides", "center"]
     self.selected_tactic = self.tactics[0]
     self.strategies = []
@@ -31,9 +34,12 @@ class General(Minion):
     for i in range(0, len(self.skills)):
       if self.cd[i] < self.max_cd[i]: self.cd[i] += 1
 
-  def use_skill(self, i):
+  def use_skill(self, i, x, y):
     if self.cd[i] >= self.max_cd[i]:
-      if self.skills[i]():
+      if len(inspect.getargspec(self.skills[i])[0]) == 1: # Only self argument
+        used = self.skills[i]()
+      else: used = self.skills[i](x, y)
+      if used:
         self.max_cd[i] *= 2
         self.cd[i] = 0
 
@@ -42,27 +48,16 @@ class General(Minion):
       m.get_healed(100)
     return True
 
-  def heal_target_minion(self):
-    key = libtcod.Key()
-    mouse = libtcod.Mouse()
-    libtcod.sys_check_for_event(libtcod.EVENT_ANY, key, mouse)
-    # TODO that 16
-    (x, y) = (mouse.cx-16, mouse.cy)
-    if (x >= self.bg.width or x < 0 or y >= self.bg.height or y < 0): return False
-    minion = self.bg.tiles[(mouse.cx-16, mouse.cy)].entity
+  def heal_target_minion(self, x, y):
+    if not self.bg.is_inside(x, y): return False
+    minion = self.bg.tiles[x, y].entity
     if minion is not None and minion.side == self.side and minion != self and minion.hp != minion.max_hp:
       minion.get_healed(100)
       return True
     return False
  
-  def mine(self):
-    key = libtcod.Key()
-    mouse = libtcod.Mouse()
-    libtcod.sys_check_for_event(libtcod.EVENT_ANY, key, mouse)
-    # TODO that 16
-    (x, y) = (mouse.cx-16, mouse.cy)
-    if (x >= self.bg.width or x < 0 or y >= self.bg.height or y < 0): return False
-    if self.bg.tiles[(x, y)].entity is not None: return False
+  def mine(self, x, y):
+    if not self.bg.is_inside(x, y) or self.bg.tiles[(x, y)].entity is not None: return False
     Mine(self.bg, x, y)
     return True 
  

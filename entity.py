@@ -98,7 +98,7 @@ class Arrow(Effect):
 
   def update(self):
     if not self.alive: return
-    if self.x >= self.bg.width-1 or self.x <= 0:
+    if not self.bg.is_inside(self.x + (1 if self.side == 0 else -1), self.y):
       self.dissapear()
     self.do_attack()
     if not self.alive: return
@@ -120,7 +120,7 @@ class Wave(Effect):
 
   def update(self):
     if not self.alive: return
-    if self.x >= self.bg.width-1 or self.x <= 0:
+    if not self.bg.is_inside(self.x + (1 if self.side == 0 else -1), self.y):
       self.dissapear()
       return
     self.do_attack()
