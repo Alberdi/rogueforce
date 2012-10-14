@@ -38,6 +38,7 @@ class Entity(object):
     return next_tile.is_passable(self) and (next_tile.entity is None or next_tile.entity.can_be_pushed(dx, dy))
 
   def get_pushed(self, dx, dy):
+    self.pushed = False
     self.move(dx, dy)
     self.pushed = True
 

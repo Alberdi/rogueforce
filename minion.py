@@ -82,7 +82,7 @@ class Ranged_Minion(Minion):
     self.reset_action()
 
   def follow_tactic(self):
-    if self.tactic == "stop":
-      self.bg.effects.append(\
-      Arrow(self.bg, self.x+1 if self.side == 0 else self.x-1, self.y, self.side, self.ranged_power))
+    next_x = self.x+1 if self.side == 0 else self.x-1
+    if self.tactic == "stop" and self.bg.tiles[(next_x, self.y)].entity == None:
+      self.bg.effects.append(Arrow(self.bg, next_x, self.y, self.side, self.ranged_power))
     else: super(Ranged_Minion, self).follow_tactic()
