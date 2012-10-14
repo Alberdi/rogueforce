@@ -3,6 +3,8 @@ from general import General
 from minion import *
 
 import libtcodpy as libtcod
+
+import copy
 import random
 import socket
 import sys
@@ -51,6 +53,14 @@ class Gui(object):
     self.keymap_tactics = KEYMAP_TACTICS[0:len(self.bg.generals[self.side].tactics)]
     self.render_all()
 
+  def clean_all(self):
+    for e in copy.copy(self.bg.effects):
+      if not e.alive:
+        self.bg.effects.remove(e)
+    for m in copy.copy(self.bg.minions):
+      if not m.alive:
+        self.bg.minions.remove(m)
+
   def loop(self):
     turn = 0
     turn_time = 0.1
@@ -82,6 +92,7 @@ class Gui(object):
       turn +=1
       self.process_messages(messages)
       self.update_all()
+      if (turn % 100) == 0: self.clean_all()
       self.render_all()
 
   def process_messages(self, messages):

@@ -96,7 +96,6 @@ class Arrow(Effect):
       self.dissapear()
 
   def update(self):
-    #TODO This is too ugly :/
     if not self.alive: return
     if self.x >= self.bg.width-1 or self.x <= 0:
       self.dissapear()
