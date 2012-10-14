@@ -1,4 +1,4 @@
-from entity import Entity
+from entity import *
 import libtcodpy as libtcod
 
 class Minion(Entity):
@@ -28,11 +28,13 @@ class Minion(Entity):
   def follow_tactic(self):
     if self.tactic == "forward":
       self.move(1 if self.side == 0 else -1, 0)
+    elif self.tactic == "backward":
+      self.move(-1 if self.side == 0 else 1, 0)
     elif self.tactic == "stop":
       self.next_action = 1
-    elif self.tactic == "go_sides":
+    elif self.tactic == "sides":
       self.move(0, 1 if self.y >= self.bg.height/2 else -1)
-    elif self.tactic == "go_center":
+    elif self.tactic == "center":
       self.move(0, -1 if self.y >= self.bg.height/2 else 1)
 
   def get_attacked(self, enemy):
@@ -68,3 +70,19 @@ class Minion(Entity):
     c = int(255*(float(self.hp)/self.max_hp))
     self.color = libtcod.Color(255, c, c)
     
+
+class Ranged_Minion(Minion):
+  def __init__(self, battleground, x, y, side, name):
+    super(Ranged_Minion, self).__init__(battleground, x, y, side, name)
+    self.ranged_power = 4
+    self.power = 1
+    self.max_hp = 10
+    self.hp = 10
+    self.default_next_action = 10
+    self.reset_action()
+
+  def follow_tactic(self):
+    if self.tactic == "stop":
+      self.bg.effects.append(\
+      Arrow(self.bg, self.x+1 if self.side == 0 else self.x-1, self.y, self.side, self.ranged_power))
+    else: super(Ranged_Minion, self).follow_tactic()

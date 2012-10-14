@@ -1,6 +1,6 @@
 from battleground import Battleground
 from general import General
-from minion import Minion
+from minion import *
 
 import libtcodpy as libtcod
 import random
@@ -41,7 +41,7 @@ class Gui(object):
     self.bg = Battleground(BG_WIDTH, BG_HEIGHT)
     for x in range(10,5,-1):
       for y in range(10,31):
-        self.bg.minions.append(Minion(self.bg, x, y, 0, "human"))
+        self.bg.minions.append(Ranged_Minion(self.bg, x, y, 0, "human"))
     for x in range(49,54):
       for y in range(10,31):
         self.bg.minions.append(Minion(self.bg, x, y, 1, "monkey"))

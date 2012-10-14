@@ -10,12 +10,15 @@ class General(Minion):
     self.max_cd = []
     self.cd = []
     self.skills = [self.heal_target_minion, self.heal_all_minions, self.heal_all_minions, self.mine, self.sonic_wave]
-    self.tactics = ["forward", "stop", "go_sides", "go_center"]
+    self.tactics = ["forward", "stop", "backward", "sides", "center"]
     self.selected_tactic = self.tactics[0]
     self.strategies = []
     for i in range(0, len(self.skills)):
       self.max_cd.append(50)
       self.cd.append(0)
+
+  def can_be_pushed(self, dx, dy):
+    return False
 
   def command_tactic(self, i):
     self.selected_tactic = self.tactics[i]
@@ -30,7 +33,9 @@ class General(Minion):
 
   def use_skill(self, i):
     if self.cd[i] >= self.max_cd[i]:
-      if self.skills[i](): self.cd[i] = 0
+      if self.skills[i]():
+        self.max_cd[i] *= 2
+        self.cd[i] = 0
 
   def heal_all_minions(self):
     for m in self.bg.minions:

@@ -53,12 +53,16 @@ class Entity(object):
 class Effect(Entity):
   def __init__(self, battleground, x, y, side, char = ' ', color = libtcod.white):
     saved = battleground.tiles[(x, y)].entity
-    super(Effect, self).__init__(battleground, x, y, side, '~', libtcod.light_blue)
+    super(Effect, self).__init__(battleground, x, y, side, char, color)
     self.bg.tiles[(x, y)].entity = saved
     self.bg.tiles[(x, y)].effects.append(self)
 
-  def can_be_pushed(self):
+  def can_be_pushed(self, dx, dy):
     return False
+
+  def dissapear(self):
+    self.bg.tiles[(self.x, self.y)].effects.remove(self)
+    self.alive = False
 
   def move(self, dx, dy):
     self.bg.tiles[(self.x, self.y)].effects.remove(self)
@@ -75,8 +79,31 @@ class Mine(Entity):
     return True
 
   def get_attacked(self, attacker):
-    attacker.get_attacked(self)
-    self.bg.tiles[(self.x, self.y)].entity = None
+    if attacker.can_be_attacked():
+      attacker.get_attacked(self)
+      self.bg.tiles[(self.x, self.y)].entity = None
+
+class Arrow(Effect):
+  def __init__(self, battleground, x, y, side, power):
+    super(Arrow, self).__init__(battleground, x, y, side, '>' if side == 0 else '<', libtcod.light_red)
+    self.power = power
+    self.do_attack()
+
+  def do_attack(self):
+    entity = self.bg.tiles[(self.x, self.y)].entity
+    if entity is not None and entity.can_be_attacked():
+      if not entity.is_ally(self): entity.get_attacked(self)
+      self.dissapear()
+
+  def update(self):
+    #TODO This is too ugly :/
+    if not self.alive: return
+    if self.x >= self.bg.width-1 or self.x <= 0:
+      self.dissapear()
+    self.do_attack()
+    if not self.alive: return
+    self.move(1 if self.side == 0 else -1, 0)
+    self.do_attack()
 
 class Wave(Effect):
   def __init__(self, battleground, x, y, side):
@@ -94,8 +121,7 @@ class Wave(Effect):
   def update(self):
     if not self.alive: return
     if self.x >= self.bg.width-1 or self.x <= 0:
-      self.bg.tiles[(self.x, self.y)].effects.remove(self)
-      self.alive = False
+      self.dissapear()
       return
     self.do_attack()
     self.move(1 if self.side == 0 else -1, 0)
