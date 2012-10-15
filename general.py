@@ -1,7 +1,7 @@
-from entity import Mine, Wave
 from minion import Minion
 
 import libtcodpy as libtcod
+import skill
 
 import inspect
 
@@ -12,7 +12,7 @@ class General(Minion):
     self.hp = 100
     self.max_cd = []
     self.cd = []
-    self.skills = [self.heal_target_minion, self.heal_all_minions, self.mine, self.sonic_wave]
+    self.skills = [(skill.heal_target_minion, 100), (skill.heal_all_minions, 20), (skill.mine, 50), (skill.sonic_waves, 10, 3)]
     self.tactics = ["forward", "stop", "backward", "sides", "center"]
     self.selected_tactic = self.tactics[0]
     self.strategies = []
@@ -36,33 +36,10 @@ class General(Minion):
 
   def use_skill(self, i, x, y):
     if self.cd[i] >= self.max_cd[i]:
-      if len(inspect.getargspec(self.skills[i])[0]) == 1: # Only self argument
-        used = self.skills[i]()
-      else: used = self.skills[i](x, y)
-      if used:
+      params = [self]
+      if inspect.getargspec(self.skills[i][0])[0][1:3] == ['x', 'y']: params.extend([x, y])
+      params.extend(self.skills[i][1:])
+      if self.skills[i][0](*params):
         self.max_cd[i] *= 2
         self.cd[i] = 0
 
-  def heal_all_minions(self):
-    for m in self.bg.minions:
-      m.get_healed(100)
-    return True
-
-  def heal_target_minion(self, x, y):
-    if not self.bg.is_inside(x, y): return False
-    minion = self.bg.tiles[x, y].entity
-    if minion is not None and minion.side == self.side and minion != self and minion.hp != minion.max_hp:
-      minion.get_healed(100)
-      return True
-    return False
- 
-  def mine(self, x, y):
-    if not self.bg.is_inside(x, y) or self.bg.tiles[(x, y)].entity is not None: return False
-    Mine(self.bg, x, y)
-    return True 
- 
-  def sonic_wave(self):
-    self.bg.effects.append(Wave(self.bg, self.x, self.y+1, self.side))
-    self.bg.effects.append(Wave(self.bg, self.x+1 if self.side == 0 else self.x-1, self.y, self.side))
-    self.bg.effects.append(Wave(self.bg, self.x, self.y-1, self.side))
-    return True

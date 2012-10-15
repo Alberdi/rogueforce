@@ -1,4 +1,5 @@
-from entity import *
+from effect import Arrow
+from entity import Entity
 import libtcodpy as libtcod
 
 class Minion(Entity):
@@ -42,11 +43,7 @@ class Minion(Entity):
     if self.hp > 0:
       self.update_color()
     else:
-      self.bg.tiles[(self.x, self.y)].entity = None
-      # We can't delete self from the list because we are iterating it
-      #self.bg.minions.remove(self)
-      self.x = -1
-      self.alive = False
+      self.die()
 
   def get_healed(self, amount):
     self.hp += amount
@@ -69,7 +66,6 @@ class Minion(Entity):
     # More red -> closer to death
     c = int(255*(float(self.hp)/self.max_hp))
     self.color = libtcod.Color(255, c, c)
-    
 
 class Ranged_Minion(Minion):
   def __init__(self, battleground, x, y, side, name):
