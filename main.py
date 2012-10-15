@@ -9,17 +9,22 @@ import random
 import re
 import socket
 import sys
+import textwrap
 import time
 
 BG_WIDTH = 60
 BG_HEIGHT = 43
 PANEL_WIDTH = 16
 PANEL_HEIGHT = BG_HEIGHT
+MSG_WIDTH = BG_WIDTH - 2
+MSG_HEIGHT = 6
 SCREEN_WIDTH = BG_WIDTH + PANEL_WIDTH*2
-SCREEN_HEIGHT = BG_HEIGHT
+SCREEN_HEIGHT = BG_HEIGHT + MSG_HEIGHT + 2
 
 BG_OFFSET_X = PANEL_WIDTH
 BG_OFFSET_Y = 0
+MSG_OFFSET_X = PANEL_WIDTH + 1
+MSG_OFFSET_Y = BG_HEIGHT + 1
 
 LIMIT_FPS = 20
 
@@ -41,6 +46,7 @@ class Gui(object):
 
     self.con_root = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
     self.con_bg = libtcod.console_new(BG_WIDTH, BG_HEIGHT)
+    self.con_msgs = libtcod.console_new(MSG_WIDTH, MSG_HEIGHT)
     self.con_panels = [libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT), libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT)]
 
     self.bg = Battleground(BG_WIDTH, BG_HEIGHT)
@@ -51,10 +57,22 @@ class Gui(object):
       for y in range(10,31):
         self.bg.minions.append(Minion(self.bg, x, y, 1, "monkey"))
 
-    self.bg.generals = [General(self.bg, 3, 20, 0, "Gemekaa"), General(self.bg, 56, 20, 1, "Fapencio")]
+    self.bg.generals = [General(self.bg, 3, 20, 0, "Gemekaa", libtcod.green), General(self.bg, 56, 20, 1, "Fapencio", libtcod.orange)]
     self.keymap_skills = KEYMAP_SKILLS[0:len(self.bg.generals[self.side].skills)]
     self.keymap_tactics = KEYMAP_TACTICS[0:len(self.bg.generals[self.side].tactics)]
+    self.game_msgs = []
     self.render_all()
+
+  def message(self, new_msg, color=libtcod.white):
+    #split the message if necessary, among multiple lines
+    new_msg_lines = textwrap.wrap(new_msg, MSG_WIDTH)
+    for line in new_msg_lines:
+      #if the buffer is full, remove the first line to make room for the new one
+      if len(self.game_msgs) == MSG_HEIGHT:
+        del self.game_msgs[0]
+        libtcod.console_clear(self.con_msgs)
+      #add the new line as a tuple, with the text and the color
+      self.game_msgs.append((line, color))
 
   def clean_all(self):
     for e in copy.copy(self.bg.effects):
@@ -101,16 +119,19 @@ class Gui(object):
       for m in messages[i].split("\n"):
         match = SKILL_PATTERN.match(m)
         if match is not None:
-          self.bg.generals[i].use_skill(*map(int, match.groups()))
+          if self.bg.generals[i].use_skill(*map(int, match.groups())):
+            self.message(self.bg.generals[i].name + ": " + self.bg.generals[i].skill_names[int(match.group(1))], self.bg.generals[i].color)
         elif m.startswith("tactic"):
           self.bg.generals[i].command_tactic(int(m[6]))
 
   def render_all(self):
     self.bg.draw(self.con_bg)
+    self.render_msgs()
     self.render_panels()
     libtcod.console_blit(self.con_bg, 0, 0, BG_WIDTH, BG_HEIGHT, self.con_root, BG_OFFSET_X, BG_OFFSET_Y)
     for i in [0,1]:
       libtcod.console_blit(self.con_panels[i], 0, 0, PANEL_WIDTH, PANEL_HEIGHT, self.con_root, (PANEL_WIDTH+BG_WIDTH)*i, 0)
+    libtcod.console_blit(self.con_msgs, 0, 0, MSG_WIDTH, MSG_HEIGHT, self.con_root, MSG_OFFSET_X, MSG_OFFSET_Y)
     libtcod.console_blit(self.con_root, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
     libtcod.console_flush()
  
@@ -122,6 +143,13 @@ class Gui(object):
     libtcod.console_rect(con, x+ratio, y, w-ratio, 1, False, libtcod.BKGND_SET)
     libtcod.console_set_default_background(con, text_color)
     libtcod.console_print_rect(con, x+1, y, w, 1, "%03d / %03d" % (value, max_value))
+
+  def render_msgs(self):
+    y = 0
+    for (line, color) in self.game_msgs:
+      libtcod.console_set_default_foreground(self.con_msgs, color)
+      libtcod.console_print(self.con_msgs, 0, y, line)
+      y += 1
 
   def render_panels(self):
     bar_length = 11

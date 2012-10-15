@@ -3,8 +3,8 @@ from entity import Entity
 import libtcodpy as libtcod
 
 class Minion(Entity):
-  def __init__(self, battleground, x, y, side, name):
-    super(Minion, self).__init__(battleground, x, y, side, name[0])
+  def __init__(self, battleground, x, y, side, name, color=libtcod.white):
+    super(Minion, self).__init__(battleground, x, y, side, name[0], color)
     self.name = name
     self.max_hp = 20
     self.hp = 20

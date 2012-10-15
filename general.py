@@ -6,13 +6,14 @@ import skill
 import inspect
 
 class General(Minion):
-  def __init__(self, battleground, x, y, side, name):
-    super(General, self).__init__(battleground, x, y, side, name)
+  def __init__(self, battleground, x, y, side, name, color=libtcod.white):
+    super(General, self).__init__(battleground, x, y, side, name, color)
     self.max_hp = 100
     self.hp = 100
     self.max_cd = []
     self.cd = []
     self.skills = [(skill.heal_target_minion, 100), (skill.heal_all_minions, 20), (skill.mine, 50), (skill.sonic_waves, 10, 3)]
+    self.skill_names =["Don't die!", "Heal you all men!", "Mine", "Sonic Waves"]
     self.tactics = ["forward", "stop", "backward", "sides", "center"]
     self.selected_tactic = self.tactics[0]
     self.strategies = []
@@ -39,7 +40,11 @@ class General(Minion):
       params = [self]
       if inspect.getargspec(self.skills[i][0])[0][1:3] == ['x', 'y']: params.extend([x, y])
       params.extend(self.skills[i][1:])
-      if self.skills[i][0](*params):
-        self.max_cd[i] *= 2
-        self.cd[i] = 0
-
+      if self.skills[i][0](*params): # Used properly
+        for j in range(0, len(self.skills)):
+          if j != i: self.cd[j] -= 5
+          else:
+            self.max_cd[i] *= 2
+            self.cd[i] = 0
+        return True
+    return False

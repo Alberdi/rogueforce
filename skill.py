@@ -20,9 +20,9 @@ def mine(general, x, y, power):
   return True
 
 def sonic_waves(general, power, waves):
-  if waves >= 1:
-    general.bg.effects.append(Wave(general.bg, general.x+1 if general.side == 0 else general.x-1, general.y, general.side, power))
-  if waves >= 3:
-    general.bg.effects.append(Wave(general.bg, general.x, general.y+1, general.side, power))
-    general.bg.effects.append(Wave(general.bg, general.x, general.y-1, general.side, power))
-  return True
+  for i in range(0, waves):
+    x = general.x+1-(i+1)/2 if general.side == 0 else general.x-1+(i+1)/2
+    y = general.y+(((i+1)/2)*(-1 if i%2 == 0 else 1))
+    if general.bg.is_inside(x,y):
+      general.bg.effects.append(Wave(general.bg, x, y, general.side, power))
+  return waves > 0
