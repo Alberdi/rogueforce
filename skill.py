@@ -32,5 +32,5 @@ def water_pusher(general, x, y, radius):
     for j in (-1, 0, 1):
       entity = general.bg.tiles[(x+i, y+j)].entity
       if entity is not None and (i, j) != (0, 0):
-	        entity.get_pushed(i, j)
+	      entity.get_pushed(i, j)
   return True
