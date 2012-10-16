@@ -7,7 +7,6 @@ def heal_all_minions(general, amount):
   return True
 
 def heal_target_minion(general, x, y, amount):
-  if not general.bg.is_inside(x, y): return False
   minion = general.bg.tiles[x, y].entity
   if minion is not None and minion.side == general.side and minion != general and minion.hp != minion.max_hp:
     minion.get_healed(amount)
@@ -15,7 +14,7 @@ def heal_target_minion(general, x, y, amount):
   return False
 
 def mine(general, x, y, power):
-  if not general.bg.is_inside(x, y) or general.bg.tiles[(x, y)].entity is not None: return False
+  if general.bg.tiles[(x, y)].entity is not None: return False
   Mine(general.bg, x, y, power)
   return True
 

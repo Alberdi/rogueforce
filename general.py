@@ -38,10 +38,15 @@ class General(Minion):
     for i in range(0, len(self.skills)):
       if self.cd[i] < self.max_cd[i]: self.cd[i] += 1
 
+  def update_color(self):
+    pass
+
   def use_skill(self, i, x, y):
     if self.cd[i] >= self.max_cd[i]:
       params = [self]
-      if inspect.getargspec(self.skills[i][0])[0][1:3] == ['x', 'y']: params.extend([x, y])
+      if inspect.getargspec(self.skills[i][0])[0][1:3] == ['x', 'y']:
+        if not self.bg.is_inside(x, y): return
+        params.extend([x, y])
       params.extend(self.skills[i][1:])
       if self.skills[i][0](*params): # Used properly
         for j in range(0, len(self.skills)):
