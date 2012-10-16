@@ -30,9 +30,7 @@ def sonic_waves(general, power, waves):
 def water_pusher(general, x, y, radius):
   for i in (-1, 0, 1):
     for j in (-1, 0, 1):
-      print (i, j)
       entity = general.bg.tiles[(x+i, y+j)].entity
-      if (entity is not None):
-        if ((i, j) != (0, 0)):
+      if entity is not None and (i, j) != (0, 0):
 	        entity.get_pushed(i, j)
-  return True;
+  return True
