@@ -1,6 +1,7 @@
 from effect import Arrow
 from entity import Entity
 import libtcodpy as libtcod
+import tactic
 
 class Minion(Entity):
   def __init__(self, battleground, x, y, side, name, color=libtcod.white):
@@ -9,7 +10,7 @@ class Minion(Entity):
     self.max_hp = 20
     self.hp = 20
     self.power = 5
-    self.tactic = "forward"
+    self.tactic = None
 
   def can_be_attacked(self):
     return True
@@ -27,16 +28,8 @@ class Minion(Entity):
     else: return None
  
   def follow_tactic(self):
-    if self.tactic == "forward":
-      self.move(1 if self.side == 0 else -1, 0)
-    elif self.tactic == "backward":
-      self.move(-1 if self.side == 0 else 1, 0)
-    elif self.tactic == "stop":
-      self.next_action = 1
-    elif self.tactic == "sides":
-      self.move(0, 1 if self.y >= self.bg.height/2 else -1)
-    elif self.tactic == "center":
-      self.move(0, -1 if self.y >= self.bg.height/2 else 1)
+    if self.tactic is None: return
+    self.tactic(self)
 
   def get_attacked(self, enemy):
     self.hp -= enemy.power
@@ -78,7 +71,8 @@ class Ranged_Minion(Minion):
     self.reset_action()
 
   def follow_tactic(self):
+    if self.tactic is None: return
     next_x = self.x+1 if self.side == 0 else self.x-1
-    if self.tactic == "stop" and self.bg.tiles[(next_x, self.y)].entity == None:
+    if self.tactic == tactic.stop and self.bg.tiles[(next_x, self.y)].entity == None:
       self.bg.effects.append(Arrow(self.bg, next_x, self.y, self.side, self.ranged_power))
     else: super(Ranged_Minion, self).follow_tactic()

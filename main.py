@@ -120,7 +120,7 @@ class Gui(object):
         match = SKILL_PATTERN.match(m)
         if match is not None:
           if self.bg.generals[i].use_skill(*map(int, match.groups())):
-            self.message(self.bg.generals[i].name + ": " + self.bg.generals[i].skill_names[int(match.group(1))], self.bg.generals[i].color)
+            self.message(self.bg.generals[i].name + ": " + self.bg.generals[i].skill_quotes[int(match.group(1))], self.bg.generals[i].color)
         elif m.startswith("tactic"):
           self.bg.generals[i].command_tactic(int(m[6]))
 
@@ -172,7 +172,7 @@ class Gui(object):
     for s in range(0, len(self.bg.generals[i].tactics)):
       libtcod.console_set_default_foreground(self.con_panels[i],
         libtcod.red if self.bg.generals[i].tactics[s] == self.bg.generals[i].selected_tactic else libtcod.white)
-      libtcod.console_print(self.con_panels[i], bar_offset_x, line, KEYMAP_TACTICS[s] + ": " + self.bg.generals[i].tactics[s].capitalize())
+      libtcod.console_print(self.con_panels[i], bar_offset_x, line, KEYMAP_TACTICS[s] + ": " + self.bg.generals[i].tactic_quotes[s])
       line += 2
 
   def update_all(self):
