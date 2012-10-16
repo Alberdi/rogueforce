@@ -12,8 +12,8 @@ class General(Minion):
     self.hp = 100
     self.max_cd = []
     self.cd = []
-    self.skills = [(skill.heal_target_minion, 100), (skill.heal_all_minions, 20), (skill.mine, 50), (skill.sonic_waves, 10, 3)]
-    self.skill_names =["Don't die!", "Heal you all men!", "Mine", "Sonic Waves"]
+    self.skills = [(skill.heal_target_minion, 100), (skill.heal_all_minions, 20), (skill.mine, 50), (skill.sonic_waves, 10, 3), (skill.water_pusher, 50)]
+    self.skill_names =["Don't die!", "Heal you all men!", "Mine", "Sonic Waves", "Hidro Pump"]
     self.tactics = ["forward", "stop", "backward", "sides", "center"]
     self.selected_tactic = self.tactics[0]
     self.strategies = []

@@ -26,3 +26,13 @@ def sonic_waves(general, power, waves):
     if general.bg.is_inside(x,y):
       general.bg.effects.append(Wave(general.bg, x, y, general.side, power))
   return waves > 0
+
+def water_pusher(general, x, y, radius):
+  for i in (-1, 0, 1):
+    for j in (-1, 0, 1):
+      print (i, j)
+      entity = general.bg.tiles[(x+i, y+j)].entity
+      if (entity is not None):
+        if ((i, j) != (0, 0)):
+	        entity.get_pushed(i, j)
+  return True;
