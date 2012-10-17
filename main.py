@@ -50,14 +50,17 @@ class Gui(object):
     self.con_panels = [libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT), libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT)]
 
     self.bg = Battleground(BG_WIDTH, BG_HEIGHT)
+    self.bg.generals = [General(self.bg, 3, 20, 0, "Gemekaa", libtcod.green), General(self.bg, 56, 20, 1, "Fapencio", libtcod.orange)]
+
     for x in range(10,5,-1):
       for y in range(10,31):
-        self.bg.minions.append(Ranged_Minion(self.bg, x, y, 0, "human"))
+        self.bg.minions.append(self.bg.generals[0].minion.clone(x, y))
     for x in range(49,54):
       for y in range(10,31):
-        self.bg.minions.append(Minion(self.bg, x, y, 1, "monkey"))
+        self.bg.minions.append(self.bg.generals[1].minion.clone(x, y))
+    for i in [0,1]:
+      self.bg.generals[i].command_tactic(0)
 
-    self.bg.generals = [General(self.bg, 3, 20, 0, "Gemekaa", libtcod.green), General(self.bg, 56, 20, 1, "Fapencio", libtcod.orange)]
     self.keymap_skills = KEYMAP_SKILLS[0:len(self.bg.generals[self.side].skills)]
     self.keymap_tactics = KEYMAP_TACTICS[0:len(self.bg.generals[self.side].tactics)]
     self.game_msgs = []

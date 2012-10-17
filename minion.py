@@ -15,6 +15,9 @@ class Minion(Entity):
   def can_be_attacked(self):
     return True
 
+  def clone(self, x, y):
+    return self.__class__(self.bg, x, y, self.side, self.name, self.original_color)
+
   def enemy_reachable(self):
     # Order: forward, backward, up, down
     enemy = self.bg.tiles[(self.x + (1 if self.side == 0 else -1), self.y)].entity
@@ -61,7 +64,7 @@ class Minion(Entity):
     self.color = libtcod.Color(255, c, c)
 
 class Ranged_Minion(Minion):
-  def __init__(self, battleground, x, y, side, name):
+  def __init__(self, battleground, x, y, side, name, color=libtcod.white):
     super(Ranged_Minion, self).__init__(battleground, x, y, side, name)
     self.ranged_power = 4
     self.power = 1

@@ -10,6 +10,7 @@ class Entity(object):
     self.side = side
     self.char = char
     self.color = color
+    self.original_color = color
     self.bg.tiles[(x, y)].entity = self
     self.default_next_action = 5
     self.next_action = self.default_next_action
