@@ -50,7 +50,7 @@ class Gui(object):
     self.con_panels = [libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT), libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT)]
 
     self.bg = Battleground(BG_WIDTH, BG_HEIGHT)
-    self.bg.generals = [General(self.bg, 3, 20, 0, "Gemekaa", libtcod.green), General(self.bg, 56, 20, 1, "Fapencio", libtcod.orange)]
+    self.bg.generals = [Conway(self.bg, 3, 20, 0, "Gemekaa", libtcod.green), General(self.bg, 56, 20, 1, "Fapencio", libtcod.orange)]
 
     for x in range(10,5,-1):
       for y in range(10,31):
@@ -171,7 +171,7 @@ class Gui(object):
 
   def render_tactics(self, i):
     bar_offset_x = 3
-    line = 9 + len(self.bg.generals[i].skills)
+    line = 4 + len(self.bg.generals[i].skills)*2
     for s in range(0, len(self.bg.generals[i].tactics)):
       libtcod.console_set_default_foreground(self.con_panels[i],
         libtcod.red if self.bg.generals[i].tactics[s] == self.bg.generals[i].selected_tactic else libtcod.white)

@@ -60,6 +60,8 @@ class General(Minion):
 class Conway(General):
   def __init__(self, battleground, x, y, side, name, color=libtcod.white):
     super(Conway, self).__init__(battleground, x, y, side, name, color)
+    self.skills = [(skill.minion_glider, False), (skill.minion_glider, True), (skill.minion_lwss, )]
+    self.skill_quotes = ["Glide from the top!", "Glide from the bottom!", "Lightweight strike force!"]
     self.tactics = [tactic.null, tactic.stop]
     self.tactic_quotes = ["Live life", "Stop"]
     self.selected_tactic = self.tactics[0]
@@ -93,7 +95,7 @@ class Conway(General):
         for t in self.bg.tiles.values():
           self.live_life(t)
         for tile in self.next_gen_births:
-          self.bg.minions.append(Minion(self.bg, tile.x, tile.y, self.side, "human"))
+          self.bg.minions.append(self.minion.clone(tile.x, tile.y))
         for tile in self.next_gen_deaths:
           tile.entity.die()
       else:

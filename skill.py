@@ -1,6 +1,17 @@
 from effect import *
 from entity import *
 
+def create_minion(general, x, y):
+  if general.bg.tiles[(x, y)].entity is not None or not general.bg.tiles[(x, y)].passable: return False
+  general.bg.minions.append(general.minion.clone(x, y))
+  return True
+
+def create_minions(general, l):
+  did_anything = False
+  for (x, y) in l:
+    did_anything += create_minion(general, x, y)
+  return did_anything > 0
+
 def heal_all_minions(general, amount):
   for m in general.bg.minions:
     m.get_healed(amount)
@@ -17,6 +28,18 @@ def mine(general, x, y, power):
   if general.bg.tiles[(x, y)].entity is not None: return False
   Mine(general.bg, x, y, power)
   return True
+
+def minion_glider(general, x, y, go_bottom = True):
+  if not general.bg.is_inside(x-1, y-1) or not general.bg.is_inside(x+1, y+1): return False
+  j = 1 if go_bottom else -1
+  i = 1 if general.side == 0 else -1
+  return create_minions(general, [(x-i, y-j), (x, y-j), (x, y), (x+i, y), (x-i, y+j)])
+
+def minion_lwss(general, x, y):
+  if not general.bg.is_inside(x-2, y-2) or not general.bg.is_inside(x+2, y+2): return False
+  j = 1 if general.side == 0 else -1
+  return create_minions(general,\
+    [(x-1*j, y-1), (x, y-1), (x+1*j, y-1), (x+2*j, y-1), (x-2*j, y), (x+2*j, y), (x+2*j, y+1), (x-2*j, y+2), (x+1*j, y+2)])
 
 def sonic_waves(general, power, waves):
   for i in range(0, waves):
