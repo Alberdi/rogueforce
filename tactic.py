@@ -37,6 +37,9 @@ def go_sides(minion):
 
 def go_top(minion):
   minion.move(0, -1)
+
+def null(minion):
+  pass
   
 def stop(minion):
   minion.next_action = 1

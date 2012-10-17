@@ -56,3 +56,46 @@ class General(Minion):
             self.cd[i] = 0
         return True
     return False
+
+class Conway(General):
+  def __init__(self, battleground, x, y, side, name, color=libtcod.white):
+    super(Conway, self).__init__(battleground, x, y, side, name, color)
+    self.tactics = [tactic.null, tactic.stop]
+    self.tactic_quotes = ["Live life", "Stop"]
+    self.selected_tactic = self.tactics[0]
+    self.command_tactic(0)
+
+  def live_life(self, tile):
+    neighbours = 0
+    for i in [-1, 0, 1]:
+      for j in [-1, 0, 1]:
+        (x, y) = (tile.x+i, tile.y+j)
+        if (i, j) == (0, 0) or not self.bg.is_inside(x, y): continue
+        if self.bg.tiles[(x, y)].entity is not None and self.bg.tiles[(x, y)].entity.is_ally(self): neighbours += 1
+    # Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+    if tile.entity is None and neighbours == 3 and tile.passable: self.next_gen_births.append(tile)
+    # Any live cell...
+    elif tile.entity is not None and tile.entity.is_ally(self) and tile.entity != self:
+      # ...with more than three live neighbours dies, as if by overcrowding.
+      if neighbours > 3: self.next_gen_deaths.append(tile)
+      # ...with fewer than two live neighbours dies, as if caused by under-population.
+      elif neighbours < 2: self.next_gen_deaths.append(tile)
+      # ...with two or three live neighbours lives on to the next generation.
+      # No need to do any action.
+
+  def update(self):
+    if not self.alive: return
+    if self.selected_tactic == tactic.null: # Live life
+      if self.next_action <= 0:
+        self.reset_action()
+        self.next_gen_births = []
+        self.next_gen_deaths = []
+        for t in self.bg.tiles.values():
+          self.live_life(t)
+        for tile in self.next_gen_births:
+          self.bg.minions.append(Minion(self.bg, tile.x, tile.y, self.side, "human"))
+        for tile in self.next_gen_deaths:
+          tile.entity.die()
+      else:
+        self.next_action -= 1
+    super(Conway, self).update()
