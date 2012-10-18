@@ -33,12 +33,13 @@ KEYMAP_TACTICS = "ZXCVBNM"
 
 SKILL_PATTERN = re.compile("skill(\d) \((-?\d+),(-?\d+)\)")
 
-class Gui(object):
-  def __init__(self, side, host = None, port = None):
+class Game(object):
+  def __init__(self, battleground, side, host = None, port = None):
     if host is not None:
       self.network = Network(host, port)
     else:
       self.network = None
+    self.bg = battleground
     self.side = side
     libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
     libtcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, 'Rogue Force')
@@ -48,9 +49,6 @@ class Gui(object):
     self.con_bg = libtcod.console_new(BG_WIDTH, BG_HEIGHT)
     self.con_msgs = libtcod.console_new(MSG_WIDTH, MSG_HEIGHT)
     self.con_panels = [libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT), libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT)]
-
-    self.bg = Battleground(BG_WIDTH, BG_HEIGHT)
-    self.bg.generals = [Conway(self.bg, 3, 20, 0, "Gemekaa", libtcod.green), General(self.bg, 56, 20, 1, "Fapencio", libtcod.orange)]
 
     for x in range(10,5,-1):
       for y in range(10,31):
@@ -199,8 +197,10 @@ class Network(object):
 
 
 if __name__=="__main__":
+  bg = Battleground(BG_WIDTH, BG_HEIGHT)
+  bg.generals = [Conway(bg, 3, 20, 0, "Gemekaa", libtcod.green), General(bg, 56, 20, 1, "Fapencio", libtcod.orange)]
   if len(sys.argv) == 4: 
-    gui = Gui(int(sys.argv[1]), sys.argv[2], int(sys.argv[3]))
+    game = Game(bg, int(sys.argv[1]), sys.argv[2], int(sys.argv[3]))
   else:
-    gui = Gui(int(sys.argv[1]))
-  gui.loop()
+    game = Game(bg, int(sys.argv[1]))
+  game.loop()
