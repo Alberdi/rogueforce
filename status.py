@@ -2,8 +2,12 @@ class Status(object):
   def __init__(self, minion, duration = 9999):
     self.duration = duration
     self.minion = minion
-    self.minion.statuses.append(self)
+    if minion != None: # Not a prototype
+      self.minion.statuses.append(self)
   
+  def clone(self, minion):
+    return self.__class__(minion, self.duration)
+
   def end(self):
     self.duration = -1
     self.minion.statuses.remove(self)
@@ -25,6 +29,9 @@ class Poison(Status):
     self.ticks = ticks
     self.power = power
     self.timer = 0
+
+  def clone(self, minion):
+    return self.__class__(minion, self.power, self.tbt, self.ticks)
 
   def tick(self):
     self.timer -= 1
