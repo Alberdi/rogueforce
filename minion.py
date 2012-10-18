@@ -11,6 +11,7 @@ class Minion(Entity):
     self.hp = 20
     self.power = 5
     self.tactic = None
+    self.statuses = []
 
   def can_be_attacked(self):
     return True
@@ -56,6 +57,7 @@ class Minion(Entity):
       else:
         self.follow_tactic()
     else: self.next_action -= 1
+    for s in self.statuses: s.update()
 
   def update_color(self):
     # We change the color to indicate that the minion is wounded

@@ -37,6 +37,7 @@ class General(Minion):
     if not self.alive: return
     for i in range(0, len(self.skills)):
       if self.cd[i] < self.max_cd[i]: self.cd[i] += 1
+    for s in self.statuses: s.update()
 
   def update_color(self):
     pass

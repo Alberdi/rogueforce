@@ -16,6 +16,7 @@ class Entity(object):
     self.next_action = self.default_next_action
     self.pushed = False
     self.alive = True
+    self.statuses = []
 
   def can_be_attacked(self):
     return False
