@@ -1,4 +1,5 @@
 from minion import Minion
+from status import *
 
 import libtcodpy as libtcod
 import skill
@@ -37,6 +38,7 @@ class General(Minion):
     if not self.alive: return
     for i in range(0, len(self.skills)):
       if self.cd[i] < self.max_cd[i]: self.cd[i] += 1
+    for s in self.statuses: s.update()
 
   def update_color(self):
     pass
@@ -60,8 +62,9 @@ class General(Minion):
 class Conway(General):
   def __init__(self, battleground, x, y, side, name, color=libtcod.white):
     super(Conway, self).__init__(battleground, x, y, side, name, color)
-    self.skills = [(skill.minion_glider, False), (skill.minion_glider, True), (skill.minion_lwss, )]
-    self.skill_quotes = ["Glide from the top!", "Glide from the bottom!", "Lightweight strike force!"]
+    poison = Poison(None, 5, 19, 4)
+    self.skills = [(skill.minion_glider, False), (skill.minion_glider, True), (skill.minion_lwss, ), (skill.apply_status, poison)]
+    self.skill_quotes = ["Glide from the top!", "Glide from the bottom!", "Lightweight strike force!", "Poison on your veins!"]
     self.tactics = [tactic.null, tactic.stop]
     self.tactic_quotes = ["Live life", "Stop"]
     self.selected_tactic = self.tactics[0]
