@@ -11,7 +11,6 @@ class Minion(Entity):
     self.hp = 20
     self.power = 5
     self.tactic = None
-    self.statuses = []
 
   def can_be_attacked(self):
     return True

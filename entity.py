@@ -55,7 +55,7 @@ class Entity(object):
     self.next_action = self.default_next_action
 
   def update(self):
-    pass
+    for s in self.statuses: s.update()
 
 class Mine(Entity):
   def __init__(self, battleground, x, y, power):
