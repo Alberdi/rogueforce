@@ -1,7 +1,9 @@
 from effect import Arrow
 from entity import Entity
+from entity import Big_Entity
 import libtcodpy as libtcod
 import tactic
+
 
 class Minion(Entity):
   def __init__(self, battleground, x, y, side, name, color=libtcod.white):
@@ -62,6 +64,38 @@ class Minion(Entity):
     # More red -> closer to death
     c = int(255*(float(self.hp)/self.max_hp))
     self.color = libtcod.Color(255, c, c)
+
+class Big_Minion(Big_Entity, Minion):
+  def __init__(self, battleground, x, y, side, name, color=libtcod.white):
+    Big_Entity.__init__(self, battleground, x, y, side, name, color)
+    Minion.__init__(self, battleground, x, y, side, name, color)
+
+  def can_move(self, dx, dy):
+    for (x,y) in [(self.x+dx+x,self.y+dy+y) for x in range (0, self.length) for y in range (0, self.length)]:
+      next_tile = self.bg.tiles[(x, y)]
+      if not next_tile.is_passable(self): return False
+      if next_tile.entity is None: continue
+      if not next_tile.entity.is_ally(self): return False
+      if next_tile.entity is self: continue
+      if not next_tile.entity.can_be_pushed(dx, dy): return False
+    return True
+    
+  def clone(self, x, y):
+    entity = self.__class__(self.bg, x, y, self.side, self.name, self.color)
+    entity.update_body()
+    return entity
+
+  def enemy_reachable(self):
+    # Order: forward, backward, up, down
+    enemy = self.bg.tiles[(self.x + (self.length if self.side == 0 else -1), self.y)].entity
+    if enemy is None or self.is_ally(enemy) or not enemy.can_be_attacked():
+      enemy = self.bg.tiles[(self.x + (-1 if self.side == 0 else self.length), self.y)].entity
+    if enemy is None or self.is_ally(enemy) or not enemy.can_be_attacked():
+      enemy = self.bg.tiles[(self.x, self.y-1)].entity
+    if enemy is None or self.is_ally(enemy) or not enemy.can_be_attacked():
+      enemy = self.bg.tiles[(self.x, self.y+self.length)].entity
+    if enemy != None and not self.is_ally(enemy) and enemy.can_be_attacked(): return enemy
+    else: return None
 
 class Ranged_Minion(Minion):
   def __init__(self, battleground, x, y, side, name, color=libtcod.white):

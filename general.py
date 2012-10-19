@@ -1,4 +1,5 @@
 from minion import Minion
+from minion import Big_Minion
 
 import libtcodpy as libtcod
 import skill
