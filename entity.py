@@ -44,6 +44,7 @@ class Entity(object):
 
   def get_pushed(self, dx, dy):
     self.pushed = False
+    self.reset_action()
     self.move(dx, dy)
     self.pushed = True
 
