@@ -52,9 +52,10 @@ class Game(object):
     for x in range(10,5,-1):
       for y in range(10,31):
         self.bg.minions.append(self.bg.generals[0].minion.clone(x, y))
+        
     for x in range(49,54):
       for y in range(10,31):
-        self.bg.minions.append(self.bg.generals[1].minion.clone(x, y))
+	self.bg.minions.append(self.bg.generals[1].minion.clone(x, y))
     for i in [0,1]:
       self.bg.generals[i].command_tactic(0)
 
