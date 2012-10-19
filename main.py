@@ -50,13 +50,8 @@ class Game(object):
     self.con_msgs = libtcod.console_new(MSG_WIDTH, MSG_HEIGHT)
     self.con_panels = [libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT), libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT)]
 
-    for x in range(10,5,-1):
-      for y in range(10,31):
-        self.bg.minions.append(self.bg.generals[0].minion.clone(x, y))
-    for x in range(49,54):
-      for y in range(10,31):
-        self.bg.minions.append(self.bg.generals[1].minion.clone(x, y))
     for i in [0,1]:
+      self.bg.generals[i].formation.place_minions()
       self.bg.generals[i].command_tactic(0)
 
     self.keymap_skills = KEYMAP_SKILLS[0:len(self.bg.generals[self.side].skills)]
@@ -198,7 +193,7 @@ class Network(object):
 
 if __name__=="__main__":
   bg = Battleground(BG_WIDTH, BG_HEIGHT)
-  bg.generals = [Conway(bg, 3, 20, 0, "Gemekaa", libtcod.green), General(bg, 56, 20, 1, "Fapencio", libtcod.orange)]
+  bg.generals = [General(bg, 3, 21, 0, "Gemekaa", libtcod.green), General(bg, 56, 21, 1, "Fapencio", libtcod.orange)]
   if len(sys.argv) == 4: 
     game = Game(bg, int(sys.argv[1]), sys.argv[2], int(sys.argv[3]))
   else:

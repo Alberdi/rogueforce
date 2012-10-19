@@ -1,4 +1,5 @@
 from minion import Minion
+from formation import *
 
 import libtcodpy as libtcod
 import skill
@@ -13,7 +14,9 @@ class General(Minion):
     self.hp = 100
     self.max_cd = []
     self.cd = []
+    self.formation = Files(self)
     self.minion = Minion(self.bg, 0, 0, self.side, "minion")
+    self.starting_minions = 138
     self.bg.tiles[(0,0)].entity = None
     self.skills = [(skill.heal_target_minion, 100), (skill.heal_all_minions, 20), (skill.mine, 50), (skill.sonic_waves, 10, 3), (skill.water_pusher, 50)]
     self.skill_quotes =["Don't die!", "Heal you all men!", "Mine", "Sonic Waves", "Hidro Pump"]
