@@ -73,6 +73,9 @@ class Big_Entity(Entity):
     self.chars = chars
     self.length = int(math.sqrt(len(self.chars)).real)
   
+  def can_be_pushed(self, dx, dy):
+    return False
+
   def can_move(self, dx, dy):
     for (x,y) in [(self.x+dx+x,self.y+dy+y) for x in range (0, self.length) for y in range (0, self.length)]:
       next_tile = self.bg.tiles[(x, y)]

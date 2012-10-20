@@ -17,7 +17,7 @@ if __name__=="__main__":
   for i in [0,1]:
     g.append(choicebox("Choose general " + str(i), title, generals))
     m.append(choicebox("Choose minions " + str(i), title, minions))
-    g[i] = getattr(general, g[i])(bg, 56 if i else 3, 20, i, g[i], libtcod.orange if i else libtcod.green)
+    g[i] = getattr(general, g[i])(bg, 56 if i else 3, 21, i, g[i], libtcod.orange if i else libtcod.green)
     g[i].minion = getattr(minion, m[i])(bg, 0, 0, i, m[i].lower())
 
   bg.generals = g

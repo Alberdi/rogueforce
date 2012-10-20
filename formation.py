@@ -19,9 +19,9 @@ class Rows(Formation):
       r = self.rows
       while r > 0:
         if n <= 0: return
-        (pos_x, pos_y) = self.mirror(x, self.general.y + offset_y)
-        if self.general.bg.tiles[(pos_x, pos_y)].entity is None:
-          self.general.bg.minions.append(self.general.minion.clone(pos_x, pos_y))
+        minion_placed = self.general.minion.clone(*self.mirror(x, self.general.y + offset_y))
+        if minion_placed is not None:
+          self.general.bg.minions.append(minion_placed)
           n -= 1
         offset_y = abs(offset_y)+1 if r%2 or not self.rows%2 else -offset_y
         r -= 1
