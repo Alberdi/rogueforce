@@ -39,6 +39,9 @@ class Tile(object):
     self.x = x
     self.y = y
 
+  def get_char(self, x, y):
+    return self.char
+
   def is_passable(self, passenger):
     return self.passable and (self.entity == None or self.entity.is_ally(passenger))
 
@@ -46,7 +49,7 @@ class Tile(object):
     if len(self.effects) > 0: drawable = self.effects[-1]
     elif self.entity is not None: drawable = self.entity
     else: drawable = self
-    libtcod.console_put_char_ex(con, self.x, self.y, drawable.char, drawable.color, self.bg_color)
+    libtcod.console_put_char_ex(con, self.x, self.y, drawable.get_char(drawable.x-self.x,drawable.y-self.y), drawable.color, self.bg_color)
   
   def hover(self):
     self.bg_color = libtcod.blue

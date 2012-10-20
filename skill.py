@@ -1,6 +1,12 @@
 from effect import *
 from entity import *
 
+def apply_status(general, x, y, status):
+  entity = general.bg.tiles[(x, y)].entity
+  if entity is None: return False
+  status.clone(entity)
+  return True
+
 def create_minion(general, x, y):
   if general.bg.tiles[(x, y)].entity is not None or not general.bg.tiles[(x, y)].passable: return False
   general.bg.minions.append(general.minion.clone(x, y))

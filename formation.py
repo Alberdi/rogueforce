@@ -19,7 +19,10 @@ class Rows(Formation):
       r = self.rows
       while r > 0:
         if n <= 0: return
-        self.general.bg.minions.append(self.general.minion.clone(*self.mirror(x, self.general.y + offset_y)))
+        (pos_x, pos_y) = self.mirror(x, self.general.y + offset_y)
+        if self.general.bg.tiles[(pos_x, pos_y)].entity is None:
+          self.general.bg.minions.append(self.general.minion.clone(pos_x, pos_y))
+          n -= 1
         offset_y = abs(offset_y)+1 if r%2 or not self.rows%2 else -offset_y
-        (r, n) = (r-1, n-1)
+        r -= 1
 

@@ -1,6 +1,5 @@
 from battleground import Battleground
 from general import *
-from minion import *
 
 import libtcodpy as libtcod
 
