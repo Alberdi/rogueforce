@@ -18,7 +18,7 @@ class Minion(Entity):
     return True
 
   def clone(self, x, y):
-    if self.bg.tiles[(x, y)].entity is None:
+    if self.bg.is_inside(x, y) and self.bg.tiles[(x, y)].entity is None and self.bg.tiles[(x, y)].is_passable(self):
       return self.__class__(self.bg, x, y, self.side, self.name, self.original_color)
     return None
 
@@ -85,7 +85,8 @@ class Big_Minion(Big_Entity, Minion):
     
   def clone(self, x, y):
     for (pos_x, pos_y) in [(x+i, y+j) for i in range (0, self.length) for j in range (0, self.length)]:
-      if self.bg.tiles[(pos_x, pos_y)].entity is not None: return None
+      if not self.bg.is_inside(pos_x, pos_y) or self.bg.tiles[(pos_x, pos_y)].entity is not None or not self.bg.tiles[(x, y)].is_passable(self):
+        return None
     entity = self.__class__(self.bg, x, y, self.side, self.name, self.color)
     entity.update_body()
     return entity
