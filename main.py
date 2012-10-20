@@ -56,7 +56,22 @@ class Game(object):
     self.keymap_skills = KEYMAP_SKILLS[0:len(self.bg.generals[self.side].skills)]
     self.keymap_tactics = KEYMAP_TACTICS[0:len(self.bg.generals[self.side].tactics)]
     self.game_msgs = []
+    self.game_over = False
     self.render_all()
+
+  def check_game_over(self):
+    for i in [0,1]:
+      if not self.bg.generals[i].alive:
+        self.message(self.bg.generals[i].name + " is dead!", self.bg.generals[i].original_color)
+        self.game_over = True
+
+  def clean_all(self):
+    for e in copy.copy(self.bg.effects):
+      if not e.alive:
+        self.bg.effects.remove(e)
+    for m in copy.copy(self.bg.minions):
+      if not m.alive:
+        self.bg.minions.remove(m)
 
   def message(self, new_msg, color=libtcod.white):
     #split the message if necessary, among multiple lines
@@ -69,20 +84,12 @@ class Game(object):
       #add the new line as a tuple, with the text and the color
       self.game_msgs.append((line, color))
 
-  def clean_all(self):
-    for e in copy.copy(self.bg.effects):
-      if not e.alive:
-        self.bg.effects.remove(e)
-    for m in copy.copy(self.bg.minions):
-      if not m.alive:
-        self.bg.minions.remove(m)
-
   def loop(self):
     turn = 0
     turn_time = 0.1
     key = libtcod.Key()
     mouse = libtcod.Mouse()
-    while True:
+    while not self.game_over:
       messages = ["", ""]
       start = time.time()
       while time.time() - start < turn_time:
@@ -106,8 +113,13 @@ class Game(object):
       turn +=1
       self.process_messages(messages)
       self.update_all()
+      self.check_game_over()
       if (turn % 100) == 0: self.clean_all()
       self.render_all()
+
+    while True: # Game is over
+      libtcod.sys_check_for_event(libtcod.EVENT_ANY, key, mouse)
+      if key.vk == libtcod.KEY_ESCAPE: exit()
 
   def process_messages(self, messages):
     for i in [0,1]:
