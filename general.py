@@ -14,6 +14,7 @@ class General(Minion):
     self.hp = 100
     self.max_cd = []
     self.cd = []
+    self.death_quote = "..."
     self.formation = Rows(self)
     self.minion = Minion(self.bg, 0, 0, self.side, "minion")
     self.starting_minions = 101
@@ -65,6 +66,7 @@ class Conway(General):
   def __init__(self, battleground, x, y, side, name, color=libtcod.white):
     super(Conway, self).__init__(battleground, x, y, side, name, color)
     poison = Poison(None, 5, 19, 4)
+    self.death_quote = "This is more like a game of... death"
     self.skills = [(skill.minion_glider, False), (skill.minion_glider, True), (skill.minion_lwss, ), (skill.apply_status, poison)]
     self.skill_quotes = ["Glide from the top!", "Glide from the bottom!", "Lightweight strike force!", "Poison on your veins!"]
     self.tactics = [tactic.null, tactic.stop]

@@ -62,6 +62,7 @@ class Game(object):
   def check_game_over(self):
     for i in [0,1]:
       if not self.bg.generals[i].alive:
+        self.message(self.bg.generals[i].name + ": " + self.bg.generals[i].death_quote, self.bg.generals[i].original_color)
         self.message(self.bg.generals[i].name + " is dead!", self.bg.generals[i].original_color)
         self.game_over = True
 
