@@ -115,35 +115,47 @@ class Emperor(General):
     super(Emperor, self).__init__(battleground, x, y, side, name, color)
     self.max_hp = 60
     self.hp = 60
-    self.death_quote = "May this night carry my will and these old stars forever remember this night."
+    #self.start_quote = "May this night carry my will and these old stars forever remember this night."
+    self.death_quote = "Nightspirit... embrace my soul..."
     self.human_form = True
     self.minion = Ranged_Minion(self.bg, 0, 0, self.side, "wizard")
     self.minion.attack_effects = [')', '(']
-    self.starting_minions = 101
+    self.starting_minions = 0
     curse = Freeze_Cooldowns(None, 15)
-    self.skills = [(self.transform, ), (skill.apply_status_enemy_general, curse)]
-    self.skill_quotes = ["O'Nightspirit... I am one with thee, I am the eternal power, I am the Emperor!", \
-                         "I curse you of all men"]
-    self.max_cd[0] = 200
+    self.skills = [(skill.restock_minions, 21), (skill.apply_status_enemy_general, curse), (skill.null, )]
+    # We don't need the last quote because it will be changed and pulled in transform()
+    self.skill_quotes = ["I am the black wizards", "I curse you of all men", "This shouldn't be showed"]
+    self.max_cd = [25, 50, 200]
+    self.cd = [0, 0, 0]
+    self.transform_index = 2
 
   def die(self):
     if self.human_form:
-      self.cd[0] = self.max_cd[0]
-      self.use_skill(0, 0, 0)
+      self.cd[self.transform_index] = self.max_cd[self.transform_index]
+      self.use_skill(self.transform_index, 0, 0)
     else:
       super(Emperor, self).die()
 
-  def transform(self, please_ignore):
+  def transform(self):
     if not self.human_form: return False
     self.human_form = False
     self.hp = self.max_hp
-    self.char = 'S'
+    self.char = 'N'
+    self.name = "Nightspirit"
     self.original_color = libtcod.light_grey
     self.color = self.original_color
-    self.skills = [(skill.sonic_waves, 10, 3), (skill.water_pusher, 50)]
-    self.skill_quotes =["Thus spake the Nightspirit", "Something something push"]
-    self.max_cd[0] = 25
-    for i in range(1, len(self.skills)):
+    self.skills = [(skill.sonic_waves, 10, 3), (skill.water_pusher, 1), (skill.sonic_waves, 50, self.bg.width-2)]
+    # Last quote is shared with the human form skill
+    self.skill_quotes =["Thus spake the Nightspirit", "Dark force push",
+                        "O'Nightspirit... I am one with thee, I am the eternal power, I am the Emperor!"]
+    for i in range(0, len(self.skills)-1):
       self.max_cd[i] = 50
       self.cd[i] = 5
+    self.max_cd[self.transform_index] = 250
+    self.cd[self.transform_index] = 0
     return True
+
+  def use_skill(self, i, x, y):
+    skill_used = super(Emperor, self).use_skill(i, x, y)
+    if skill_used and i == self.transform_index: self.transform()
+    return skill_used

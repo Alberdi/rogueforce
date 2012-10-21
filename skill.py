@@ -51,6 +51,17 @@ def minion_lwss(general, x, y):
   return create_minions(general,\
     [(x-1*j, y-1), (x, y-1), (x+1*j, y-1), (x+2*j, y-1), (x-2*j, y), (x+2*j, y), (x+2*j, y+1), (x-2*j, y+2), (x+1*j, y+2)])
 
+def null(general):
+  return True
+
+def restock_minions(general, number):
+  tmp = general.starting_minions
+  general.starting_minions = number
+  general.formation.place_minions()
+  general.starting_minions = tmp
+  general.command_tactic([i for i,x in enumerate(general.tactics) if x == general.selected_tactic][0])
+  return True
+
 def sonic_waves(general, power, waves):
   for i in range(0, waves):
     x = general.x+1-(i+1)/2 if general.side == 0 else general.x-1+(i+1)/2
