@@ -20,6 +20,14 @@ class Status(object):
       self.tick()
       if self.duration <= 0: self.end()
 
+class Freeze_Cooldowns(Status):
+  def __init__(self, entity, duration = 9999):
+    super(Freeze_Cooldowns, self).__init__(entity, duration)
+
+  def tick(self):
+    for i in range(0, len(self.entity.skills)):
+      self.entity.cd[i] -= 1
+
 class Poison(Status):
   # tbt = time between ticks
   def __init__(self, entity, power, tbt = 0, ticks = 9999):

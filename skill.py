@@ -1,7 +1,11 @@
 from effect import *
 from entity import *
 
-def apply_status(general, x, y, status):
+def apply_status_enemy_general(general, status):
+  status.clone(general.bg.generals[(general.side+1)%2])
+  return True
+
+def apply_status_target(general, x, y, status):
   entity = general.bg.tiles[(x, y)].entity
   if entity is None: return False
   status.clone(entity)

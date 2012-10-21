@@ -23,8 +23,8 @@ class Effect(Entity):
     self.bg.tiles[(self.x, self.y)].effects.append(self)
 
 class Arrow(Effect):
-  def __init__(self, battleground, x, y, side, power):
-    super(Arrow, self).__init__(battleground, x, y, side, '>' if side == 0 else '<', libtcod.light_red)
+  def __init__(self, battleground, x, y, side, power, attack_effects = ['>', '<']):
+    super(Arrow, self).__init__(battleground, x, y, side, attack_effects[side], libtcod.light_red)
     self.power = power
     self.do_attack()
 

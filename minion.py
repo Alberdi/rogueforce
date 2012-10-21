@@ -104,18 +104,23 @@ class Big_Minion(Big_Entity, Minion):
     else: return None
 
 class Ranged_Minion(Minion):
-  def __init__(self, battleground, x, y, side, name, color=libtcod.white):
+  def __init__(self, battleground, x, y, side, name, color=libtcod.white, attack_effects = ['>', '<']):
     super(Ranged_Minion, self).__init__(battleground, x, y, side, name)
-    self.ranged_power = 4
-    self.power = 1
     self.max_hp = 10
     self.hp = 10
+    self.power = 1
+    self.ranged_power = 4
+    self.attack_effects = attack_effects
     self.default_next_action = 10
     self.reset_action()
+
+  def clone(self, x, y):
+    if super(Ranged_Minion, self).clone(x, y) == None: return None
+    return self.__class__(self.bg, x, y, self.side, self.name, self.original_color, self.attack_effects)
 
   def follow_tactic(self):
     if self.tactic is None: return
     next_x = self.x+1 if self.side == 0 else self.x-1
     if self.tactic == tactic.stop and self.bg.tiles[(next_x, self.y)].entity == None:
-      self.bg.effects.append(Arrow(self.bg, next_x, self.y, self.side, self.ranged_power))
+      self.bg.effects.append(Arrow(self.bg, next_x, self.y, self.side, self.ranged_power, self.attack_effects))
     else: super(Ranged_Minion, self).follow_tactic()

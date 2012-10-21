@@ -1,5 +1,6 @@
 from formation import *
 from minion import *
+from status import *
 
 import libtcodpy as libtcod
 import skill
@@ -108,3 +109,41 @@ class Conway(General):
       else:
         self.next_action -= 1
     super(Conway, self).update()
+
+class Emperor(General):
+  def __init__(self, battleground, x, y, side, name = "Emperor", color=libtcod.sepia):
+    super(Emperor, self).__init__(battleground, x, y, side, name, color)
+    self.max_hp = 60
+    self.hp = 60
+    self.death_quote = "May this night carry my will and these old stars forever remember this night."
+    self.human_form = True
+    self.minion = Ranged_Minion(self.bg, 0, 0, self.side, "wizard")
+    self.minion.attack_effects = [')', '(']
+    self.starting_minions = 101
+    curse = Freeze_Cooldowns(None, 15)
+    self.skills = [(self.transform, ), (skill.apply_status_enemy_general, curse)]
+    self.skill_quotes = ["O'Nightspirit... I am one with thee, I am the eternal power, I am the Emperor!", \
+                         "I curse you of all men"]
+    self.max_cd[0] = 200
+
+  def die(self):
+    if self.human_form:
+      self.cd[0] = self.max_cd[0]
+      self.use_skill(0, 0, 0)
+    else:
+      super(Emperor, self).die()
+
+  def transform(self, please_ignore):
+    if not self.human_form: return False
+    self.human_form = False
+    self.hp = self.max_hp
+    self.char = 'S'
+    self.original_color = libtcod.light_grey
+    self.color = self.original_color
+    self.skills = [(skill.sonic_waves, 10, 3), (skill.water_pusher, 50)]
+    self.skill_quotes =["Thus spake the Nightspirit", "Something something push"]
+    self.max_cd[0] = 25
+    for i in range(1, len(self.skills)):
+      self.max_cd[i] = 50
+      self.cd[i] = 5
+    return True
