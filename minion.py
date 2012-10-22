@@ -6,7 +6,7 @@ import tactic
 
 
 class Minion(Entity):
-  def __init__(self, battleground, x, y, side, name, color=libtcod.white):
+  def __init__(self, battleground, x, y, side, name = "minion", color=libtcod.white):
     super(Minion, self).__init__(battleground, x, y, side, name[0], color)
     self.name = name
     self.max_hp = 20
@@ -69,7 +69,7 @@ class Minion(Entity):
     self.color = libtcod.Color(255, c, c)
 
 class Big_Minion(Big_Entity, Minion):
-  def __init__(self, battleground, x, y, side, name, color=libtcod.white):
+  def __init__(self, battleground, x, y, side, name = "Giant", color=libtcod.white):
     Big_Entity.__init__(self, battleground, x, y, side, name, color)
     Minion.__init__(self, battleground, x, y, side, name, color)
 
@@ -104,7 +104,7 @@ class Big_Minion(Big_Entity, Minion):
     else: return None
 
 class Ranged_Minion(Minion):
-  def __init__(self, battleground, x, y, side, name, color=libtcod.white, attack_effects = ['>', '<']):
+  def __init__(self, battleground, x, y, side, name = "archer", color=libtcod.white, attack_effects = ['>', '<']):
     super(Ranged_Minion, self).__init__(battleground, x, y, side, name)
     self.max_hp = 10
     self.hp = 10

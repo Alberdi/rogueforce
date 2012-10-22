@@ -9,7 +9,7 @@ import tactic
 import inspect
 
 class General(Minion):
-  def __init__(self, battleground, x, y, side, name, color=libtcod.white):
+  def __init__(self, battleground, x, y, side, name = "General", color=libtcod.orange):
     super(General, self).__init__(battleground, x, y, side, name, color)
     self.max_hp = 100
     self.hp = 100
@@ -69,7 +69,7 @@ class General(Minion):
     return False
 
 class Conway(General):
-  def __init__(self, battleground, x, y, side, name, color=libtcod.white):
+  def __init__(self, battleground, x, y, side, name = "Conway", color=libtcod.green):
     super(Conway, self).__init__(battleground, x, y, side, name, color)
     poison = Poison(None, 5, 19, 4)
     self.death_quote = "This is more like a game of... death"
