@@ -8,7 +8,7 @@ import libtcodpy as libtcod
 
 if __name__=="__main__":
   bg = Battleground(main.BG_WIDTH, main.BG_HEIGHT)
-  generals = ["General", "Conway"]
+  generals = ["General", "Conway", "Emperor"]
   minions = ["Minion", "Ranged_Minion"] 
   title = "Rogue Force launcher"
   g = []
