@@ -11,6 +11,17 @@ def apply_status_target(general, x, y, status):
   status.clone(entity)
   return True
 
+def consume_minions(general, value = 1):
+  count = 0
+  for m in general.bg.minions:
+    if m.is_ally(general):
+      m.die()
+      count += 1
+  if count == 0: return False
+  general.get_healed(count*value)
+  general.delta_cooldowns(count*value)
+  return True
+
 def create_minion(general, x, y):
   if general.bg.tiles[(x, y)].entity is not None or not general.bg.tiles[(x, y)].passable: return False
   general.bg.minions.append(general.minion.clone(x, y))
@@ -21,6 +32,13 @@ def create_minions(general, l):
   for (x, y) in l:
     did_anything += create_minion(general, x, y)
   return did_anything > 0
+
+def global_darkness(general, duration):
+  for tile in general.bg.tiles.values():
+    if tile.passable:
+      d = Darkness(general.bg, tile.x, tile.y, duration)
+      general.bg.effects.append(d)
+  return True
 
 def heal_all_minions(general, amount):
   for m in general.bg.minions:

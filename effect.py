@@ -1,9 +1,9 @@
-from entity import Entity
+import entity
 
 import libtcodpy as libtcod
 
-class Effect(Entity):
-  def __init__(self, battleground, x, y, side, char = ' ', color = libtcod.white):
+class Effect(entity.Entity):
+  def __init__(self, battleground, x, y, side = entity.NEUTRAL_SIDE, char = ' ', color = libtcod.white):
     saved = battleground.tiles[(x, y)].entity
     super(Effect, self).__init__(battleground, x, y, side, char, color)
     self.bg.tiles[(x, y)].entity = saved
@@ -42,6 +42,16 @@ class Arrow(Effect):
     if not self.alive: return
     self.move(1 if self.side == 0 else -1, 0)
     self.do_attack()
+
+class Darkness(Effect):
+  def __init__(self, battleground, x, y, duration):
+    super(Darkness, self).__init__(battleground, x, y, entity.NEUTRAL_SIDE, ' ')
+    self.duration = duration
+
+  def update(self):
+    if not self.alive: return
+    self.duration -= 1
+    if self.duration <= 0: self.dissapear()
 
 class Wave(Effect):
   def __init__(self, battleground, x, y, side, power):

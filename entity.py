@@ -4,7 +4,7 @@ import cmath as math
 NEUTRAL_SIDE = 555
 
 class Entity(object):
-  def __init__(self, battleground, x, y, side, char = ' ', color = libtcod.white):
+  def __init__(self, battleground, x, y, side = NEUTRAL_SIDE, char = ' ', color = libtcod.white):
     self.bg = battleground
     self.x = x
     self.y = y

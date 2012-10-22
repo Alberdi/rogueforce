@@ -37,6 +37,12 @@ class General(Minion):
       if m.side == self.side:
         m.tactic = self.tactics[i]
 
+  def delta_cooldowns(self, delta):
+    for i in range(0, len(self.skills)):
+      self.cd[i] += delta
+      if self.cd[i] > self.max_cd[i]: self.cd[i] = self.max_cd[i]
+      elif self.cd[i] < 0: self.cd[i] = 0
+
   def update(self):
     if not self.alive: return
     for i in range(0, len(self.skills)):
@@ -121,18 +127,21 @@ class Emperor(General):
     self.minion.attack_effects = [')', '(']
     self.starting_minions = 0
     curse = Freeze_Cooldowns(None, 15)
-    self.skills = [(skill.restock_minions, 21), (skill.apply_status_enemy_general, curse), (skill.null, )]
+    self.skills = [(skill.restock_minions, 21), (skill.apply_status_enemy_general, curse), (skill.water_pusher, 1), (skill.null, )]
     # We don't need the last quote because it will be changed and pulled in transform()
-    self.skill_quotes = ["I am the black wizards", "I curse you of all men", "This shouldn't be showed"]
-    self.max_cd = [25, 50, 200]
-    self.cd = [0, 0, 0]
-    self.transform_index = 2
+    self.skill_quotes = ["Once destroyed, their souls are being summoned", "I curse you of all men",
+                         "Towards the Pantheon", "This shouldn't be showed"]
+    self.max_cd = [25, 50, 50, 200]
+    self.cd = [0, 0, 0, 0]
+    self.transform_index = 3
 
   def die(self):
     if self.human_form:
       self.cd[self.transform_index] = self.max_cd[self.transform_index]
       self.use_skill(self.transform_index, 0, 0)
     else:
+      self.char = 'E'
+      self.name = "Emperor"
       super(Emperor, self).die()
 
   def transform(self):
@@ -143,9 +152,9 @@ class Emperor(General):
     self.name = "Nightspirit"
     self.original_color = libtcod.light_grey
     self.color = self.original_color
-    self.skills = [(skill.sonic_waves, 10, 3), (skill.water_pusher, 1), (skill.sonic_waves, 50, self.bg.width-2)]
+    self.skills = [(skill.sonic_waves, 10, 3), (skill.global_darkness, 20), (skill.consume_minions, ), (skill.sonic_waves, 50, self.bg.width-2)]
     # Last quote is shared with the human form skill
-    self.skill_quotes =["Thus spake the Nightspirit", "Dark force push",
+    self.skill_quotes =["Thus spake the Nightspirit", "Nightside Eclipse", "My wizards are many, but their essence is mine",
                         "O'Nightspirit... I am one with thee, I am the eternal power, I am the Emperor!"]
     for i in range(0, len(self.skills)-1):
       self.max_cd[i] = 50
@@ -156,5 +165,5 @@ class Emperor(General):
 
   def use_skill(self, i, x, y):
     skill_used = super(Emperor, self).use_skill(i, x, y)
-    if skill_used and i == self.transform_index: self.transform()
+    if skill_used and self.human_form and i == self.transform_index: self.transform()
     return skill_used
