@@ -14,6 +14,7 @@ class Battleground(object):
           self.tiles[(x,y)] = Tile(x, y, "#", False)
         else: # Floor
           self.tiles[(x,y)] = Tile(x, y)
+    self.tiles[(-1, -1)] = Tile(-1, -1)
     self.hovered = None
 
   def draw(self, con):

@@ -17,9 +17,8 @@ class General(Minion):
     self.cd = []
     self.death_quote = "..."
     self.formation = Rows(self)
-    self.minion = Minion(self.bg, 0, 0, self.side, "minion")
+    self.minion = Minion(self.bg, -1, -1, self.side, "minion")
     self.starting_minions = 101
-    self.bg.tiles[(0,0)].entity = None
     self.skills = [(skill.heal_target_minion, 100), (skill.heal_all_minions, 20), (skill.mine, 50), (skill.sonic_waves, 10, 3), (skill.water_pusher, 50)]
     self.skill_quotes =["Don't die!", "Heal you all men!", "Mine", "Sonic Waves", "Hidro Pump"]
     self.tactics = [tactic.forward, tactic.stop, tactic.backward, tactic.go_sides, tactic.go_center, tactic.attack_general, tactic.defend_general]
@@ -118,7 +117,7 @@ class Emperor(General):
     #self.start_quote = "May this night carry my will and these old stars forever remember this night."
     self.death_quote = "Nightspirit... embrace my soul..."
     self.human_form = True
-    self.minion = Ranged_Minion(self.bg, 0, 0, self.side, "wizard")
+    self.minion = Ranged_Minion(self.bg, -1, -1, self.side, "wizard")
     self.minion.attack_effects = [')', '(']
     self.starting_minions = 0
     curse = Freeze_Cooldowns(None, 15)
