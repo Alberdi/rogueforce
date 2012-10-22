@@ -1,6 +1,6 @@
 Rogue Force
 ===========
-Rogue Force is a reimagining of the Sega Saturn Dragon Force game set in space featuring roguelike graphics. The game is still in very early development with the focus put on the one on one battles, totally disregarding the overworld view and other details for now. Not even the name is final.
+Rogue Force is a reimagining of the Sega Saturn *Dragon Force* game set in space featuring roguelike graphics. The game is still in very early development with the focus put on the one on one battles, totally disregarding the overworld view and other details for now. Not even the name is final.
 
 What does it look like?
 -----------------------
@@ -14,7 +14,7 @@ To be honest, that is more concept art than anything. Here is a real screenshot,
 
 How's the gameplay?
 -------------------------
-Currently? A bit clumsy. All the input is given through the keyboard, with the mouse position beign used for some skills. The graphical interface doesn't help new players that much at the moment, so the best way to know what is what is by trial and error.
+Currently? A bit clumsy. All the input is given through the keyboard, with the mouse position being used for some skills. The graphical interface doesn't help new players that much at the moment, so the best way to know what is what is by trial and error.
 
 Does it feature network play?
 -----------------------------
@@ -38,7 +38,7 @@ It will launch a TCP server based on sockets on the port included and the next o
     marce:~$ python main.py 8888
      sito:~$ python main.py 8889
 
-More or less the same if you're running it using the launcher, but you'll need to talk it in advance and choose the same generals for each side. To customize your experiencae, such as choosing different generals for each side, using the `main.py` method, you'll to edit the last lines of that file. Maybe it's a bit cumbersome, but it's the preferred method for now; just make sure that both copies of the game have exactly the same code.
+More or less the same if you're running it using the launcher, but you'll need to talk it in advance and choose the same generals for each side. To customize your experience, such as choosing different generals for each side, using the `main.py` method, you'll to edit the last lines of that file. Maybe it's a bit cumbersome, but it's the preferred method for now; just make sure that both copies of the game have exactly the same code.
 
 Rogue Force will have ready to play packages for each major system in the future, but they're not provided yet.
 
