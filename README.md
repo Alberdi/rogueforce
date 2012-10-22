@@ -44,7 +44,7 @@ Rogue Force will have ready to play packages for each major system in the future
 
 Can I help?
 -----------
-Probably. I'll appreciate most kinds of help, from code to game ideas for new generals or gameplay. If you want to get involved somehow, write to Marcelino Alberdi explaining what would you like to do.
+Probably. I'll appreciate most kinds of help, from code to game ideas for new generals or gameplay. If you want to get involved somehow, write to Marcelino Alberdi (marcelino.alberdi@gmail.com) explaining what would you like to do.
 
 License?
 --------
