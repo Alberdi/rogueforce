@@ -10,4 +10,8 @@ def is_ally_minion(general, tile):
   if tile.entity is None: return False
   return tile.entity in general.bg.minions and tile.entity.is_ally(general)
   
-  
+def is_empty(general, tile):
+  return tile.entity is None
+
+def is_minion(general, tile):
+  return tile.entity is not None and tile.entity in general.bg.minions

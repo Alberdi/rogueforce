@@ -4,7 +4,7 @@ import cmath as math
 NEUTRAL_SIDE = 555
 
 class Entity(object):
-  def __init__(self, battleground, x, y, side = NEUTRAL_SIDE, char = ' ', color = libtcod.white):
+  def __init__(self, battleground, x=-1, y=-1, side=NEUTRAL_SIDE, char=' ', color=libtcod.white):
     self.bg = battleground
     self.x = x
     self.y = y
@@ -32,7 +32,13 @@ class Entity(object):
     if next_tile.entity is None: return True
     if not next_tile.entity.is_ally(self): return False
     return next_tile.entity.can_be_pushed(dx, dy)
-  
+
+  def clone(self, x, y): 
+    if self.bg.is_inside(x, y) and self.bg.tiles[(x, y)].entity is None and self.bg.tiles[(x, y)].is_passable(self):
+      return self.__class__(self.bg, x, y, self.side, self.char, self.original_color)
+    return None
+                
+
   def get_char(self, x, y):
     return self.char  
   
@@ -121,12 +127,17 @@ class Big_Entity(Entity):
     self.bg.tiles[(self.x+1, self.y+1)].entity = self      
       
 class Mine(Entity):
-  def __init__(self, battleground, x, y, power):
+  def __init__(self, battleground, x=-1, y=-1, power=50):
     super(Mine, self).__init__(battleground, x, y, NEUTRAL_SIDE, 'X', libtcod.red)
     self.power = power
 
   def can_be_attacked(self):
     return True
+
+  def clone(self, x, y):
+    if self.bg.is_inside(x, y) and self.bg.tiles[(x, y)].entity is None and self.bg.tiles[(x, y)].is_passable(self):
+      return self.__class__(self.bg, x, y, self.power)
+    return None
 
   def get_attacked(self, attacker):
     if attacker.can_be_attacked():

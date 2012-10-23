@@ -23,12 +23,10 @@ class General(Minion):
     self.starting_minions = 101
     self.skills = []
     self.skills.append(Skill(self, heal, 50, [100], "Don't die!", SingleTarget(self, is_ally_minion)))
-#    self.skills.append(Skill(heal_minion, [20], "Heal you all men!", area.all_minions))
-#    self.skills.append(Skill(mine, [50], "Can't touch this", area.target))
-#    self.skills.append(Skill(sonic_waves, [10, 3], "Sonic Waves"))
-#    self.skills.append(Skill(water_pusher, [50], "Hidro Pump", area.target))
-    #self.skills = [(skill.heal_target_minion, 100), (skill.heal_all_minions, 20), (skill.mine, 50), (skill.sonic_waves, 10, 3), (skill.water_pusher, 50)]
-    #self.skill_quotes =["Don't die!", "Heal you all men!", "Mine", "Sonic Waves", "Hidro Pump"]
+    self.skills.append(Skill(self, heal, 50, [20], "Heal you all men!", AllBattleground(self, is_minion)))
+    self.skills.append(Skill(self, place_entity, 50, [Mine(self.bg)], "Can't touch this", SingleTarget(self, is_empty)))
+    self.skills.append(Skill(self, sonic_waves, 50, [10, 3], "Sonic Waves"))
+    self.skills.append(Skill(self, water_pusher, 50, [], "Hidro Pump", SingleTarget(self)))
     self.tactics = [tactic.forward, tactic.stop, tactic.backward, tactic.go_sides, tactic.go_center, tactic.attack_general, tactic.defend_general]
     self.tactic_quotes = ["Forward", "Fire", "Backward", "Go sides", "Go center", "Attack", "Defend"]
     self.selected_tactic = self.tactics[0]

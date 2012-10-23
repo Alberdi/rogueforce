@@ -16,6 +16,10 @@ class Area(object):
       return self.get_all_tiles(x, y)
     return filter(self.sieve.apply, self.get_all_tiles(x, y))
 
+class AllBattleground(Area):
+  def get_all_tiles(self, x, y):
+    return self.general.bg.tiles.values()
+
 class SingleTarget(Area):
   def get_all_tiles(self, x, y):
     if not self.general.bg.is_inside(x, y): return []

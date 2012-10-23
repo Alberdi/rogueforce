@@ -14,7 +14,7 @@ class Skill(object):
   def apply_function(self, tiles):
     did_anything = False
     for t in tiles:
-      did_anything = self.function(self.general, t, *self.parameters)
+      did_anything += self.function(self.general, t, *self.parameters)
     return did_anything
 
   def reset_cd(self):
@@ -25,14 +25,38 @@ class Skill(object):
 
   def use(self, x, y):
     if self.area is None:
-      return self.function(general, *parameters)
+      return self.function(self.general, *self.parameters)
     return self.apply_function(self.area.get_tiles(x, y))
     #return self.function(general, self.area.get_tiles(x, y), *parameters)
 
 
 def heal(general, tile, amount):
+  if tile.entity.hp == tile.entity.max_hp: return False
   tile.entity.get_healed(amount)
   return True
+
+def place_entity(general, tile, entity):
+  clone = entity.clone(tile.x, tile.y)
+  return clone is not None
+
+def sonic_waves(general, power, waves):
+  for i in range(0, waves):
+    x = general.x+1-(i+1)/2 if general.side == 0 else general.x-1+(i+1)/2
+    y = general.y+(((i+1)/2)*(-1 if i%2 == 0 else 1))
+    if general.bg.is_inside(x,y):
+      general.bg.effects.append(Wave(general.bg, x, y, general.side, power))
+  return waves > 0
+
+def water_pusher(general, tile):
+  did_anything = False
+  for i in [-1, 0, 1]:
+    for j in [-1, 0, 1]:
+      if not general.bg.is_inside(tile.x + i, tile.y + j): continue
+      entity = general.bg.tiles[(tile.x + i, tile.y + j)].entity
+      if entity is not None and (i, j) != (0, 0) and entity.can_be_pushed(i, j):
+        entity.get_pushed(i, j)
+        did_anything = True
+  return did_anything
 
 #### Old functions ####
 def apply_status_enemy_general(general, status):
@@ -86,11 +110,6 @@ def heal_target_minion(general, x, y, amount):
     return True
   return False
 
-def mine(general, x, y, power):
-  if general.bg.tiles[(x, y)].entity is not None: return False
-  Mine(general.bg, x, y, power)
-  return True
-
 def minion_glider(general, x, y, go_bottom = True):
   if not general.bg.is_inside(x-1, y-1) or not general.bg.is_inside(x+1, y+1): return False
   j = 1 if go_bottom else -1
@@ -114,19 +133,5 @@ def restock_minions(general, number):
   general.command_tactic([i for i,x in enumerate(general.tactics) if x == general.selected_tactic][0])
   return True
 
-def sonic_waves(general, power, waves):
-  for i in range(0, waves):
-    x = general.x+1-(i+1)/2 if general.side == 0 else general.x-1+(i+1)/2
-    y = general.y+(((i+1)/2)*(-1 if i%2 == 0 else 1))
-    if general.bg.is_inside(x,y):
-      general.bg.effects.append(Wave(general.bg, x, y, general.side, power))
-  return waves > 0
 
-def water_pusher(general, x, y, radius):
-  for i in [-1, 0, 1]:
-    for j in [-1, 0, 1]:
-      if not general.bg.is_inside(x+i, y+j): continue
-      entity = general.bg.tiles[(x+i, y+j)].entity
-      if entity is not None and (i, j) != (0, 0):
-	      entity.get_pushed(i, j)
-  return True
+
