@@ -43,6 +43,7 @@ class Minion(Entity):
     if self.hp > 0:
       self.update_color()
     else:
+      self.hp = 0
       self.die()
 
   def get_healed(self, amount):

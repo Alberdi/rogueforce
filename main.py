@@ -205,7 +205,7 @@ class Network(object):
 
 if __name__=="__main__":
   bg = Battleground(BG_WIDTH, BG_HEIGHT)
-  bg.generals = [General(bg, 3, 21, 0), General(bg, 56, 21, 1, "Fapencio", libtcod.orange)]
+  bg.generals = [Emperor(bg, 3, 21, 0), Emperor(bg, 56, 21, 1, "Fapencio", libtcod.orange)]
   if len(sys.argv) == 4: 
     game = Game(bg, int(sys.argv[1]), sys.argv[2], int(sys.argv[3]))
   else:

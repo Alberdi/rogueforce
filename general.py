@@ -40,12 +40,6 @@ class General(Minion):
       if m.side == self.side:
         m.tactic = self.tactics[i]
 
-  def delta_cooldowns(self, delta):
-    for i in range(0, len(self.skills)):
-      self.cd[i] += delta
-      if self.cd[i] > self.max_cd[i]: self.cd[i] = self.max_cd[i]
-      elif self.cd[i] < 0: self.cd[i] = 0
-
   def update(self):
     if not self.alive: return
     for s in self.skills: s.update()
@@ -121,10 +115,13 @@ class Emperor(General):
     self.minion.attack_effects = [')', '(']
     self.starting_minions = 0
     curse = Freeze_Cooldowns(None, 15)
-    self.skills = [(skill.restock_minions, 21), (skill.apply_status_enemy_general, curse), (skill.water_pusher, 1), (skill.null, )]
-    # We don't need the last quote because it will be changed and pulled in transform()
-    self.skill_quotes = ["Once destroyed, their souls are being summoned", "I curse you of all men",
-                         "Towards the Pantheon", "This shouldn't be showed"]
+    self.skills = []
+    self.skills.append(Skill(self, restock_minions, 25, [21], "Once destroyed, their souls are being summoned"))
+    self.skills.append(Skill(self, apply_status, 50, [Freeze_Cooldowns(None, 15)], "I curse you of all men",
+                             AllBattleground(self, is_enemy_general)))
+    self.skills.append(Skill(self, water_pusher, 50, [], "Towards the Panteon", SingleTarget(self)))
+    self.skills.append(Skill(self, null, 200, [], "This shouldn't be showed"))
+    # We don't need that last quote because it will be changed and pulled in transform()
     self.max_cd = [25, 50, 50, 200]
     self.cd = [0, 0, 0, 0]
     self.transform_index = 3
@@ -146,15 +143,14 @@ class Emperor(General):
     self.name = "Nightspirit"
     self.original_color = libtcod.light_grey
     self.color = self.original_color
-    self.skills = [(skill.sonic_waves, 10, 3), (skill.global_darkness, 20), (skill.consume_minions, ), (skill.sonic_waves, 50, self.bg.width-2)]
+    self.skills = []
+    self.skills.append(Skill(self, sonic_waves, 50, [10, 3], "Thus spake the Nightspirit"))
+    self.skills.append(Skill(self, darkness, 50, [20], "Nightside eclipse", AllBattleground(self)))
+    self.skills.append(Skill(self, consume, 50, [1, 1], "My wizards are many, but their essence is mine",
+                             AllBattleground(self, is_ally_minion)))
+    self.skills.append(Skill(self, sonic_waves, 250, [50, 50],
+                             "O'Nightspirit... I am one with thee, I am the eternal power, I am the Emperor!"))
     # Last quote is shared with the human form skill
-    self.skill_quotes =["Thus spake the Nightspirit", "Nightside Eclipse", "My wizards are many, but their essence is mine",
-                        "O'Nightspirit... I am one with thee, I am the eternal power, I am the Emperor!"]
-    for i in range(0, len(self.skills)-1):
-      self.max_cd[i] = 50
-      self.cd[i] = 5
-    self.max_cd[self.transform_index] = 250
-    self.cd[self.transform_index] = 0
     return True
 
   def use_skill(self, i, x, y):

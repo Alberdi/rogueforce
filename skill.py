@@ -17,6 +17,10 @@ class Skill(object):
       did_anything += self.function(self.general, t, *self.parameters)
     return did_anything
 
+  def change_cd(self, delta):
+    self.cd += delta
+    self.cd = 0 if self.cd < 0 else self.max_cd if self.cd > self.max_cd else self.cd
+
   def reset_cd(self):
     self.cd = 0
 
@@ -29,6 +33,22 @@ class Skill(object):
     return self.apply_function(self.area.get_tiles(x, y))
     #return self.function(general, self.area.get_tiles(x, y), *parameters)
 
+def apply_status(general, tile, status):
+  status.clone(tile.entity)
+  return True
+
+def consume(general, tile, hp_gain=1, delta_cd=1):
+  tile.entity.die()
+  general.get_healed(hp_gain)
+  for s in general.skills:
+    s.change_cd(delta_cd)
+  return True
+
+def darkness(general, tile, duration):
+  if tile.passable:
+    d = Darkness(general.bg, tile.x, tile.y, duration)
+    general.bg.effects.append(d)
+  return tile.passable
 
 def heal(general, tile, amount):
   if tile.entity.hp == tile.entity.max_hp: return False
@@ -59,9 +79,6 @@ def water_pusher(general, tile):
   return did_anything
 
 #### Old functions ####
-def apply_status_enemy_general(general, status):
-  status.clone(general.bg.generals[(general.side+1)%2])
-  return True
 
 def apply_status_target(general, x, y, status):
   entity = general.bg.tiles[(x, y)].entity
@@ -69,16 +86,6 @@ def apply_status_target(general, x, y, status):
   status.clone(entity)
   return True
 
-def consume_minions(general, value = 1):
-  count = 0
-  for m in general.bg.minions:
-    if m.is_ally(general):
-      m.die()
-      count += 1
-  if count == 0: return False
-  general.get_healed(count*value)
-  general.delta_cooldowns(count*value)
-  return True
 
 def create_minion(general, x, y):
   if general.bg.tiles[(x, y)].entity is not None or not general.bg.tiles[(x, y)].passable: return False
@@ -90,13 +97,6 @@ def create_minions(general, l):
   for (x, y) in l:
     did_anything += create_minion(general, x, y)
   return did_anything > 0
-
-def global_darkness(general, duration):
-  for tile in general.bg.tiles.values():
-    if tile.passable:
-      d = Darkness(general.bg, tile.x, tile.y, duration)
-      general.bg.effects.append(d)
-  return True
 
 def heal_all_minions(general, amount):
   for m in general.bg.minions:
@@ -132,6 +132,4 @@ def restock_minions(general, number):
   general.starting_minions = tmp
   general.command_tactic([i for i,x in enumerate(general.tactics) if x == general.selected_tactic][0])
   return True
-
-
 

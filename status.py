@@ -25,7 +25,8 @@ class Freeze_Cooldowns(Status):
     super(Freeze_Cooldowns, self).__init__(entity, duration)
 
   def tick(self):
-    self.entity.delta_cooldowns(-1)
+    for s in self.entity.skills:
+      s.change_cd(-1)
 
 class Poison(Status):
   # tbt = time between ticks
