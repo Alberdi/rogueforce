@@ -73,7 +73,7 @@ class Conway(General):
     super(Conway, self).__init__(battleground, x, y, side, name, color)
     poison = Poison(None, 5, 19, 4)
     self.death_quote = "This is more like a game of... death"
-    self.skills = [(skill.minion_glider, False), (skill.minion_glider, True), (skill.minion_lwss, ), (skill.apply_status, poison)]
+    self.skills = [(skill.minion_glider, False), (skill.minion_glider, True), (skill.minion_lwss, ), (skill.apply_status_target, poison)]
     self.skill_quotes = ["Glide from the top!", "Glide from the bottom!", "Lightweight strike force!", "Poison on your veins!"]
     self.tactics = [tactic.null, tactic.stop]
     self.tactic_quotes = ["Live life", "Stop"]
