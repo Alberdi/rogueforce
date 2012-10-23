@@ -21,6 +21,9 @@ class Skill(object):
     self.cd += delta
     self.cd = 0 if self.cd < 0 else self.max_cd if self.cd > self.max_cd else self.cd
 
+  def change_max_cd(self, delta):
+    self.max_cd += delta
+
   def reset_cd(self):
     self.cd = 0
 
@@ -31,7 +34,7 @@ class Skill(object):
     if self.area is None:
       return self.function(self.general, *self.parameters)
     return self.apply_function(self.area.get_tiles(x, y))
-    #return self.function(general, self.area.get_tiles(x, y), *parameters)
+
 
 def apply_status(general, tile, status):
   status.clone(tile.entity)
@@ -44,6 +47,15 @@ def consume(general, tile, hp_gain=1, delta_cd=1):
     s.change_cd(delta_cd)
   return True
 
+def create_minions(general, l):
+  did_anything = False
+  for (x, y) in l:
+    minion_placed = general.minion.clone(x, y)
+    if minion_placed is not None:
+      general.bg.minions.append(minion_placed)
+      did_anything = True
+  return did_anything
+
 def darkness(general, tile, duration):
   if tile.passable:
     d = Darkness(general.bg, tile.x, tile.y, duration)
@@ -55,9 +67,34 @@ def heal(general, tile, amount):
   tile.entity.get_healed(amount)
   return True
 
+def minion_glider(general, tile, go_bottom = True):
+  (x, y) = (tile.x, tile.y)
+  if not general.bg.is_inside(x-1, y-1) or not general.bg.is_inside(x+1, y+1): return False
+  j = 1 if go_bottom else -1
+  i = 1 if general.side == 0 else -1
+  return create_minions(general, [(x-i, y-j), (x, y-j), (x, y), (x+i, y), (x-i, y+j)])
+
+def minion_lwss(general, tile):
+  (x, y) = (tile.x, tile.y)
+  if not general.bg.is_inside(x-2, y-2) or not general.bg.is_inside(x+2, y+2): return False
+  j = 1 if general.side == 0 else -1
+  return create_minions(general,\
+    [(x-1*j, y-1), (x, y-1), (x+1*j, y-1), (x+2*j, y-1), (x-2*j, y), (x+2*j, y), (x+2*j, y+1), (x-2*j, y+2), (x+1*j, y+2)])
+
+def null(general):
+  return True
+
 def place_entity(general, tile, entity):
   clone = entity.clone(tile.x, tile.y)
   return clone is not None
+
+def restock_minions(general, number):
+  tmp = general.starting_minions
+  general.starting_minions = number
+  general.formation.place_minions()
+  general.starting_minions = tmp
+  general.command_tactic([i for i,x in enumerate(general.tactics) if x == general.selected_tactic][0])
+  return True
 
 def sonic_waves(general, power, waves):
   for i in range(0, waves):
@@ -77,59 +114,4 @@ def water_pusher(general, tile):
         entity.get_pushed(i, j)
         did_anything = True
   return did_anything
-
-#### Old functions ####
-
-def apply_status_target(general, x, y, status):
-  entity = general.bg.tiles[(x, y)].entity
-  if entity is None: return False
-  status.clone(entity)
-  return True
-
-
-def create_minion(general, x, y):
-  if general.bg.tiles[(x, y)].entity is not None or not general.bg.tiles[(x, y)].passable: return False
-  general.bg.minions.append(general.minion.clone(x, y))
-  return True
-
-def create_minions(general, l):
-  did_anything = False
-  for (x, y) in l:
-    did_anything += create_minion(general, x, y)
-  return did_anything > 0
-
-def heal_all_minions(general, amount):
-  for m in general.bg.minions:
-    m.get_healed(amount)
-  return True
-
-def heal_target_minion(general, x, y, amount):
-  minion = general.bg.tiles[x, y].entity
-  if minion is not None and minion.side == general.side and minion != general and minion.hp != minion.max_hp:
-    minion.get_healed(amount)
-    return True
-  return False
-
-def minion_glider(general, x, y, go_bottom = True):
-  if not general.bg.is_inside(x-1, y-1) or not general.bg.is_inside(x+1, y+1): return False
-  j = 1 if go_bottom else -1
-  i = 1 if general.side == 0 else -1
-  return create_minions(general, [(x-i, y-j), (x, y-j), (x, y), (x+i, y), (x-i, y+j)])
-
-def minion_lwss(general, x, y):
-  if not general.bg.is_inside(x-2, y-2) or not general.bg.is_inside(x+2, y+2): return False
-  j = 1 if general.side == 0 else -1
-  return create_minions(general,\
-    [(x-1*j, y-1), (x, y-1), (x+1*j, y-1), (x+2*j, y-1), (x-2*j, y), (x+2*j, y), (x+2*j, y+1), (x-2*j, y+2), (x+1*j, y+2)])
-
-def null(general):
-  return True
-
-def restock_minions(general, number):
-  tmp = general.starting_minions
-  general.starting_minions = number
-  general.formation.place_minions()
-  general.starting_minions = tmp
-  general.command_tactic([i for i,x in enumerate(general.tactics) if x == general.selected_tactic][0])
-  return True
 

@@ -13,6 +13,9 @@ def is_ally_minion(general, tile):
 def is_empty(general, tile):
   return tile.entity is None
 
+def is_enemy(general, tile):
+  return tile.entity is not None and not tile.entity.is_ally(general)
+
 def is_enemy_general(general, tile):
   return tile.entity == general.bg.generals[(general.side+1)%2]
 

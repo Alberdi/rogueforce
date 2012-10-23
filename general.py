@@ -52,6 +52,9 @@ class General(Minion):
     skill = self.skills[i]
     if skill.cd >= skill.max_cd:
       if skill.use(x, y):
+        for s in self.skills:
+          s.change_cd(-5)
+        skill.change_max_cd(skill.max_cd)
         skill.reset_cd()
         return True
     return False
@@ -61,8 +64,12 @@ class Conway(General):
     super(Conway, self).__init__(battleground, x, y, side, name, color)
     poison = Poison(None, 5, 19, 4)
     self.death_quote = "This is more like a game of... death"
-    self.skills = [(skill.minion_glider, False), (skill.minion_glider, True), (skill.minion_lwss, ), (skill.apply_status_target, poison)]
-    self.skill_quotes = ["Glide from the top!", "Glide from the bottom!", "Lightweight strike force!", "Poison on your veins!"]
+    self.skills = []
+    self.skills.append(Skill(self, minion_glider, 50, [False], "Glide from the top!", SingleTarget(self, is_empty)))
+    self.skills.append(Skill(self, minion_glider, 50, [True], "Glide from the bottom!", SingleTarget(self, is_empty)))
+    self.skills.append(Skill(self, minion_lwss, 50, [], "Lightweight strike force!", SingleTarget(self, is_empty)))
+    self.skills.append(Skill(self, apply_status, 50, [Poison(None, 5, 19, 4)],
+                             "Poison on your veins", SingleTarget(self, is_enemy)))
     self.tactics = [tactic.null, tactic.stop]
     self.tactic_quotes = ["Live life", "Stop"]
     self.selected_tactic = self.tactics[0]
