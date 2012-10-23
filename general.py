@@ -1,9 +1,11 @@
+from area import *
 from formation import *
 from minion import *
+from sieve import *
+from skill import *
 from status import *
 
 import libtcodpy as libtcod
-import skill
 import tactic
 
 import inspect
@@ -19,14 +21,17 @@ class General(Minion):
     self.formation = Rows(self)
     self.minion = Minion(self.bg, -1, -1, self.side, "minion")
     self.starting_minions = 101
-    self.skills = [(skill.heal_target_minion, 100), (skill.heal_all_minions, 20), (skill.mine, 50), (skill.sonic_waves, 10, 3), (skill.water_pusher, 50)]
-    self.skill_quotes =["Don't die!", "Heal you all men!", "Mine", "Sonic Waves", "Hidro Pump"]
+    self.skills = []
+    self.skills.append(Skill(self, heal, 50, [100], "Don't die!", SingleTarget(self, is_ally_minion)))
+#    self.skills.append(Skill(heal_minion, [20], "Heal you all men!", area.all_minions))
+#    self.skills.append(Skill(mine, [50], "Can't touch this", area.target))
+#    self.skills.append(Skill(sonic_waves, [10, 3], "Sonic Waves"))
+#    self.skills.append(Skill(water_pusher, [50], "Hidro Pump", area.target))
+    #self.skills = [(skill.heal_target_minion, 100), (skill.heal_all_minions, 20), (skill.mine, 50), (skill.sonic_waves, 10, 3), (skill.water_pusher, 50)]
+    #self.skill_quotes =["Don't die!", "Heal you all men!", "Mine", "Sonic Waves", "Hidro Pump"]
     self.tactics = [tactic.forward, tactic.stop, tactic.backward, tactic.go_sides, tactic.go_center, tactic.attack_general, tactic.defend_general]
     self.tactic_quotes = ["Forward", "Fire", "Backward", "Go sides", "Go center", "Attack", "Defend"]
     self.selected_tactic = self.tactics[0]
-    for i in range(0, len(self.skills)):
-      self.max_cd.append(50)
-      self.cd.append(0)
 
   def can_be_pushed(self, dx, dy):
     return False
@@ -45,26 +50,17 @@ class General(Minion):
 
   def update(self):
     if not self.alive: return
-    for i in range(0, len(self.skills)):
-      if self.cd[i] < self.max_cd[i]: self.cd[i] += 1
+    for s in self.skills: s.update()
     for s in self.statuses: s.update()
 
   def update_color(self):
     pass
 
   def use_skill(self, i, x, y):
-    if self.cd[i] >= self.max_cd[i]:
-      params = [self]
-      if inspect.getargspec(self.skills[i][0])[0][1:3] == ['x', 'y']:
-        if not self.bg.is_inside(x, y): return
-        params.extend([x, y])
-      params.extend(self.skills[i][1:])
-      if self.skills[i][0](*params): # Used properly
-        for j in range(0, len(self.skills)):
-          if j != i: self.cd[j] -= 5
-          else:
-            self.max_cd[i] *= 2
-            self.cd[i] = 0
+    skill = self.skills[i]
+    if skill.cd >= skill.max_cd:
+      if skill.use(x, y):
+        skill.reset_cd()
         return True
     return False
 

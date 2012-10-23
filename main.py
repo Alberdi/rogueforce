@@ -128,7 +128,7 @@ class Game(object):
         match = SKILL_PATTERN.match(m)
         if match is not None:
           if self.bg.generals[i].use_skill(*map(int, match.groups())):
-            self.message(self.bg.generals[i].name + ": " + self.bg.generals[i].skill_quotes[int(match.group(1))], self.bg.generals[i].color)
+            self.message(self.bg.generals[i].name + ": " + self.bg.generals[i].skills[int(match.group(1))].quote, self.bg.generals[i].color)
         elif m.startswith("tactic"):
           self.bg.generals[i].command_tactic(int(m[6]))
 
@@ -169,7 +169,7 @@ class Game(object):
       line = 3
       for s in range(0, len(self.bg.generals[i].skills)):
         libtcod.console_put_char_ex(self.con_panels[i], bar_offset_x-1, line, KEYMAP_SKILLS[s], libtcod.white, libtcod.black)
-        self.render_bar(self.con_panels[i], bar_offset_x, line, bar_length, self.bg.generals[i].cd[s], self.bg.generals[i].max_cd[s],
+        self.render_bar(self.con_panels[i], bar_offset_x, line, bar_length, self.bg.generals[i].skills[s].cd, self.bg.generals[i].skills[s].max_cd,
           libtcod.dark_blue, libtcod.sky, libtcod.black)
         line += 2
       self.render_tactics(i)
@@ -205,7 +205,7 @@ class Network(object):
 
 if __name__=="__main__":
   bg = Battleground(BG_WIDTH, BG_HEIGHT)
-  bg.generals = [Emperor(bg, 3, 21, 0), General(bg, 56, 21, 1, "Fapencio", libtcod.orange)]
+  bg.generals = [General(bg, 3, 21, 0), General(bg, 56, 21, 1, "Fapencio", libtcod.orange)]
   if len(sys.argv) == 4: 
     game = Game(bg, int(sys.argv[1]), sys.argv[2], int(sys.argv[3]))
   else:

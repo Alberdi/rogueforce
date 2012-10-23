@@ -1,6 +1,40 @@
 from effect import *
 from entity import *
 
+class Skill(object):
+  def __init__(self, general, function, max_cd, parameters=[], quote="", area=None):
+    self.general = general
+    self.function = function
+    self.max_cd = max_cd
+    self.cd = 0
+    self.parameters = parameters
+    self.area = area
+    self.quote = quote
+
+  def apply_function(self, tiles):
+    did_anything = False
+    for t in tiles:
+      did_anything = self.function(self.general, t, *self.parameters)
+    return did_anything
+
+  def reset_cd(self):
+    self.cd = 0
+
+  def update(self):
+    if self.cd < self.max_cd: self.cd += 1
+
+  def use(self, x, y):
+    if self.area is None:
+      return self.function(general, *parameters)
+    return self.apply_function(self.area.get_tiles(x, y))
+    #return self.function(general, self.area.get_tiles(x, y), *parameters)
+
+
+def heal(general, tile, amount):
+  tile.entity.get_healed(amount)
+  return True
+
+#### Old functions ####
 def apply_status_enemy_general(general, status):
   status.clone(general.bg.generals[(general.side+1)%2])
   return True
