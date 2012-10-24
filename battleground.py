@@ -15,25 +15,31 @@ class Battleground(object):
         else: # Floor
           self.tiles[(x,y)] = Tile(x, y)
     self.tiles[(-1, -1)] = Tile(-1, -1)
-    self.hovered = None
+    self.hovered = []
 
   def draw(self, con):
     for pos in self.tiles:
       self.tiles[pos].draw(con)
 
+  def hover_tiles(self, l, color=libtcod.blue):
+    self.unhover_tiles()
+    for t in l:
+      t.hover(color)
+    self.hovered = l
+
   def is_inside(self, x, y):
     return 0 <= x < self.width and 0 <= y < self.height
 
-  def tile_hovered(self, x, y):
-    if self.hovered is not None: self.hovered.unhover()
-    self.hovered = self.tiles[(x, y)]
-    self.hovered.hover()
+  def unhover_tiles(self):
+    for t in self.hovered:
+      t.unhover()
 
 class Tile(object):
   def __init__(self, x, y, char = ".", passable = True):
     self.passable = passable
     self.char = char
     self.color = libtcod.Color(50, 50, 150)
+    self.bg_original_color = libtcod.black
     self.bg_color = libtcod.black
     self.entity = None
     self.effects = []
@@ -52,8 +58,8 @@ class Tile(object):
     else: drawable = self
     libtcod.console_put_char_ex(con, self.x, self.y, drawable.get_char(drawable.x-self.x,drawable.y-self.y), drawable.color, self.bg_color)
   
-  def hover(self):
-    self.bg_color = libtcod.blue
+  def hover(self, color=libtcod.blue):
+    self.bg_color = color
 
   def unhover(self):
-    self.bg_color = libtcod.black
+    self.bg_color = self.bg_original_color

@@ -37,7 +37,6 @@ class Entity(object):
     if self.bg.is_inside(x, y) and self.bg.tiles[(x, y)].entity is None and self.bg.tiles[(x, y)].is_passable(self):
       return self.__class__(self.bg, x, y, self.side, self.char, self.original_color)
     return None
-                
 
   def get_char(self, x, y):
     return self.char  

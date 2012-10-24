@@ -24,6 +24,10 @@ class Skill(object):
   def change_max_cd(self, delta):
     self.max_cd += delta
 
+  def get_area_tiles(self, x, y):
+    if self.area is None: return None
+    return self.area.get_tiles(x, y)
+
   def reset_cd(self):
     self.cd = 0
 

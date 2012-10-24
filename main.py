@@ -1,3 +1,4 @@
+from area import SingleTarget
 from battleground import Battleground
 from general import *
 
@@ -57,6 +58,10 @@ class Game(object):
     self.keymap_tactics = KEYMAP_TACTICS[0:len(self.bg.generals[self.side].tactics)]
     self.game_msgs = []
     self.game_over = False
+    self.area_hover_color = libtcod.green
+    self.area_hover_color_invalid = libtcod.red
+    self.default_hover_color = libtcod.blue
+    self.default_hover_function = SingleTarget(self.bg.generals[self.side]).get_all_tiles
     self.render_all()
 
   def check_game_over(self):
@@ -74,6 +79,16 @@ class Game(object):
       if not m.alive:
         self.bg.minions.remove(m)
 
+  def do_hover(self, hover_function, x, y):
+    if hover_function is not None:
+      tiles = hover_function(x,y)
+      if tiles is not None and tiles:
+        self.bg.hover_tiles(tiles, self.area_hover_color)
+      else:
+        self.bg.hover_tiles(self.default_hover_function(x, y), self.area_hover_color_invalid)
+    else:
+      self.bg.hover_tiles(self.default_hover_function(x, y), self.default_hover_color)
+
   def message(self, new_msg, color=libtcod.white):
     #split the message if necessary, among multiple lines
     new_msg_lines = textwrap.wrap(new_msg, MSG_WIDTH)
@@ -90,17 +105,21 @@ class Game(object):
     turn_time = 0.1
     key = libtcod.Key()
     mouse = libtcod.Mouse()
+    hover_function = None
     while not self.game_over:
       messages = ["", ""]
       start = time.time()
       while time.time() - start < turn_time:
         libtcod.sys_check_for_event(libtcod.EVENT_ANY, key, mouse)
         (x, y) = (mouse.cx-BG_OFFSET_X, mouse.cy-BG_OFFSET_Y)
-        if self.bg.is_inside(x,y): self.bg.tile_hovered(x, y)
         if key.vk == libtcod.KEY_ESCAPE: exit()
         n = self.keymap_skills.find(chr(key.c).upper()) # Number of the skill pressed
         if n != -1: 
-          messages[self.side] += "skill{0} ({1},{2})\n".format(n, x, y)
+          if chr(key.c).istitle(): # With uppercase we show the area
+            hover_function = self.bg.generals[self.side].skills[n].get_area_tiles
+          else: # Use the skill
+            messages[self.side] += "skill{0} ({1},{2})\n".format(n, x, y)
+            hover_function = None
         n = self.keymap_tactics.find(chr(key.c).upper()) # Number of the tactic pressed
         if n != -1: 
           messages[self.side] += "tactic{0}\n".format(n)
@@ -116,6 +135,7 @@ class Game(object):
       self.update_all()
       self.check_game_over()
       if (turn % 100) == 0: self.clean_all()
+      self.do_hover(hover_function, x, y)
       self.render_all()
 
     while True: # Game is over
