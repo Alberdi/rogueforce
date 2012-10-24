@@ -82,7 +82,9 @@ class Game(object):
   def do_hover(self, hover_function, x, y):
     if hover_function is not None:
       tiles = hover_function(x,y)
-      if tiles is not None and tiles:
+      if tiles is None:
+        self.bg.hover_tiles(self.default_hover_function(x,y), self.area_hover_color)
+      elif tiles:
         self.bg.hover_tiles(tiles, self.area_hover_color)
       else:
         self.bg.hover_tiles(self.default_hover_function(x, y), self.area_hover_color_invalid)
