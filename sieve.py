@@ -11,7 +11,6 @@ def is_ally_general(general, tile):
   if tile.entity is None: return False
   return tile.entity == general
 
-
 def is_ally_minion(general, tile):
   if tile.entity is None: return False
   return tile.entity in general.bg.minions and tile.entity.is_ally(general)
