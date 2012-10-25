@@ -33,6 +33,8 @@ KEYMAP_TACTICS = "ZXCVBNM"
 
 SKILL_PATTERN = re.compile("skill(\d) \((-?\d+),(-?\d+)\)")
 
+TURN_LAG = 0
+
 class Game(object):
   def __init__(self, battleground, side, host = None, port = None):
     if host is not None:
@@ -44,6 +46,8 @@ class Game(object):
     libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
     libtcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, 'Rogue Force')
     libtcod.sys_set_fps(LIMIT_FPS)
+
+    self.messages = [{}, {}]
 
     self.con_root = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
     self.con_bg = libtcod.console_new(BG_WIDTH, BG_HEIGHT)
@@ -109,7 +113,6 @@ class Game(object):
     mouse = libtcod.Mouse()
     hover_function = None
     while not self.game_over:
-      messages = ["", ""]
       start = time.time()
       while time.time() - start < turn_time:
         libtcod.sys_check_for_event(libtcod.EVENT_ANY, key, mouse)
@@ -120,39 +123,45 @@ class Game(object):
           if chr(key.c).istitle(): # With uppercase we show the area
             hover_function = self.bg.generals[self.side].skills[n].get_area_tiles
           else: # Use the skill
-            messages[self.side] += "skill{0} ({1},{2})\n".format(n, x, y)
+            self.messages[self.side][turn] = "skill{0} ({1},{2})\n".format(n, x, y)
+            #messages[self.side] += "skill{0} ({1},{2})\n".format(n, x, y)
             hover_function = None
         n = self.keymap_tactics.find(chr(key.c).upper()) # Number of the tactic pressed
         if n != -1: 
-          messages[self.side] += "tactic{0}\n".format(n)
-      messages[self.side] += "DONE\n"
+          self.messages[self.side][turn] = "tactic{0}\n".format(n)
 
       if self.network != None:
-        self.network.send(messages[self.side])
-        messages[(self.side+1)%2] = self.network.recv()
-      else:
-        messages[(self.side+1)%2] = "DONE\n"
-      turn +=1
-      self.process_messages(messages)
+        if turn in self.messages[self.side]:
+          self.network.send(str(turn) + "#"  + self.messages[self.side][turn])
+        else:
+          self.network.send("D")
+        received = self.network.recv()
+        split = received.split("#")
+        if len(split) == 2:
+          self.messages[not self.side][int(split[0])] = split[1]
+
+      self.process_messages(turn)
       self.update_all()
       self.check_game_over()
       if (turn % 100) == 0: self.clean_all()
       self.do_hover(hover_function, x, y)
       self.render_all()
+      turn +=1
 
     while True: # Game is over
       libtcod.sys_check_for_event(libtcod.EVENT_ANY, key, mouse)
       if key.vk == libtcod.KEY_ESCAPE: exit()
 
-  def process_messages(self, messages):
+  def process_messages(self, turn):
+    t = turn - TURN_LAG
     for i in [0,1]:
-      for m in messages[i].split("\n"):
-        match = SKILL_PATTERN.match(m)
+      if t in self.messages[i]:
+        match = SKILL_PATTERN.match(self.messages[i][t])
         if match is not None:
           if self.bg.generals[i].use_skill(*map(int, match.groups())):
             self.message(self.bg.generals[i].name + ": " + self.bg.generals[i].skills[int(match.group(1))].quote, self.bg.generals[i].color)
-        elif m.startswith("tactic"):
-          self.bg.generals[i].command_tactic(int(m[6]))
+        elif self.messages[i][t].startswith("tactic"):
+          self.bg.generals[i].command_tactic(int(self.messages[i][t][6]))
 
   def render_all(self):
     self.bg.draw(self.con_bg)
