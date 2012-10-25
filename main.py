@@ -16,15 +16,21 @@ BG_WIDTH = 60
 BG_HEIGHT = 43
 PANEL_WIDTH = 16
 PANEL_HEIGHT = BG_HEIGHT
+INFO_WIDTH = BG_WIDTH
+INFO_HEIGHT = 6
 MSG_WIDTH = BG_WIDTH - 2
 MSG_HEIGHT = 6
 SCREEN_WIDTH = BG_WIDTH + PANEL_WIDTH*2
-SCREEN_HEIGHT = BG_HEIGHT + MSG_HEIGHT + 2
+SCREEN_HEIGHT = BG_HEIGHT + INFO_HEIGHT + MSG_HEIGHT + 2
 
 BG_OFFSET_X = PANEL_WIDTH
-BG_OFFSET_Y = 0
-MSG_OFFSET_X = PANEL_WIDTH + 1
-MSG_OFFSET_Y = BG_HEIGHT + 1
+BG_OFFSET_Y = INFO_HEIGHT + 1
+PANEL_OFFSET_X = BG_OFFSET_X
+PANEL_OFFSET_Y = BG_OFFSET_Y + 8
+MSG_OFFSET_X = BG_OFFSET_X
+MSG_OFFSET_Y = 1
+INFO_OFFSET_X = PANEL_WIDTH + 1
+INFO_OFFSET_Y = BG_OFFSET_Y + BG_HEIGHT + 1
 
 KEYMAP_SKILLS = "QWERTYUIOP"
 KEYMAP_TACTICS = "ZXCVBNM"
@@ -44,6 +50,7 @@ class Game(object):
 
     self.con_root = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
     self.con_bg = libtcod.console_new(BG_WIDTH, BG_HEIGHT)
+    self.con_info = libtcod.console_new(BG_WIDTH, BG_HEIGHT)
     self.con_msgs = libtcod.console_new(MSG_WIDTH, MSG_HEIGHT)
     self.con_panels = [libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT), libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT)]
 
@@ -59,7 +66,7 @@ class Game(object):
     self.area_hover_color_invalid = libtcod.red
     self.default_hover_color = libtcod.blue
     self.default_hover_function = SingleTarget(self.bg.generals[self.side]).get_all_tiles
-    self.render_all()
+    self.render_all(0,0)
 
   def check_game_over(self):
     for i in [0,1]:
@@ -135,7 +142,7 @@ class Game(object):
       self.check_game_over()
       if (turn % 100) == 0: self.clean_all()
       self.do_hover(hover_function, x, y)
-      self.render_all()
+      self.render_all(x, y)
 
     while True: # Game is over
       libtcod.sys_check_for_event(libtcod.EVENT_ANY, key, mouse)
@@ -151,13 +158,15 @@ class Game(object):
         elif m.startswith("tactic"):
           self.bg.generals[i].command_tactic(int(m[6]))
 
-  def render_all(self):
+  def render_all(self, x, y):
     self.bg.draw(self.con_bg)
+    self.render_info(x, y)
     self.render_msgs()
     self.render_panels()
     libtcod.console_blit(self.con_bg, 0, 0, BG_WIDTH, BG_HEIGHT, self.con_root, BG_OFFSET_X, BG_OFFSET_Y)
     for i in [0,1]:
-      libtcod.console_blit(self.con_panels[i], 0, 0, PANEL_WIDTH, PANEL_HEIGHT, self.con_root, (PANEL_WIDTH+BG_WIDTH)*i, 0)
+      libtcod.console_blit(self.con_panels[i], 0, 0, PANEL_WIDTH, PANEL_HEIGHT, self.con_root, (PANEL_WIDTH+BG_WIDTH)*i, PANEL_OFFSET_Y)
+    libtcod.console_blit(self.con_info, 0, 0, MSG_WIDTH, MSG_HEIGHT, self.con_root, INFO_OFFSET_X, INFO_OFFSET_Y)
     libtcod.console_blit(self.con_msgs, 0, 0, MSG_WIDTH, MSG_HEIGHT, self.con_root, MSG_OFFSET_X, MSG_OFFSET_Y)
     libtcod.console_blit(self.con_root, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
     libtcod.console_flush()
@@ -170,6 +179,11 @@ class Game(object):
     libtcod.console_rect(con, x+ratio, y, w-ratio, 1, False, libtcod.BKGND_SET)
     libtcod.console_set_default_background(con, text_color)
     libtcod.console_print_rect(con, x+1, y, w, 1, "%03d / %03d" % (value, max_value))
+
+  def render_info(self, x, y):
+    libtcod.console_set_default_foreground(self.con_msgs, libtcod.white)
+    if self.bg.is_inside(x, y):
+      libtcod.console_print(self.con_info, BG_WIDTH-7, 5, "%02d/%02d" % (x, y))
 
   def render_msgs(self):
     y = 0
