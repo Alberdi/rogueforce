@@ -85,9 +85,9 @@ class Big_Minion(Big_Entity, Minion):
     # Order: forward, backward, up, down
     for (dx, dy) in [(1 if self.side == 0 else -1, 0), (1 if self.side == 0 else -1, 0), (0, 1), (0, -1)]:
       for (x,y) in [(self.x+dx+x,self.y+dy+y) for x in range (0, self.length) for y in range (0, self.length)]:
-	enemy = self.bg.tiles[(x, y)].entity
-	if enemy is not None and not self.is_ally(enemy) and enemy.can_be_attacked(): return enemy
-	else: continue
+        enemy = self.bg.tiles[(x, y)].entity
+        if enemy is not None and not self.is_ally(enemy) and enemy.can_be_attacked():
+          return enemy
     return None
 
 class Ranged_Minion(Minion):
