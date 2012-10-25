@@ -33,7 +33,7 @@ KEYMAP_TACTICS = "ZXCVBNM"
 
 SKILL_PATTERN = re.compile("skill(\d) \((-?\d+),(-?\d+)\)")
 
-TURN_LAG = 0
+TURN_LAG = 1
 
 class Game(object):
   def __init__(self, battleground, side, host = None, port = None):
@@ -114,6 +114,12 @@ class Game(object):
     hover_function = None
     while not self.game_over:
       start = time.time()
+      if self.network is not None and turn > 0:
+        received = self.network.recv()
+        split = received.split("#")
+        if len(split) == 2:
+          self.messages[not self.side][int(split[0])] = split[1]
+
       while time.time() - start < turn_time:
         libtcod.sys_check_for_event(libtcod.EVENT_ANY, key, mouse)
         (x, y) = (mouse.cx-BG_OFFSET_X, mouse.cy-BG_OFFSET_Y)
@@ -135,10 +141,6 @@ class Game(object):
           self.network.send(str(turn) + "#"  + self.messages[self.side][turn])
         else:
           self.network.send("D")
-        received = self.network.recv()
-        split = received.split("#")
-        if len(split) == 2:
-          self.messages[not self.side][int(split[0])] = split[1]
 
       self.process_messages(turn)
       self.update_all()
