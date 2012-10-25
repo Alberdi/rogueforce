@@ -8,8 +8,6 @@ from status import *
 import libtcodpy as libtcod
 import tactic
 
-import inspect
-
 class General(Minion):
   def __init__(self, battleground, x, y, side, name = "General", color=libtcod.orange):
     super(General, self).__init__(battleground, x, y, side, name, color)
@@ -28,7 +26,7 @@ class General(Minion):
     self.skills.append(Skill(self, sonic_waves, 50, [10, 3], "Sonic Waves"))
     self.skills.append(Skill(self, water_pusher, 50, [], "Hidro Pump", SingleTarget(self)))
     self.tactics = [tactic.forward, tactic.stop, tactic.backward, tactic.go_sides, tactic.go_center, tactic.attack_general, tactic.defend_general]
-    self.tactic_quotes = ["Forward", "Fire", "Backward", "Go sides", "Go center", "Attack", "Defend"]
+    self.tactic_quotes = ["Forward", "Stop/Fire", "Backward", "Go sides", "Go center", "Attack", "Defend"]
     self.selected_tactic = self.tactics[0]
 
   def can_be_pushed(self, dx, dy):
@@ -69,7 +67,7 @@ class Conway(General):
     self.skills.append(Skill(self, minion_glider, 50, [True], "Glide from the bottom!", SingleTarget(self, is_empty)))
     self.skills.append(Skill(self, minion_lwss, 50, [], "Lightweight strike force!", SingleTarget(self, is_empty)))
     self.skills.append(Skill(self, apply_status, 50, [Poison(None, 5, 19, 4)],
-                             "Poison on your veins", SingleTarget(self, is_enemy)))
+                             "Poison on your veins!", SingleTarget(self, is_enemy)))
     self.tactics = [tactic.null, tactic.stop]
     self.tactic_quotes = ["Live life", "Stop"]
     self.selected_tactic = self.tactics[0]
@@ -126,7 +124,7 @@ class Emperor(General):
     self.skills.append(Skill(self, restock_minions, 25, [21], "Once destroyed, their souls are being summoned"))
     self.skills.append(Skill(self, apply_status, 50, [Freeze_Cooldowns(None, 15)], "I curse you of all men",
                              AllBattleground(self, is_enemy_general)))
-    self.skills.append(Skill(self, water_pusher, 50, [], "Towards the Panteon", SingleTarget(self)))
+    self.skills.append(Skill(self, water_pusher, 50, [], "Towards the Pantheon", SingleTarget(self)))
     self.skills.append(Skill(self, null, 200, [], "This shouldn't be showed"))
     # We don't need that last quote because it will be changed and pulled in transform()
     self.max_cd = [25, 50, 50, 200]

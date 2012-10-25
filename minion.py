@@ -12,7 +12,7 @@ class Minion(Entity):
     self.max_hp = 20
     self.hp = 20
     self.power = 5
-    self.tactic = None
+    self.tactic = tactic.null
 
   def can_be_attacked(self):
     return True
@@ -35,7 +35,6 @@ class Minion(Entity):
     else: return None
  
   def follow_tactic(self):
-    if self.tactic is None: return
     self.tactic(self)
 
   def get_attacked(self, enemy):

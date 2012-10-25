@@ -26,8 +26,6 @@ BG_OFFSET_Y = 0
 MSG_OFFSET_X = PANEL_WIDTH + 1
 MSG_OFFSET_Y = BG_HEIGHT + 1
 
-LIMIT_FPS = 20
-
 KEYMAP_SKILLS = "QWERTYUIOP"
 KEYMAP_TACTICS = "ZXCVBNM"
 
@@ -45,7 +43,6 @@ class Game(object):
     self.side = side
     libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
     libtcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, 'Rogue Force')
-    libtcod.sys_set_fps(LIMIT_FPS)
 
     self.messages = [{}, {}]
 

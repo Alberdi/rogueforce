@@ -70,7 +70,8 @@ class Entity(object):
     self.next_action = self.default_next_action
 
   def update(self):
-    for s in self.statuses: s.update()
+    for s in self.statuses:
+      s.update()
 
 class Big_Entity(Entity):
   def __init__(self, battleground, x, y, side, chars = ["a", "b", "c", "d"], color = libtcod.white):
@@ -141,5 +142,5 @@ class Mine(Entity):
   def get_attacked(self, attacker):
     if attacker.can_be_attacked():
       attacker.get_attacked(self)
-      self.bg.tiles[(self.x, self.y)].entity = None
+    self.die()
       
