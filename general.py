@@ -35,6 +35,9 @@ class General(Minion):
       if m.side == self.side:
         m.tactic = self.tactics[i]
 
+  def recount_minions_alive(self):
+    self.minions_alive = len(filter(lambda x: x.alive and x.side == self.side, self.bg.minions))
+
   def start_battle(self):
     self.hp = self.max_hp
     self.minions_alive = self.starting_minions
@@ -106,7 +109,7 @@ class Conway(General):
             self.bg.minions.append(minion_placed)
         for tile in self.next_gen_deaths:
           tile.entity.die()
-        self.minions_alive = len(filter(lambda x: x.alive and x.side == self.side, self.bg.minions))
+        self.recount_minions_alive()
       else:
         self.next_action -= 1
     super(Conway, self).update()

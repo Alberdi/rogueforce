@@ -99,7 +99,7 @@ def restock_minions(general, number):
   general.formation.place_minions()
   general.starting_minions = tmp
   general.command_tactic([i for i,x in enumerate(general.tactics) if x == general.selected_tactic][0])
-  general.minions_alive += number
+  general.recount_minions_alive()
   return True
 
 def sonic_waves(general, power, waves):
