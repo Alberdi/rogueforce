@@ -17,20 +17,20 @@ BG_HEIGHT = 43
 PANEL_WIDTH = 16
 PANEL_HEIGHT = BG_HEIGHT
 INFO_WIDTH = BG_WIDTH
-INFO_HEIGHT = 6
+INFO_HEIGHT = 1
 MSG_WIDTH = BG_WIDTH - 2
 MSG_HEIGHT = 6
 SCREEN_WIDTH = BG_WIDTH + PANEL_WIDTH*2
-SCREEN_HEIGHT = BG_HEIGHT + INFO_HEIGHT + MSG_HEIGHT + 2
+SCREEN_HEIGHT = BG_HEIGHT + INFO_HEIGHT + MSG_HEIGHT + 1
 
 BG_OFFSET_X = PANEL_WIDTH
-BG_OFFSET_Y = INFO_HEIGHT + 1
-PANEL_OFFSET_X = BG_OFFSET_X
+BG_OFFSET_Y = MSG_HEIGHT + 1
+PANEL_OFFSET_X = 0
 PANEL_OFFSET_Y = BG_OFFSET_Y + 5
 MSG_OFFSET_X = BG_OFFSET_X
 MSG_OFFSET_Y = 1
 INFO_OFFSET_X = PANEL_WIDTH + 1
-INFO_OFFSET_Y = BG_OFFSET_Y + BG_HEIGHT + 1
+INFO_OFFSET_Y = BG_OFFSET_Y + BG_HEIGHT
 
 KEYMAP_SKILLS = "QWERTYUIOP"
 KEYMAP_TACTICS = "ZXCVBNM"
@@ -184,9 +184,16 @@ class Game(object):
     libtcod.console_print_rect(con, x+1, y, w, 1, "%03d / %03d" % (value, max_value))
 
   def render_info(self, x, y):
-    libtcod.console_set_default_foreground(self.con_msgs, libtcod.white)
+    libtcod.console_print(self.con_info, 0, 0, " " * INFO_WIDTH)
     if self.bg.is_inside(x, y):
-      libtcod.console_print(self.con_info, BG_WIDTH-7, 5, "%02d/%02d" % (x, y))
+      libtcod.console_set_default_foreground(self.con_info, libtcod.white)
+      libtcod.console_print(self.con_info, INFO_WIDTH-7, 0, "%02d/%02d" % (x, y))
+      entity = self.bg.tiles[(x, y)].entity
+      if entity is not None:
+        if entity in self.bg.minions or entity in self.bg.generals:
+          libtcod.console_set_default_foreground(self.con_info, self.bg.generals[entity.side].original_color)
+          libtcod.console_print(self.con_info, 0, 0, entity.name.capitalize() + ": HP %02d/%02d, PW %d" %
+            (entity.hp, entity.max_hp, entity.power))
 
   def render_msgs(self):
     y = 0
