@@ -101,9 +101,12 @@ class Conway(General):
         for t in self.bg.tiles.values():
           self.live_life(t)
         for tile in self.next_gen_births:
-          self.bg.minions.append(self.minion.clone(tile.x, tile.y))
+          minion_placed = self.minion.clone(tile.x, tile.y) 
+          if minion_placed is not None:
+            self.bg.minions.append(minion_placed)
         for tile in self.next_gen_deaths:
           tile.entity.die()
+        self.minions_alive = len(filter(lambda x: x.alive and x.side == self.side, self.bg.minions))
       else:
         self.next_action -= 1
     super(Conway, self).update()
