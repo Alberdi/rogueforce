@@ -57,6 +57,7 @@ def create_minions(general, l):
     minion_placed = general.minion.clone(x, y)
     if minion_placed is not None:
       general.bg.minions.append(minion_placed)
+      general.minions_alive += 1
       did_anything = True
   return did_anything
 
@@ -98,6 +99,7 @@ def restock_minions(general, number):
   general.formation.place_minions()
   general.starting_minions = tmp
   general.command_tactic([i for i,x in enumerate(general.tactics) if x == general.selected_tactic][0])
+  general.minions_alive += number
   return True
 
 def sonic_waves(general, power, waves):
