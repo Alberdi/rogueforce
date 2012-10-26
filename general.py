@@ -12,9 +12,6 @@ class General(Minion):
   def __init__(self, battleground, x, y, side, name = "General", color=libtcod.orange):
     super(General, self).__init__(battleground, x, y, side, name, color)
     self.max_hp = 100
-    self.hp = 100
-    self.max_cd = []
-    self.cd = []
     self.death_quote = "..."
     self.formation = Rows(self)
     self.minion = Minion(self.bg, -1, -1, self.side, "minion")
@@ -38,6 +35,11 @@ class General(Minion):
       if m.side == self.side:
         m.tactic = self.tactics[i]
 
+  def start_battle(self):
+    self.hp = self.max_hp
+    self.minions_alive = self.starting_minions
+    self.command_tactic(0)
+
   def update(self):
     if not self.alive: return
     for s in self.skills: s.update()
@@ -60,7 +62,6 @@ class General(Minion):
 class Conway(General):
   def __init__(self, battleground, x, y, side, name = "Conway", color=libtcod.green):
     super(Conway, self).__init__(battleground, x, y, side, name, color)
-    poison = Poison(None, 5, 19, 4)
     self.death_quote = "This is more like a game of... death"
     self.skills = []
     self.skills.append(Skill(self, minion_glider, 50, [False], "Glide from the top!", SingleTarget(self, is_empty)))
@@ -71,7 +72,6 @@ class Conway(General):
     self.tactics = [tactic.null, tactic.stop]
     self.tactic_quotes = ["Live life", "Stop"]
     self.selected_tactic = self.tactics[0]
-    self.command_tactic(0)
 
   def live_life(self, tile):
     neighbours = 0
@@ -112,7 +112,6 @@ class Emperor(General):
   def __init__(self, battleground, x, y, side, name = "Emperor", color=libtcod.sepia):
     super(Emperor, self).__init__(battleground, x, y, side, name, color)
     self.max_hp = 60
-    self.hp = 60
     #self.start_quote = "May this night carry my will and these old stars forever remember this night."
     self.death_quote = "Nightspirit... embrace my soul..."
     self.human_form = True
@@ -127,8 +126,6 @@ class Emperor(General):
     self.skills.append(Skill(self, water_pusher, 50, [], "Towards the Pantheon", SingleTarget(self)))
     self.skills.append(Skill(self, null, 200, [], "This shouldn't be showed"))
     # We don't need that last quote because it will be changed and pulled in transform()
-    self.max_cd = [25, 50, 50, 200]
-    self.cd = [0, 0, 0, 0]
     self.transform_index = 3
 
   def die(self):

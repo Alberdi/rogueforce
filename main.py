@@ -26,7 +26,7 @@ SCREEN_HEIGHT = BG_HEIGHT + INFO_HEIGHT + MSG_HEIGHT + 2
 BG_OFFSET_X = PANEL_WIDTH
 BG_OFFSET_Y = INFO_HEIGHT + 1
 PANEL_OFFSET_X = BG_OFFSET_X
-PANEL_OFFSET_Y = BG_OFFSET_Y + 8
+PANEL_OFFSET_Y = BG_OFFSET_Y + 5
 MSG_OFFSET_X = BG_OFFSET_X
 MSG_OFFSET_Y = 1
 INFO_OFFSET_X = PANEL_WIDTH + 1
@@ -66,6 +66,9 @@ class Game(object):
     self.area_hover_color_invalid = libtcod.red
     self.default_hover_color = libtcod.blue
     self.default_hover_function = SingleTarget(self.bg.generals[self.side]).get_all_tiles
+
+    self.bg.generals[0].start_battle()
+    self.bg.generals[1].start_battle()
     self.render_all(0,0)
 
   def check_game_over(self):
@@ -205,11 +208,14 @@ class Game(object):
         self.render_bar(self.con_panels[i], bar_offset_x, line, bar_length, self.bg.generals[i].skills[s].cd, self.bg.generals[i].skills[s].max_cd,
           libtcod.dark_blue, libtcod.sky, libtcod.black)
         line += 2
+      libtcod.console_set_default_foreground(self.con_panels[i], libtcod.white)
+      libtcod.console_print(self.con_panels[i], 3, line+1,
+                            str(self.bg.generals[i].minions_alive) + " " + self.bg.generals[i].minion.name + "s  ")
       self.render_tactics(i)
 
   def render_tactics(self, i):
     bar_offset_x = 3
-    line = 4 + len(self.bg.generals[i].skills)*2
+    line = 7 + len(self.bg.generals[i].skills)*2
     for s in range(0, len(self.bg.generals[i].tactics)):
       libtcod.console_set_default_foreground(self.con_panels[i],
         libtcod.red if self.bg.generals[i].tactics[s] == self.bg.generals[i].selected_tactic else libtcod.white)

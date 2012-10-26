@@ -22,6 +22,11 @@ class Minion(Entity):
       return self.__class__(self.bg, x, y, self.side, self.name, self.original_color)
     return None
 
+  def die(self):
+    super(Minion, self).die()
+    if self in self.bg.minions:
+      self.bg.generals[self.side].minions_alive -= 1
+
   def enemy_reachable(self):
     # Order: forward, backward, up, down
     enemy = self.bg.tiles[(self.x + (1 if self.side == 0 else -1), self.y)].entity
