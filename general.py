@@ -136,7 +136,6 @@ class Emperor(General):
 
   def die(self):
     if self.human_form:
-      self.cd[self.transform_index] = self.max_cd[self.transform_index]
       self.use_skill(self.transform_index, 0, 0)
     else:
       self.char = 'E'
