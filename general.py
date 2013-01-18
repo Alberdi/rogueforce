@@ -43,9 +43,13 @@ class General(Minion):
     self.minions_alive = len(filter(lambda x: x.alive and x.side == self.side, self.bg.minions))
 
   def start_battle(self):
+    for s in self.skills:
+      s.reset_cd()
+    self.command_tactic(0)
+
+  def start_scenario(self):
     self.hp = self.max_hp
     self.minions_alive = self.starting_minions
-    self.command_tactic(0)
 
   def update(self):
     if not self.alive: return

@@ -13,7 +13,7 @@ class Flying_Wedge(Formation):
     self.increment = increment
 
   def place_minions(self):
-    n = self.general.starting_minions
+    n = self.general.minions_alive
     for i in range(14, 3, -1):
       offset_y = 0
       for x in range(i, 3, -1):
@@ -31,7 +31,7 @@ class Inverted_Wedge(Formation):
     self.increment = increment
 
   def place_minions(self):
-    n = self.general.starting_minions
+    n = self.general.minions_alive
     for i in range(4, 15):
       offset_y = 0
       for x in range(i, 15):
@@ -49,7 +49,7 @@ class Rows(Formation):
     self.rows = rows
 
   def place_minions(self):
-    n = self.general.starting_minions
+    n = self.general.minions_alive
     for x in range(5, 15):
       offset_y = 0
       r = self.rows
