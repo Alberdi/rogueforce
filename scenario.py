@@ -3,9 +3,6 @@ from battleground import Battleground
 from general import *
 from window import *
 
-import os
-import thread
-
 class Scenario(Window):
   def __init__(self, battleground, side, host = None, port = None, window_id = 0):
     super(Scenario, self).__init__(battleground, side, host, port, window_id)
@@ -14,9 +11,7 @@ class Scenario(Window):
 
   def start_battle(self, generals):
     return self.start_battle_thread(generals)
-    #thread.start_new_thread(self.start_battle_thread, ())
-    #Very dirty non-portable non-even-workaround for the line above
-    #thread.start_new_thread(os.system, ("python battle.py 0",))
+    #thread.start_new_thread(self.start_battle_thread, (generals,))
 
   def start_battle_thread(self, generals):
     battleground = Battleground(BG_WIDTH, BG_HEIGHT)
