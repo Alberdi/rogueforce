@@ -58,12 +58,12 @@ class Window(object):
     self.default_hover_color = libtcod.blue
     self.default_hover_function = SingleTarget(self.bg.generals[self.side]).get_all_tiles
 
-    self.render_all(0,0)
-
-  def check_game_over(self):
-    return False
+    #self.render_all(0,0)
 
   def check_input(self, key, x, y):
+    return None
+
+  def check_winner(self):
     return None
 
   def clean_all(self):
@@ -109,7 +109,8 @@ class Window(object):
       while time.time() - start < turn_time:
         libtcod.sys_check_for_event(libtcod.EVENT_ANY, key, mouse)
         (x, y) = (mouse.cx-BG_OFFSET_X, mouse.cy-BG_OFFSET_Y)
-        if key.vk == libtcod.KEY_ESCAPE: exit()
+        if key.vk == libtcod.KEY_ESCAPE:
+          return None
         s = self.check_input(key, x, y)
         if s is not None:
           self.messages[self.side][turn] = s
@@ -122,15 +123,13 @@ class Window(object):
 
       self.process_messages(turn)
       self.update_all()
-      self.check_game_over()
+      winner = self.check_winner()
       if (turn % 100) == 0: self.clean_all()
       self.do_hover(hover_function, x, y)
       turn +=1
       self.render_all(x, y)
 
-    while True: # Game is over
-      libtcod.sys_check_for_event(libtcod.EVENT_ANY, key, mouse)
-      if key.vk == libtcod.KEY_ESCAPE: exit()
+    return winner
 
   def process_messages(self, turn):
     return False
@@ -172,6 +171,9 @@ class Window(object):
     bar_offset_x = 4
     for i in [0,1]:
       self.render_side_panel(i, bar_length, bar_offset_x)
+
+  def render_side_panel(self, i, bar_length, bar_offset_x):
+    pass
 
   def update_all(self):
     for g in self.bg.generals:

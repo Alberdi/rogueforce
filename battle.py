@@ -24,13 +24,6 @@ class BattleWindow(Window):
     self.keymap_tactics = KEYMAP_TACTICS[0:len(battleground.generals[side].tactics)]
     super(BattleWindow, self).__init__(battleground, side, host, port, window_id)
 
-  def check_game_over(self):
-    for i in [0,1]:
-      if not self.bg.generals[i].alive:
-        self.message(self.bg.generals[i].name + ": " + self.bg.generals[i].death_quote, self.bg.generals[i].original_color)
-        self.message(self.bg.generals[i].name + " is dead!", self.bg.generals[i].original_color)
-        self.game_over = True
-
   def check_input(self, key, x, y):
     n = self.keymap_skills.find(chr(key.c).upper()) # Number of the skill pressed
     if n != -1: 
@@ -42,6 +35,16 @@ class BattleWindow(Window):
     n = self.keymap_tactics.find(chr(key.c).upper()) # Number of the tactic pressed
     if n != -1: 
       return "tactic{0}\n".format(n)
+    return None
+
+  def check_winner(self):
+    #TODO: detect draws
+    for i in [0,1]:
+      if not self.bg.generals[i].alive:
+        self.message(self.bg.generals[i].name + ": " + self.bg.generals[i].death_quote, self.bg.generals[i].original_color)
+        self.message(self.bg.generals[i].name + " is dead!", self.bg.generals[i].original_color)
+        self.game_over = True
+        return self.bg.generals[(i+1)%2]
     return None
 
   def clean_all(self):

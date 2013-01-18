@@ -29,6 +29,10 @@ class General(Minion):
   def can_be_pushed(self, dx, dy):
     return False
 
+  def change_battleground(self, bg, x, y):
+    super(General, self).change_battleground(bg, x, y)
+    self.minion.change_battleground(bg, -1, -1)
+
   def command_tactic(self, i):
     self.selected_tactic = self.tactics[i]
     for m in self.bg.minions:

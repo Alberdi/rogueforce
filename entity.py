@@ -33,11 +33,21 @@ class Entity(object):
     if not next_tile.entity.is_ally(self): return False
     return next_tile.entity.can_be_pushed(dx, dy)
 
+  def change_battleground(self, bg, x, y):
+    self.bg.tiles[(self.x, self.y)].entity = None
+    self.bg = bg
+    (self.x, self.y) = (x, y)
+    self.bg.tiles[(self.x, self.y)].entity = self
+
   def clone(self, x, y): 
     if self.bg.is_inside(x, y) and self.bg.tiles[(x, y)].entity is None and self.bg.tiles[(x, y)].is_passable(self):
       return self.__class__(self.bg, x, y, self.side, self.char, self.original_color)
     return None
 
+  def die(self):
+    self.bg.tiles[(self.x, self.y)].entity = None
+    self.alive = False
+  
   def get_char(self, x, y):
     return self.char  
   
@@ -45,11 +55,7 @@ class Entity(object):
     self.pushed = False
     self.move(dx, dy)
     self.pushed = True
-
-  def die(self):
-    self.bg.tiles[(self.x, self.y)].entity = None
-    self.alive = False
-    
+   
   def is_ally(self, entity):
     return self.side == entity.side
 
