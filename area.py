@@ -1,7 +1,8 @@
 from sieve import Sieve
 
 class Area(object):
-  def __init__(self, general, sieve_function=None):
+  def __init__(self, bg, sieve_function=None, general=None):
+    self.bg = bg
     self.general = general
     self.sieve = None if sieve_function is None else Sieve(general, sieve_function)
 
@@ -18,9 +19,9 @@ class Area(object):
 
 class AllBattleground(Area):
   def get_all_tiles(self, x, y):
-    return self.general.bg.tiles.values()
+    return self.bg.tiles.values()
 
 class SingleTarget(Area):
   def get_all_tiles(self, x, y):
-    if not self.general.bg.is_inside(x, y): return []
-    return [self.general.bg.tiles[(x, y)]]
+    if not self.bg.is_inside(x, y): return []
+    return [self.bg.tiles[(x, y)]]

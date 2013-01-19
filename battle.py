@@ -56,24 +56,14 @@ class BattleWindow(Window):
         self.bg.minions.remove(m)
 
   def process_messages(self, turn):
-    t = turn - TURN_LAG
     for i in [0,1]:
-      if t in self.messages[i]:
-        match = SKILL_PATTERN.match(self.messages[i][t])
+      if turn in self.messages[i]:
+        match = SKILL_PATTERN.match(self.messages[i][turn])
         if match is not None:
           if self.bg.generals[i].use_skill(*map(int, match.groups())):
             self.message(self.bg.generals[i].name + ": " + self.bg.generals[i].skills[int(match.group(1))].quote, self.bg.generals[i].color)
-        elif self.messages[i][t].startswith("tactic"):
-          self.bg.generals[i].command_tactic(int(self.messages[i][t][6]))
-
-  def render_bar(self, con, x, y, w, value, max_value, bar_bg_color, bar_fg_color, text_color):
-    ratio = int(w*(float(value)/max_value))
-    libtcod.console_set_default_background(con, bar_fg_color)
-    libtcod.console_rect(con, x, y, ratio, 1, False, libtcod.BKGND_SET)
-    libtcod.console_set_default_background(con, bar_bg_color)
-    libtcod.console_rect(con, x+ratio, y, w-ratio, 1, False, libtcod.BKGND_SET)
-    libtcod.console_set_default_background(con, text_color)
-    libtcod.console_print_rect(con, x+1, y, w, 1, "%03d / %03d" % (value, max_value))
+        elif self.messages[i][turn].startswith("tactic"):
+          self.bg.generals[i].command_tactic(int(self.messages[i][turn][6]))
 
   def render_msgs(self):
     y = 0
@@ -108,7 +98,9 @@ class BattleWindow(Window):
 
 if __name__=="__main__":
   bg = Battleground(BG_WIDTH, BG_HEIGHT)
-  bg.generals = [Emperor(bg, 3, 21, 0), General(bg, 56, 21, 1)]
+  bg.generals = [Emperor(bg, 0, 3, 21), General(bg, 1, 56, 21)]
+  bg.generals[0].start_scenario()
+  bg.generals[1].start_scenario()
   if len(sys.argv) == 4: 
     battle = BattleWindow(bg, int(sys.argv[1]), sys.argv[2], int(sys.argv[3]))
   else:

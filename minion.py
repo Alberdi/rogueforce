@@ -6,7 +6,7 @@ import tactic
 
 
 class Minion(Entity):
-  def __init__(self, battleground, x, y, side, name = "minion", color=libtcod.white):
+  def __init__(self, battleground, side, x=-1, y=-1, name="minion", color=libtcod.white):
     super(Minion, self).__init__(battleground, x, y, side, name[0], color)
     self.name = name
     self.max_hp = 20
@@ -19,7 +19,7 @@ class Minion(Entity):
 
   def clone(self, x, y):
     if self.bg.is_inside(x, y) and self.bg.tiles[(x, y)].entity is None and self.bg.tiles[(x, y)].is_passable(self):
-      return self.__class__(self.bg, x, y, self.side, self.name, self.original_color)
+      return self.__class__(self.bg, self.side, x, y, self.name, self.original_color)
     return None
 
   def die(self):
@@ -74,8 +74,8 @@ class Minion(Entity):
     self.color = libtcod.Color(255, c, c)
 
 class Big_Minion(Big_Entity, Minion):
-  def __init__(self, battleground, x, y, side, name = "Giant", color=libtcod.white):
-    Big_Entity.__init__(self, battleground, x, y, side, name, color)
+  def __init__(self, battleground, side, x=-1, y=-1, name="Giant", color=libtcod.white):
+    Big_Entity.__init__(self, battleground, side, x, y, name, color)
     Minion.__init__(self, battleground, x, y, side, name, color)
     
   def clone(self, x, y):
@@ -96,8 +96,8 @@ class Big_Minion(Big_Entity, Minion):
     return None
 
 class Ranged_Minion(Minion):
-  def __init__(self, battleground, x, y, side, name = "archer", color=libtcod.white, attack_effects = ['>', '<']):
-    super(Ranged_Minion, self).__init__(battleground, x, y, side, name)
+  def __init__(self, battleground, side, x=-1, y=-1, name="archer", color=libtcod.white, attack_effects = ['>', '<']):
+    super(Ranged_Minion, self).__init__(battleground, side, x, y, name)
     self.max_hp = 10
     self.hp = 10
     self.power = 1
@@ -108,7 +108,7 @@ class Ranged_Minion(Minion):
 
   def clone(self, x, y):
     if super(Ranged_Minion, self).clone(x, y) == None: return None
-    return self.__class__(self.bg, x, y, self.side, self.name, self.original_color, self.attack_effects)
+    return self.__class__(self.bg, self.side, x, y, self.name, self.original_color, self.attack_effects)
 
   def follow_tactic(self):
     if self.tactic is None: return

@@ -56,7 +56,7 @@ class Window(object):
     self.area_hover_color = libtcod.green
     self.area_hover_color_invalid = libtcod.red
     self.default_hover_color = libtcod.blue
-    self.default_hover_function = SingleTarget(self.bg.generals[self.side]).get_all_tiles
+    self.default_hover_function = SingleTarget(self.bg).get_all_tiles
 
     #self.render_all(0,0)
 
@@ -121,7 +121,7 @@ class Window(object):
         else:
           self.network.send("D")
 
-      self.process_messages(turn)
+      self.process_messages(turn - TURN_LAG)
       self.update_all()
       winner = self.check_winner()
       if (turn % 100) == 0: self.clean_all()
@@ -146,6 +146,15 @@ class Window(object):
     libtcod.console_blit(self.con_msgs, 0, 0, MSG_WIDTH, MSG_HEIGHT, self.con_root, MSG_OFFSET_X, MSG_OFFSET_Y)
     libtcod.console_blit(self.con_root, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
     libtcod.console_flush()
+
+  def render_bar(self, con, x, y, w, value, max_value, bar_bg_color, bar_fg_color, text_color):
+    ratio = int(w*(float(value)/max_value))
+    libtcod.console_set_default_background(con, bar_fg_color)
+    libtcod.console_rect(con, x, y, ratio, 1, False, libtcod.BKGND_SET)
+    libtcod.console_set_default_background(con, bar_bg_color)
+    libtcod.console_rect(con, x+ratio, y, w-ratio, 1, False, libtcod.BKGND_SET)
+    libtcod.console_set_default_background(con, text_color)
+    libtcod.console_print_rect(con, x+1, y, w, 1, "%03d / %03d" % (value, max_value))
  
   def render_info(self, x, y):
     libtcod.console_print(self.con_info, 0, 0, " " * INFO_WIDTH)

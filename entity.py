@@ -75,6 +75,14 @@ class Entity(object):
   def reset_action(self):
     self.next_action = self.default_next_action
 
+  def teleport(self, x, y):
+    if self.bg.tiles[(x, y)].entity is None:
+      self.bg.tiles[(x, y)].entity = self
+      self.bg.tiles[(self.x, self.y)].entity = None
+      (self.x, self.y) = (x, y)
+      return True
+    return False
+
   def update(self):
     for s in self.statuses:
       s.update()

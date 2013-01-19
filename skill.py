@@ -94,10 +94,11 @@ def place_entity(general, tile, entity):
   return clone is not None
 
 def restock_minions(general, number):
-  tmp = general.starting_minions
-  general.starting_minions = number
+  #TODO: this can be a lot cleaner
+  tmp = general.minions_alive
+  general.minions_alive = number
   general.formation.place_minions()
-  general.starting_minions = tmp
+  general.minions_alive = tmp
   general.command_tactic([i for i,x in enumerate(general.tactics) if x == general.selected_tactic][0])
   general.recount_minions_alive()
   return True
