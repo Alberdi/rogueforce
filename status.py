@@ -12,17 +12,30 @@ class Status(object):
     self.duration = -1
     self.entity.statuses.remove(self)
 
-  def tick(self): pass
+  def tick(self):
+    pass
 
   def update(self):
     if self.duration > 0:
       self.duration -= 1
       self.tick()
-      if self.duration <= 0: self.end()
+      if self.duration <= 0:
+        self.end()
 
-class Freeze_Cooldowns(Status):
+class Blind(Status):
   def __init__(self, entity, duration = 9999):
-    super(Freeze_Cooldowns, self).__init__(entity, duration)
+    super(Blind, self).__init__(entity, duration)
+    self.saved_power = 0
+    if entity != None:
+      (self.saved_power, entity.power) = (entity.power, self.saved_power)
+
+  def end(self):
+    self.entity.power = self.saved_power
+    super(Blind, self).end()
+
+class FreezeCooldowns(Status):
+  def __init__(self, entity, duration = 9999):
+    super(FreezeCooldowns, self).__init__(entity, duration)
 
   def tick(self):
     for s in self.entity.skills:

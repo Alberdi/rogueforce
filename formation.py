@@ -7,9 +7,9 @@ class Formation(object):
   def mirror(self, x, y):
     return (self.general.bg.width - x - 1, self.general.bg.height - y - 1) if self.general.side else (x, y)
 
-class Flying_Wedge(Formation):
+class FlyingWedge(Formation):
   def __init__(self, general, increment=1):
-    super(Flying_Wedge, self).__init__(general)
+    super(FlyingWedge, self).__init__(general)
     self.increment = increment
 
   def place_minions(self):
@@ -25,9 +25,9 @@ class Flying_Wedge(Formation):
             n -= 1
           offset_y = abs(offset_y)+1 if j%2 else -offset_y
 
-class Inverted_Wedge(Formation):
+class InvertedWedge(Formation):
   def __init__(self, general, increment=1):
-    super(Inverted_Wedge, self).__init__(general)
+    super(InvertedWedge, self).__init__(general)
     self.increment = increment
 
   def place_minions(self):

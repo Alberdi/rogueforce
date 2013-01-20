@@ -1,21 +1,24 @@
 from battle import BattleWindow
 from battleground import Battleground
 from general import *
+from faction import *
 from window import *
 
 KEYMAP_GENERALS = "QWERTYUIOP"
 
 class Scenario(Window):
-  def __init__(self, battleground, side, reserve, host = None, port = None, window_id = 0):
+  def __init__(self, battleground, side, factions, host = None, port = None, window_id = 0):
     super(Scenario, self).__init__(battleground, side, host, port, window_id)
-    self.reserve = reserve
+    self.factions = factions
     self.requisition = [450, 300]
     self.max_requisition = 999
-    self.keymap_generals = KEYMAP_GENERALS
-    for g in reserve[0]:
-      g.start_scenario()
-    for g in reserve[1]:
-      g.start_scenario()
+    self.keymap_generals = KEYMAP_GENERALS[0:len(factions[side].generals)]
+    for f in factions:
+      for g in f.generals:
+        g.start_scenario()
+ 
+    #TODO: remove, just for testing purposes
+    self.deploy_general(factions[1].generals[0])
 
   def apply_requisition(self, general):
     if general.deployed: return
@@ -29,7 +32,6 @@ class Scenario(Window):
     else:
       general.requisition += self.requisition[general.side]
       self.requisition[general.side] = 0
-      
 
   def check_input(self, key, x, y):
     n = self.keymap_generals.find(chr(key.c).upper()) # Number of the general pressed
@@ -38,9 +40,11 @@ class Scenario(Window):
     return None
 
   def deploy_general(self, general):
-    if general.teleport(3, 21):
+    if general.teleport(53 if general.side == 0 else 56, 21):
       general.deployed = True
       self.bg.generals.append(general)
+      self.message(general.name + " has been deployed on the " + ("left" if general.side == 0 else "right") 
+                                + " side.", general.color)
       return True
     return False
 
@@ -53,7 +57,7 @@ class Scenario(Window):
     for i in [0,1]:
       if turn in self.messages[i]:
         if self.messages[i][turn].startswith("apply_req"):
-          self.apply_requisition(self.reserve[i][int(self.messages[i][turn][9])])
+          self.apply_requisition(self.factions[i].generals[int(self.messages[i][turn][9])])
 
   def render_side_panel(self, i, bar_length, bar_offset_x):
     libtcod.console_set_default_foreground(self.con_panels[i], libtcod.white)
@@ -61,17 +65,18 @@ class Scenario(Window):
     libtcod.console_set_default_foreground(self.con_panels[i], libtcod.black)
     self.render_bar(self.con_panels[i], bar_offset_x, 1, bar_length, self.requisition[i], self.max_requisition, libtcod.dark_blue, libtcod.sky, libtcod.black)
     line = 4
-    j = 0
-    for g in self.reserve[i]:
+    for j in range(0, len(self.factions[i].generals)):
+      g = self.factions[i].generals[j]
       libtcod.console_set_default_foreground(self.con_panels[i], libtcod.white)
       libtcod.console_print(self.con_panels[i], bar_offset_x-1, line, " " + g.name)
       libtcod.console_set_default_foreground(self.con_panels[i], libtcod.black)
       libtcod.console_put_char_ex(self.con_panels[i], bar_offset_x-1, line+1, self.keymap_generals[j], g.color, libtcod.black)
       self.render_bar(self.con_panels[i], bar_offset_x, line+1, bar_length, g.requisition, g.cost, libtcod.dark_blue, libtcod.sky, libtcod.black)
-      j += 1
       line += 3
 
   def start_battle(self, generals):
+    if generals[0].side != 0: # Left side must be the first
+      (generals[0], generals[1]) = (generals[1], generals[0])
     return self.start_battle_thread(generals)
     #thread.start_new_thread(self.start_battle_thread, (generals,))
 
@@ -81,13 +86,14 @@ class Scenario(Window):
     scenario_pos = []
     for g in generals:
       scenario_pos.append((g.x, g.y))
-      g.change_battleground(battleground, 40 if g.side == 0 else 56, g.y)
+      g.change_battleground(battleground, 3 if g.side == 0 else 56, g.y)
     battle = BattleWindow(battleground, 0)
     winner = battle.loop()
     for i in [0,1]:
       generals[i].change_battleground(self.bg, *(scenario_pos[i]))
       if not generals[i].alive:
         generals[i].die()
+        self.message(generals[(i+1)%2].name + " defeated " + generals[i].name + " on a battle.", generals[(i+1)%2].color)
    
   def update_all(self):
     for i in [0,1]:
@@ -98,14 +104,13 @@ class Scenario(Window):
       if enemy is not None:
         self.start_battle([g, enemy])
       else:
-        g.move(1 if g.side == 0 else -1, 0)
+        g.move(1 if g.side == 0 else 0, 0)
 
 
 if __name__=="__main__":
   battleground = Battleground(BG_WIDTH, BG_HEIGHT)
-  reserve = []
-  reserve.append([General(battleground, 0), Emperor(battleground, 0)])
-  reserve.append([General(battleground, 1)])
-  side = 0
-  scenario = Scenario(battleground, side, reserve) 
+  factions = []
+  factions.append(Oracles(battleground, 0))
+  factions.append(Oracles(battleground, 1))
+  scenario = Scenario(battleground, 0, factions) 
   scenario.loop()

@@ -3,18 +3,32 @@ import entity
 import libtcodpy as libtcod
 
 class Effect(entity.Entity):
-  def __init__(self, battleground, x, y, side = entity.NEUTRAL_SIDE, char = ' ', color = libtcod.white):
+  def __init__(self, battleground, x, y, side=entity.NEUTRAL_SIDE, char=' ', color=libtcod.white):
     saved = battleground.tiles[(x, y)].entity
     super(Effect, self).__init__(battleground, x, y, side, char, color)
     self.bg.tiles[(x, y)].entity = saved
     self.bg.tiles[(x, y)].effects.append(self)
+    if x != -1:
+      self.bg.effects.append(self)
 
   def can_be_pushed(self, dx, dy):
     return False
 
+  def clone(self, x, y): 
+    if self.bg.is_inside(x, y):
+      return self.__class__(self.bg, x, y, self.side, self.char, self.original_color)
+    return None
+
   def dissapear(self):
     self.bg.tiles[(self.x, self.y)].effects.remove(self)
     self.alive = False
+
+  def do_attack(self, dissapear=False):
+    entity = self.bg.tiles[(self.x, self.y)].entity
+    if entity is not None and entity.can_be_attacked():
+      if not entity.is_ally(self): entity.get_attacked(self)
+      if dissapear:
+        self.dissapear()
 
   def move(self, dx, dy):
     self.bg.tiles[(self.x, self.y)].effects.remove(self)
@@ -28,20 +42,14 @@ class Arrow(Effect):
     self.power = power
     self.do_attack()
 
-  def do_attack(self):
-    entity = self.bg.tiles[(self.x, self.y)].entity
-    if entity is not None and entity.can_be_attacked():
-      if not entity.is_ally(self): entity.get_attacked(self)
-      self.dissapear()
-
   def update(self):
     if not self.alive: return
     if not self.bg.is_inside(self.x + (1 if self.side == 0 else -1), self.y):
       self.dissapear()
-    self.do_attack()
+    self.do_attack(True)
     if not self.alive: return
     self.move(1 if self.side == 0 else -1, 0)
-    self.do_attack()
+    self.do_attack(True)
 
 class Darkness(Effect):
   def __init__(self, battleground, x, y, duration):
@@ -52,6 +60,30 @@ class Darkness(Effect):
     if not self.alive: return
     self.duration -= 1
     if self.duration <= 0: self.dissapear()
+
+class Thunder(Effect):
+  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='|', color=libtcod.lighter_red, power=30):
+    self.target_y = y
+    self.power = power
+    if x != -1:
+      y = y-5 if y-5 >= 0 else 0
+    super(Thunder, self).__init__(battleground, x, y, side, char, color)
+
+  def update(self):
+    if not self.alive: return
+    if self.color == libtcod.lighter_red:
+      self.color = libtcod.light_red
+    elif self.color == libtcod.light_red:
+      self.color = libtcod.red
+    elif self.y != self.target_y:
+      self.move(0, 1)
+      self.color = libtcod.lighter_red
+    elif self.char == '|':
+      self.char = '*'
+      self.color == libtcod.lighter_red
+    else:
+      self.do_attack()
+      self.dissapear()
 
 class Wave(Effect):
   def __init__(self, battleground, x, y, side, power):
