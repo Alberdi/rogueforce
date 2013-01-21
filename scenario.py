@@ -18,7 +18,12 @@ class Scenario(Window):
         g.start_scenario()
  
     #TODO: remove, just for testing purposes
+    self.i = 0
     self.deploy_general(factions[1].generals[0])
+    self.i += 1
+    self.deploy_general(factions[1].generals[1])
+    self.i += 1
+    self.deploy_general(factions[1].generals[2])
 
   def apply_requisition(self, general):
     if general.deployed: return
@@ -40,7 +45,7 @@ class Scenario(Window):
     return None
 
   def deploy_general(self, general):
-    if general.teleport(53 if general.side == 0 else 56, 21):
+    if general.teleport(3 if general.side == 0 else 56+self.i, 21):
       general.deployed = True
       self.bg.generals.append(general)
       self.message(general.name + " has been deployed on the " + ("left" if general.side == 0 else "right") 
