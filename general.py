@@ -136,7 +136,7 @@ class Emperor(General):
     #self.start_quote = "May this night carry my will and these old stars forever remember this night."
     self.death_quote = "Nightspirit... embrace my soul..."
     self.human_form = True
-    self.minion = Ranged_Minion(self.bg, self.side, name="wizard")
+    self.minion = RangedMinion(self.bg, self.side, name="wizard")
     self.minion.attack_effects = [')', '(']
     self.starting_minions = 0
     self.transform_index = 3

@@ -1,6 +1,6 @@
 from effect import Arrow
 from entity import Entity
-from entity import Big_Entity
+from entity import BigEntity
 import libtcodpy as libtcod
 import tactic
 
@@ -73,9 +73,9 @@ class Minion(Entity):
     c = int(255*(float(self.hp)/self.max_hp))
     self.color = libtcod.Color(255, c, c)
 
-class Big_Minion(Big_Entity, Minion):
+class BigMinion(BigEntity, Minion):
   def __init__(self, battleground, side, x=-1, y=-1, name="Giant", color=libtcod.white):
-    Big_Entity.__init__(self, battleground, side, x, y, name, color)
+    BigEntity.__init__(self, battleground, side, x, y, name, color)
     Minion.__init__(self, battleground, x, y, side, name, color)
     
   def clone(self, x, y):
@@ -95,9 +95,9 @@ class Big_Minion(Big_Entity, Minion):
           return enemy
     return None
 
-class Ranged_Minion(Minion):
+class RangedMinion(Minion):
   def __init__(self, battleground, side, x=-1, y=-1, name="archer", color=libtcod.white, attack_effects = ['>', '<']):
-    super(Ranged_Minion, self).__init__(battleground, side, x, y, name)
+    super(RangedMinion, self).__init__(battleground, side, x, y, name)
     self.max_hp = 10
     self.hp = 10
     self.power = 1
@@ -107,7 +107,7 @@ class Ranged_Minion(Minion):
     self.reset_action()
 
   def clone(self, x, y):
-    if super(Ranged_Minion, self).clone(x, y) == None: return None
+    if super(RangedMinion, self).clone(x, y) == None: return None
     return self.__class__(self.bg, self.side, x, y, self.name, self.original_color, self.attack_effects)
 
   def follow_tactic(self):
@@ -115,4 +115,4 @@ class Ranged_Minion(Minion):
     next_x = self.x+1 if self.side == 0 else self.x-1
     if self.tactic == tactic.stop and self.bg.tiles[(next_x, self.y)].entity == None:
       self.bg.effects.append(Arrow(self.bg, next_x, self.y, self.side, self.ranged_power, self.attack_effects))
-    else: super(Ranged_Minion, self).follow_tactic()
+    else: super(RangedMinion, self).follow_tactic()

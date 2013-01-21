@@ -10,6 +10,7 @@ class Entity(object):
     self.y = y
     self.side = side
     self.char = char
+    self.original_char = char
     self.color = color
     self.original_color = color
     self.bg.tiles[(x, y)].entity = self
@@ -87,11 +88,13 @@ class Entity(object):
     for s in self.statuses:
       s.update()
 
-class Big_Entity(Entity):
-  def __init__(self, battleground, x, y, side, chars = ["a", "b", "c", "d"], color = libtcod.white):
-    super(Big_Entity, self).__init__(battleground, x, y, side, chars, color)
+class BigEntity(Entity):
+  def __init__(self, battleground, x, y, side, chars=["a", "b", "c", "d"], colors=[libtcod.white]*4):
+    super(BigEntity, self).__init__(battleground, x, y, side, chars[0], colors[0])
     self.chars = chars
+    self.colors = colors
     self.length = int(math.sqrt(len(self.chars)).real)
+    self.update_body()
   
   def can_be_pushed(self, dx, dy):
     return False
@@ -119,7 +122,8 @@ class Big_Entity(Entity):
     self.alive = False
   
   def get_char(self, dx, dy):
-    return self.chars[self.length*dx + dy]
+    self.color = self.colors[self.length*dx+dy]
+    return self.chars[self.length*dx+dy]
     
   def move(self, dx, dy):
     if self.pushed:
@@ -136,10 +140,47 @@ class Big_Entity(Entity):
       self.update_body()
 
   def update_body(self):
+    self.bg.tiles[(self.x, self.y)].entity = self
     self.bg.tiles[(self.x+1, self.y)].entity = self
     self.bg.tiles[(self.x, self.y+1)].entity = self
     self.bg.tiles[(self.x+1, self.y+1)].entity = self      
       
+class Fortress(BigEntity):
+  def __init__(self, battleground, x, y, side=NEUTRAL_SIDE, chars=[':']*4, colors=[libtcod.white]*4):
+    super(Fortress, self).__init__(battleground, x, y, side, chars, colors)
+    self.capacity = len(chars)
+    self.guests = []
+    self.original_chars = chars
+    self.original_colors = colors
+
+  def can_be_attacked(self):
+    return True
+
+  def can_host(self, entity):
+    return self.side == entity.side or self.side == NEUTRAL_SIDE
+
+  def can_move(self, dx, dy):
+    return False
+
+  def host(self, entity):
+    if not self.can_host(entity) or len(self.guests) >= self.capacity: return
+    if not self.guests:
+      self.side = entity.side
+    self.bg.tiles[(entity.x, entity.y)].entity = None
+    (entity.x, entity.y) = (self.x, self.y)
+    self.bg.generals.remove(entity)
+    self.chars[len(self.guests)] = entity.char
+    self.colors[len(self.guests)] = entity.color
+    self.guests.append(entity)
+    self.update_body()
+
+  def unhost(self, entity):
+    self.guests.remove(entity)
+    self.chars[len(self.guests)] = self.original_char
+    self.colors[len(self.guests)] = self.original_color
+    if not self.guests:
+      self.side = NEUTRAL_SIDE
+
 class Mine(Entity):
   def __init__(self, battleground, x=-1, y=-1, power=50):
     super(Mine, self).__init__(battleground, x, y, NEUTRAL_SIDE, 'X', libtcod.red)
