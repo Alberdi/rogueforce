@@ -1,18 +1,28 @@
 from area import *
 import formation
 from general import General
+from minion import Minion
 from sieve import *
 from skill import *
 from status import *
 
 import libtcodpy as libtcod
 
+class Slave(Minion):
+  def __init__(self, battleground, side, x=-1, y=-1, name="slave", color=libtcod.white):
+    super(Slave, self).__init__(battleground, side, x, y, name, color)
+    self.max_hp = 10
+    self.hp = 10
+    self.power = 3
+
 class Gemekaa(General):
   def __init__(self, battleground, side, x=-1, y=-1, name="Gemekaa", color=libtcod.light_crimson):
     super(Gemekaa, self).__init__(battleground, side, x, y, name, color)
     self.max_hp = 70
     self.death_quote = "I did not foresee this..."
-    self.formation = formation.InvertedWedge(self, 1)
+    self.formation = formation.InvertedWedge(self, 3)
+    self.minion = Slave(self.bg, self.side)
+    self.starting_minions = 251
 
   def initialize_skills(self):
     self.skills = []
