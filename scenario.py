@@ -16,6 +16,7 @@ class Scenario(Window):
     self.requisition = [999, 300]
     self.max_requisition = 999
     self.keymap_generals = KEYMAP_GENERALS[0:len(factions[side].generals)]
+    self.selected_general = None
     for f in factions:
       for g in f.generals:
         g.start_scenario()
@@ -50,7 +51,12 @@ class Scenario(Window):
   def check_input(self, key, x, y):
     n = self.keymap_generals.find(chr(key.c).upper()) # Number of the general pressed
     if n != -1:
-      return "apply_req{0}\n".format(n)
+      g = self.factions[self.side].generals[n]
+      if g.deployed:
+        self.selected_general = g
+      else:
+        self.selected_general = None
+        return "apply_req{0}\n".format(n)
     return None
 
   def deploy_general(self, general):
@@ -62,10 +68,10 @@ class Scenario(Window):
       return True
     return False
 
-  def increment_requisition(self, i):
-    self.requisition[i] += 1
-    if self.requisition[i] > self.max_requisition:
-      self.requisition[i] = self.max_requisition
+  def increment_requisition(self):
+    for f in self.fortresses:
+      if f.side != NEUTRAL_SIDE:
+        self.requisition[f.side] += f.requisition_production
 
   def process_messages(self, turn):
     for i in [0,1]:
@@ -81,11 +87,14 @@ class Scenario(Window):
     line = 4
     for j in range(0, len(self.factions[i].generals)):
       g = self.factions[i].generals[j]
-      libtcod.console_set_default_foreground(self.con_panels[i], libtcod.white)
+      libtcod.console_set_default_foreground(self.con_panels[i], g.color if g == self.selected_general else libtcod.white)
       libtcod.console_print(self.con_panels[i], bar_offset_x-1, line, " " + g.name)
       libtcod.console_set_default_foreground(self.con_panels[i], libtcod.black)
       libtcod.console_put_char_ex(self.con_panels[i], bar_offset_x-1, line+1, self.keymap_generals[j], g.color, libtcod.black)
-      self.render_bar(self.con_panels[i], bar_offset_x, line+1, bar_length, g.requisition, g.cost, libtcod.dark_blue, libtcod.sky, libtcod.black)
+      if not g.deployed:
+        self.render_bar(self.con_panels[i], bar_offset_x, line+1, bar_length, g.requisition, g.cost, libtcod.dark_blue, libtcod.sky, libtcod.black)
+      else: 
+        self.render_bar(self.con_panels[i], bar_offset_x, line+1, bar_length, g.hp, g.max_hp, libtcod.red, libtcod.yellow, libtcod.black)
       line += 3
 
   def start_battle(self, generals):
@@ -110,8 +119,7 @@ class Scenario(Window):
         self.message(generals[(i+1)%2].name + " defeated " + generals[i].name + " on a battle.", generals[(i+1)%2].color)
    
   def update_all(self):
-    for i in [0,1]:
-      self.increment_requisition(i)
+    self.increment_requisition()
     for g in self.bg.generals:
       if not g.alive: continue
       for f in self.fortresses:

@@ -146,12 +146,13 @@ class BigEntity(Entity):
     self.bg.tiles[(self.x+1, self.y+1)].entity = self      
       
 class Fortress(BigEntity):
-  def __init__(self, battleground, x, y, side=NEUTRAL_SIDE, chars=[':']*4, colors=[libtcod.white]*4):
+  def __init__(self, battleground, x, y, side=NEUTRAL_SIDE, chars=[':']*4, colors=[libtcod.white]*4, requisition_production=1):
     super(Fortress, self).__init__(battleground, x, y, side, chars, colors)
     self.capacity = len(chars)
     self.guests = []
     self.original_chars = chars
     self.original_colors = colors
+    self.requisition_production = requisition_production
 
   def can_be_attacked(self):
     return True
