@@ -28,12 +28,10 @@ class Scenario(Window):
     #TODO: remove, just for testing purposes
     self.i = 0
     self.deploy_general(factions[1].generals[2])
-    """
     self.i += 1
     self.deploy_general(factions[1].generals[1])
     self.i += 1
     self.deploy_general(factions[1].generals[0])
-    """
 
   def apply_requisition(self, general):
     if general.deployed: return
@@ -62,6 +60,7 @@ class Scenario(Window):
   def deploy_general(self, general):
     if general.teleport(1 if general.side == 0 else 56+self.i, 21):
       general.deployed = True
+      general.alive = True
       self.bg.generals.append(general)
       self.message(general.name + " has been deployed on the " + ("left" if general.side == 0 else "right") 
                                 + " side.", general.color)
@@ -116,12 +115,13 @@ class Scenario(Window):
       generals[i].change_battleground(self.bg, *(scenario_pos[i]))
       if not generals[i].alive:
         generals[i].die()
+        generals[i].start_scenario()
         self.message(generals[(i+1)%2].name + " defeated " + generals[i].name + " on a battle.", generals[(i+1)%2].color)
    
   def update_all(self):
     self.increment_requisition()
     for g in self.bg.generals:
-      if not g.alive: continue
+      if not g.deployed: continue
       for f in self.fortresses:
         if g in f.guests:
           # If the general is in a fortress, we do nothing

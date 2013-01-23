@@ -145,8 +145,7 @@ class Emperor(General):
     if self.human_form:
       self.use_skill(self.transform_index, 0, 0)
     else:
-      self.char = 'E'
-      self.name = "Emperor"
+      self.transform()
       super(Emperor, self).die()
 
   def initialize_skills(self):
@@ -158,8 +157,15 @@ class Emperor(General):
     self.skills.append(Skill(self, null, 200, [], "This shouldn't be showed"))
     # We don't need that last quote because it will be changed and pulled in transform()
 
+  def start_battle(self):
+    super(Emperor, self).start_battle()
+    self.minons_alive = 0
+
   def transform(self):
-    if not self.human_form: return False
+    if not self.human_form:
+      self.char = 'E'
+      self.name = "Emperor"
+      return
     self.human_form = False
     self.hp = self.max_hp
     self.char = 'N'

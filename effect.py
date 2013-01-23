@@ -61,15 +61,43 @@ class Darkness(Effect):
     self.duration -= 1
     if self.duration <= 0: self.dissapear()
 
+class Explosion(Effect):
+  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='*', color=libtcod.lighter_red, power=10):
+    super(Explosion, self).__init__(battleground, x, y, side, char, color)
+    self.power = power
+
+  def clone(self, x, y): 
+    if self.bg.is_inside(x, y):
+      return self.__class__(self.bg, x, y, self.side, self.char, self.original_color, self.power)
+    return None
+
+  def update(self):
+    #TODO: generalize it to work with any starting color
+    if not self.alive: return
+    if self.color == libtcod.lighter_red:
+      self.color = libtcod.light_red
+    elif self.color == libtcod.light_red:
+      self.color = libtcod.red
+    else:
+      self.do_attack()
+      self.dissapear()
+
 class Thunder(Effect):
-  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='|', color=libtcod.lighter_red, power=30):
+  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='|', color=libtcod.lighter_red, power=30, area=None):
     self.target_y = y
     self.power = power
+    self.area = area
     if x != -1:
       y = y-5 if y-5 >= 0 else 0
     super(Thunder, self).__init__(battleground, x, y, side, char, color)
 
+  def clone(self, x, y): 
+    if self.bg.is_inside(x, y):
+      return self.__class__(self.bg, x, y, self.side, self.char, self.original_color, self.power, self.area)
+    return None
+
   def update(self):
+    #TODO: generalize it to work with any starting color
     if not self.alive: return
     if self.color == libtcod.lighter_red:
       self.color = libtcod.light_red
@@ -78,12 +106,13 @@ class Thunder(Effect):
     elif self.y != self.target_y:
       self.move(0, 1)
       self.color = libtcod.lighter_red
-    elif self.char == '|':
-      self.char = '*'
-      self.color == libtcod.lighter_red
     else:
-      self.do_attack()
       self.dissapear()
+      e = Explosion(self.bg, self.x, self.y, self.side, '*', libtcod.lighter_red, self.power)
+      if self.area:
+        for t in self.area.get_tiles(self.x, self.y):
+          if (t.x, t.y) != (e.x, e.y):
+            e.clone(t.x, t.y)
 
 class Wave(Effect):
   def __init__(self, battleground, x, y, side, power):

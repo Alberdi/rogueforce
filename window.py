@@ -57,6 +57,7 @@ class Window(object):
     self.area_hover_color_invalid = libtcod.red
     self.default_hover_color = libtcod.blue
     self.default_hover_function = SingleTarget(self.bg).get_all_tiles
+    self.hover_function = None
 
     #self.render_all(0,0)
 
@@ -69,9 +70,9 @@ class Window(object):
   def clean_all(self):
     return False
 
-  def do_hover(self, hover_function, x, y):
-    if hover_function is not None:
-      tiles = hover_function(x,y)
+  def do_hover(self, x, y):
+    if self.hover_function:
+      tiles = self.hover_function(x,y)
       if tiles is None:
         self.bg.hover_tiles(self.default_hover_function(x,y), self.area_hover_color)
       elif tiles:
@@ -97,7 +98,6 @@ class Window(object):
     turn_time = 0.1
     key = libtcod.Key()
     mouse = libtcod.Mouse()
-    hover_function = None
     while not self.game_over:
       start = time.time()
       if self.network is not None and turn > 0:
@@ -125,7 +125,7 @@ class Window(object):
       self.update_all()
       winner = self.check_winner()
       if (turn % 100) == 0: self.clean_all()
-      self.do_hover(hover_function, x, y)
+      self.do_hover(x, y)
       turn +=1
       self.render_all(x, y)
 

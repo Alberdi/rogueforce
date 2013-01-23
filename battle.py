@@ -28,9 +28,9 @@ class BattleWindow(Window):
     n = self.keymap_skills.find(chr(key.c).upper()) # Number of the skill pressed
     if n != -1: 
       if chr(key.c).istitle(): # With uppercase we show the area
-        hover_function = self.bg.generals[self.side].skills[n].get_area_tiles
+        self.hover_function = self.bg.generals[self.side].skills[n].get_area_tiles
       else: # Use the skill
-        hover_function = None
+        self.hover_function = None
         return "skill{0} ({1},{2})\n".format(n, x, y)
     n = self.keymap_tactics.find(chr(key.c).upper()) # Number of the tactic pressed
     if n != -1: 
