@@ -21,10 +21,6 @@ class Scenario(Window):
       for g in f.generals:
         g.start_scenario()
  
-    self.fortresses = []
-    self.fortresses.append(Fortress(battleground, 3, 29, chars=[':']*4, colors=[libtcod.white]*4))
-    self.fortresses.append(Fortress(battleground, 53, 21, chars=[':']*4, colors=[libtcod.white]*4))
-
     #TODO: remove, just for testing purposes
     self.i = 0
     self.deploy_general(factions[1].generals[2])
@@ -68,7 +64,7 @@ class Scenario(Window):
     return False
 
   def increment_requisition(self):
-    for f in self.fortresses:
+    for f in self.bg.fortresses:
       if f.side != NEUTRAL_SIDE:
         self.requisition[f.side] += f.requisition_production
 
@@ -122,13 +118,13 @@ class Scenario(Window):
     self.increment_requisition()
     for g in self.bg.generals:
       if not g.deployed: continue
-      for f in self.fortresses:
+      for f in self.bg.fortresses:
         if g in f.guests:
           # If the general is in a fortress, we do nothing
           continue
       enemy = g.enemy_reachable()
       if enemy is not None and enemy.side != NEUTRAL_SIDE:
-        if enemy in self.fortresses:
+        if enemy in self.bg.fortresses:
           if enemy.guests:
             e = enemy.guests[-1]
             self.start_battle([g, e])
@@ -140,14 +136,14 @@ class Scenario(Window):
         dx = 1 if g.side == 0 else -1
         dy = 0
         entity = self.bg.tiles[(g.x+dx, g.y+dy)].entity
-        if entity in self.fortresses:
+        if entity in self.bg.fortresses:
           entity.host(g)
         else:
           g.move(dx, dy)
 
 
 if __name__=="__main__":
-  battleground = Battleground(BG_WIDTH, BG_HEIGHT)
+  battleground = Battleground(BG_WIDTH, BG_HEIGHT, "map.txt")
   factions = []
   factions.append(Oracles(battleground, 0))
   factions.append(Oracles(battleground, 1))

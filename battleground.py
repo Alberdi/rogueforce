@@ -1,21 +1,32 @@
+import entity
+
 import libtcodpy as libtcod
 
+import os
+
 class Battleground(object):
-  def __init__(self, width, height):
+  def __init__(self, width, height, tilefile=None):
     self.height = height
     self.width = width
     self.effects = []
     self.minions = []
     self.generals = []
+    self.fortresses = []
     self.tiles = {}
-    for x in range(width):
-      for y in range(height):
-        if x in [0, width-1] or y in [0,height-1]: # Walls
+    if tilefile:
+      self.load_tiles(tilefile)
+    else:
+      self.default_tiles()
+    self.tiles[(-1, -1)] = Tile(-1, -1)
+    self.hovered = []
+
+  def default_tiles(self):
+    for x in range(self.width):
+      for y in range(self.height):
+        if x in [0, self.width-1] or y in [0, self.height-1]: # Walls
           self.tiles[(x,y)] = Tile(x, y, "#", False)
         else: # Floor
           self.tiles[(x,y)] = Tile(x, y)
-    self.tiles[(-1, -1)] = Tile(-1, -1)
-    self.hovered = []
 
   def draw(self, con):
     for pos in self.tiles:
@@ -30,12 +41,27 @@ class Battleground(object):
   def is_inside(self, x, y):
     return 0 <= x < self.width and 0 <= y < self.height
 
+  def load_tiles(self, tilefile):
+    forts = []
+    unpassables = ['#']
+    f = open(os.path.join("data", tilefile), 'r')
+    for y in range(self.height):
+      x = 0
+      for c in f.readline():
+        self.tiles[(x,y)] = Tile(x, y, c, c not in unpassables)
+        if c == ':':
+          forts.append((x,y))
+        x += 1
+    f.close()
+    for f in forts:
+      self.fortresses.append(entity.Fortress(self, f[0], f[1], entity.NEUTRAL_SIDE, [self.tiles[f].char]*4, [libtcod.white]*4))
+
   def unhover_tiles(self):
     for t in self.hovered:
       t.unhover()
 
 class Tile(object):
-  def __init__(self, x, y, char = ".", passable = True):
+  def __init__(self, x, y, char='.', passable=True):
     self.passable = passable
     self.char = char
     self.color = libtcod.Color(50, 50, 150)
