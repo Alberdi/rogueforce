@@ -17,18 +17,14 @@ class Slave(Minion):
     self.hp = 10
     self.power = 3
 
-class OracleGeneral(General):
-  def __init__(self, battleground, side, x=-1, y=-1, name="OracleGeneral", color=libtcod.light_crimson):
-    super(OracleGeneral, self).__init__(battleground, side, x, y, name, color)
-    self.formation = formation.InvertedWedge(self, 3)
-    self.minion = Slave(self.bg, self.side)
-    self.starting_minions = 251
-
-class Gemekaa(OracleGeneral):
+class Gemekaa(General):
   def __init__(self, battleground, side, x=-1, y=-1, name="Gemekaa", color=libtcod.light_crimson):
     super(Gemekaa, self).__init__(battleground, side, x, y, name, color)
     self.max_hp = 70
     self.death_quote = "I did not foresee this..."
+    self.formation = formation.InvertedWedge(self, 3)
+    self.minion = Slave(self.bg, self.side)
+    self.starting_minions = 251
 
   def initialize_skills(self):
     self.skills = []
@@ -48,9 +44,3 @@ class Gemekaa(OracleGeneral):
     if new_x > self.bg.width: new_x = self.bg.width
     if new_y > self.bg.height: new_y = self.bg.height
     return super(Gemekaa, self).use_skill(i, new_x, new_y)
-
-class Hunzuu(OracleGeneral):
-  # Kalbu = dog
-  def __init__(self, battleground, side, x=-1, y=-1, name="Hunzuu", color=libtcod.light_crimson):
-    super(Hunzuu, self).__init__(battleground, side, x, y, name, color)
-    self.death_quote = "Kalbu, my only friend, I failed you..."
