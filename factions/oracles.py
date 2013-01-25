@@ -17,9 +17,14 @@ class Slave(Minion):
     self.hp = 10
     self.power = 3
 
-class Kalbu(minion):
-  def __init__(self, battleground, side, x=-1, y=-1, name="Kalbu", color=libtcod.light_crimson):
+class Kalbu(Minion):
+  def __init__(self, battleground, side, x=-1, y=-1, name="Kalbu", color=libtcod.white):
     super(Kalbu, self).__init__(battleground, side, x, y, name, color)
+    self.max_hp = 100
+    self.hp = 100
+
+  def can_be_pushed(self, dx, dy):
+    return False
 
 class OracleGeneral(General):
   def __init__(self, battleground, side, x=-1, y=-1, name="OracleGeneral", color=libtcod.light_crimson):
@@ -60,5 +65,15 @@ class Hunzuu(OracleGeneral):
   # Kalbu = dog
   def __init__(self, battleground, side, x=-1, y=-1, name="Hunzuu", color=libtcod.light_crimson):
     super(Hunzuu, self).__init__(battleground, side, x, y, name, color)
-    self.death_quote = "Kalbu, my only friend, I failed you..."
+    self.dog = Kalbu(self.bg, self.side, -1, -1, "Kalbu", color=libtcod.white)
+    self.death_quote = self.dog.name + ", my only friend, I failed you..."
 
+  def start_battle(self):
+    # The dog starts behind the master
+    dog_x = self.x-1 if self.side == 0 else self.x+1
+    self.dog.change_battleground(self.bg, dog_x, self.y)
+    super(Hunzuu, self).start_battle()
+
+  def update(self):
+    super(Hunzuu, self).update()
+    self.dog.update()
