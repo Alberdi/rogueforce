@@ -61,6 +61,9 @@ class Window(object):
 
     #self.render_all(0,0)
 
+  def ai_action(self, turn):
+    return None
+
   def check_input(self, key, x, y):
     return None
 
@@ -100,8 +103,15 @@ class Window(object):
     mouse = libtcod.Mouse()
     while not self.game_over:
       start = time.time()
-      if self.network is not None and turn > 0:
-        received = self.network.recv()
+      if turn > 0:
+        if self.network:
+          received = self.network.recv()
+        else:
+          ai = self.ai_action(turn)
+          if ai:
+            received = str(turn) + "#" + ai
+          else:
+            received = "D"
         split = received.split("#")
         if len(split) == 2:
           self.messages[not self.side][int(split[0])] = split[1]
@@ -115,12 +125,11 @@ class Window(object):
         if s is not None:
           self.messages[self.side][turn] = s
 
-      if self.network != None:
+      if self.network:
         if turn in self.messages[self.side]:
           self.network.send(str(turn) + "#"  + self.messages[self.side][turn])
         else:
           self.network.send("D")
-
       self.process_messages(turn - TURN_LAG)
       self.update_all()
       winner = self.check_winner()

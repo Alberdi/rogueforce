@@ -22,6 +22,9 @@ class General(Minion):
     self.tactic_quotes = ["Forward", "Stop/Fire", "Backward", "Go sides", "Go center", "Attack", "Defend"]
     self.selected_tactic = self.tactics[0]
 
+  def ai_action(self, turn):
+    return None
+
   def can_be_pushed(self, dx, dy):
     return False
 

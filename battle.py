@@ -24,6 +24,10 @@ class BattleWindow(Window):
     self.keymap_tactics = KEYMAP_TACTICS[0:len(battleground.generals[side].tactics)]
     super(BattleWindow, self).__init__(battleground, side, host, port, window_id)
 
+  def ai_action(self, turn):
+    ai_side = (self.side+1)%2
+    return self.bg.generals[ai_side].ai_action(turn)
+
   def check_input(self, key, x, y):
     n = self.keymap_skills.find(chr(key.c).upper()) # Number of the skill pressed
     if n != -1: 
