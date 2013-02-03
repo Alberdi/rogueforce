@@ -1,6 +1,6 @@
 Rogue Force
 ===========
-Rogue Force is a reimagining of the Sega Saturn *Dragon Force* game set in space featuring roguelike graphics. The game is still in very early development with the focus put on the one on one battles, totally disregarding the overworld view and other details for now. Not even the name is final.
+Rogue Force is a reimagining of the Sega Saturn *Dragon Force* game set in space featuring roguelike graphics. The game is still in very early development with the focus put on the one on one battles, with a very crude version of the overworld view and other details for now. Not even the name is final.
 
 What does it look like?
 -----------------------
@@ -22,11 +22,11 @@ Yeah, you can play against your friends. You only need to run your own copy of t
 
 How can I run it?
 -----------------
-You'll need to download all the files in this repository and add the required library files to the root folder from the [libtcod webpage](http://doryen.eptalys.net/libtcod/download/), version 1.5.1. For Linux systems this is simply the `libtcod.so` file. If you plan to use the temporary launcher, you will need the `python-tk` and `python-easygui` packages.
+You'll need to download all the files in this repository and add the required library files to the root folder from the [libtcod webpage](http://doryen.eptalys.net/libtcod/download/), version 1.5.1. For Linux systems this is simply the `libtcod.so` file.
 
-After that, run `main.py` from the command line or use the launcher (aptly named `launcher.py`). The launcher makes it easier to get into a game, but it's not the best method because it makes a lot of assumptions and it's not updated at the same pace as the rest of the codebase.  To run `main.py` from the terminal type:
+After that, run `scenario.py` from the command line for the full experience or `battle.py` for a quick fight. The only one that supports network play at the moment is `battle.py`, you can try it with:
 
-    python main.py [0|1] {address port}
+    python battle.py [0|1] {address port}
 
 The first argument is the side on which you are playing (0 is left). The game features a dumb AI that does nothing, so you can try the game against it; just leave empty the last pair of parameters. If you want to play a networked game someone has to run the server included, `server.py`, as follows:
 
@@ -35,10 +35,10 @@ The first argument is the side on which you are playing (0 is left). The game fe
 It will launch a TCP server based on sockets on the port included and the next one (port+1). Then each player needs to connect to it in the proper order, first the one going in the port specified and then the other one. Here is an example of the workflow to play a single game of 60 seconds.
 
     marce:~$ python server.py 8888
-    marce:~$ python main.py 8888
-     sito:~$ python main.py 8889
+    marce:~$ python battle.py 8888
+     sito:~$ python battle.py 8889
 
-More or less the same if you're running it using the launcher, but you'll need to talk it in advance and choose the same generals for each side. To customize your experience, such as choosing different generals for each side, using the `main.py` method, you'll to edit the last lines of that file. Maybe it's a bit cumbersome, but it's the preferred method for now; just make sure that both copies of the game have exactly the same code.
+To customize your experience, such as choosing different generals for each side, you'll to edit the last lines of `battle.py`; and remember to do it on both sides of the network if you want to play the same game. Maybe it's a bit cumbersome, but the `scenario.py` will support network soon.
 
 Rogue Force will have ready to play packages for each major system in the future, but they're not provided yet.
 
