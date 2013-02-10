@@ -48,4 +48,4 @@ Probably. I'll appreciate most kinds of help, from code to game ideas for new ge
 
 License?
 --------
-Coming soon.
+I decided to use the free ISC license as you can check in the `LICENSE.txt` file. I really dislike the all caps legal text that goes with every single software license so I decided to strip it; I hope I won't get demanded when someone runs the hidden fork bomb in the code.
