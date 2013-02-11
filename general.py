@@ -18,9 +18,10 @@ class General(Minion):
     self.minion = Minion(self.bg, self.side)
     self.skills = []
     self.starting_minions = 101
-    self.tactics = [tactic.forward, tactic.stop, tactic.backward, tactic.go_sides, tactic.go_center, tactic.attack_general, tactic.defend_general]
-    self.tactic_quotes = ["Forward", "Stop/Fire", "Backward", "Go sides", "Go center", "Attack", "Defend"]
+    self.tactics = [tactic.stop, tactic.forward, tactic.backward, tactic.go_sides, tactic.go_center, tactic.attack_general, tactic.defend_general]
+    self.tactic_quotes = ["Stop/Fire", "Forward", "Backward", "Go sides", "Go center", "Attack", "Defend"]
     self.selected_tactic = self.tactics[0]
+    self.previous_tactic = self.tactics[0]
 
   def ai_action(self, turn):
     return None
@@ -40,11 +41,11 @@ class General(Minion):
 
   def initialize_skills(self):
     self.skills = []
-    self.skills.append(Skill(self, heal, 50, [100], "Don't die!", SingleTarget(self.bg, is_ally_minion, self)))
-    self.skills.append(Skill(self, heal, 50, [20], "Heal you all men!", AllBattleground(self.bg, is_minion, self)))
-    self.skills.append(Skill(self, place_entity, 50, [Mine(self.bg)], "Can't touch this", SingleTarget(self.bg, is_empty)))
-    self.skills.append(Skill(self, sonic_waves, 50, [10, 3], "Sonic Waves"))
-    self.skills.append(Skill(self, water_pusher, 50, [], "Hidro Pump", SingleTarget(self.bg)))
+    self.skills.append(Skill(self, heal, 50, [100], "Don't die!", "", SingleTarget(self.bg, is_ally_minion, self)))
+    self.skills.append(Skill(self, heal, 50, [20], "Heal you all men!",  "", AllBattleground(self.bg, is_minion, self)))
+    self.skills.append(Skill(self, place_entity, 50, [Mine(self.bg)], "Can't touch this", "", SingleTarget(self.bg, is_empty)))
+    self.skills.append(Skill(self, sonic_waves, 50, [10, 3], "Sonic Waves", ""))
+    self.skills.append(Skill(self, water_pusher, 50, [], "Hidro Pump", "", SingleTarget(self.bg)))
 
   def recount_minions_alive(self):
     self.minions_alive = len(filter(lambda x: x.alive and x.side == self.side, self.bg.minions))
@@ -82,17 +83,17 @@ class Conway(General):
   def __init__(self, battleground, side, x=-1, y=-1, name="Conway", color=libtcod.green):
     super(Conway, self).__init__(battleground, side, x, y, name, color)
     self.death_quote = "This is more like a game of... death"
-    self.tactics = [tactic.null, tactic.stop]
-    self.tactic_quotes = ["Live life", "Stop"]
+    self.tactics = [tactic.stop, tactic.null]
+    self.tactic_quotes = ["Stop", "Live life"]
     self.selected_tactic = self.tactics[0]
 
   def initialize_skills(self):
     self.skills = []
-    self.skills.append(Skill(self, minion_glider, 50, [False], "Glide from the top!", SingleTarget(self.bg, is_empty)))
-    self.skills.append(Skill(self, minion_glider, 50, [True], "Glide from the bottom!", SingleTarget(self.bg, is_empty)))
-    self.skills.append(Skill(self, minion_lwss, 50, [], "Lightweight strike force!", SingleTarget(self.bg, is_empty)))
+    self.skills.append(Skill(self, minion_glider, 50, [False], "Glide from the top!", "", SingleTarget(self.bg, is_empty)))
+    self.skills.append(Skill(self, minion_glider, 50, [True], "Glide from the bottom!", "", SingleTarget(self.bg, is_empty)))
+    self.skills.append(Skill(self, minion_lwss, 50, [], "Lightweight strike force!", "", SingleTarget(self.bg, is_empty)))
     self.skills.append(Skill(self, apply_status, 50, [Poison(None, 5, 19, 4)],
-                             "Poison on your veins!", SingleTarget(self.bg, is_enemy, self)))
+                             "Poison on your veins!", "", SingleTarget(self.bg, is_enemy, self)))
 
   def live_life(self, tile):
     neighbours = 0
@@ -153,11 +154,11 @@ class Emperor(General):
 
   def initialize_skills(self):
     self.skills = []
-    self.skills.append(Skill(self, restock_minions, 25, [21], "Once destroyed, their souls are being summoned"))
-    self.skills.append(Skill(self, apply_status, 50, [FreezeCooldowns(None, 15)], "I curse you of all men",
+    self.skills.append(Skill(self, restock_minions, 25, [21], "Once destroyed, their souls are being summoned", ""))
+    self.skills.append(Skill(self, apply_status, 50, [FreezeCooldowns(None, 15)], "I curse you of all men", "",
                              AllBattleground(self.bg, is_enemy_general, self)))
-    self.skills.append(Skill(self, water_pusher, 50, [], "Towards the Pantheon", SingleTarget(self.bg)))
-    self.skills.append(Skill(self, null, 200, [], "This shouldn't be showed"))
+    self.skills.append(Skill(self, water_pusher, 50, [], "Towards the Pantheon", "", SingleTarget(self.bg)))
+    self.skills.append(Skill(self, null, 200, [], "This shouldn't be showed", ""))
     # We don't need that last quote because it will be changed and pulled in transform()
 
   def start_battle(self):
@@ -176,12 +177,12 @@ class Emperor(General):
     self.original_color = libtcod.light_grey
     self.color = self.original_color
     self.skills = []
-    self.skills.append(Skill(self, sonic_waves, 50, [10, 3], "Thus spake the Nightspirit"))
-    self.skills.append(Skill(self, darkness, 50, [20], "Nightside eclipse", AllBattleground(self.bg)))
-    self.skills.append(Skill(self, consume, 50, [1, 1], "My wizards are many, but their essence is mine",
+    self.skills.append(Skill(self, sonic_waves, 50, [10, 3], "Thus spake the Nightspirit", ""))
+    self.skills.append(Skill(self, darkness, 50, [20], "Nightside eclipse", "", AllBattleground(self.bg)))
+    self.skills.append(Skill(self, consume, 50, [1, 1], "My wizards are many, but their essence is mine", "",
                              AllBattleground(self.bg, is_ally_minion, self)))
     self.skills.append(Skill(self, sonic_waves, 250, [50, 50],
-                             "O'Nightspirit... I am one with thee, I am the eternal power, I am the Emperor!"))
+                             "O'Nightspirit... I am one with thee, I am the eternal power, I am the Emperor!", ""))
     # Last quote is shared with the human form skill
     return True
 

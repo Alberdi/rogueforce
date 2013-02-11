@@ -36,8 +36,18 @@ class BattleWindow(Window):
       else: # Use the skill
         self.hover_function = None
         return "skill{0} ({1},{2})\n".format(n, x, y)
-    n = self.keymap_tactics.find(chr(key.c).upper()) # Number of the tactic pressed
-    if n != -1: 
+    if chr(key.c) == ' ':
+      if self.bg.generals[self.side].tactics.index(self.bg.generals[self.side].selected_tactic) == 0:
+        n = self.bg.generals[self.side].tactics.index(self.bg.generals[self.side].previous_tactic)
+      else:
+        self.bg.generals[self.side].previous_tactic = self.bg.generals[self.side].selected_tactic
+        n = 0
+    else:
+      if self.bg.generals[self.side].tactics.index(self.bg.generals[self.side].selected_tactic) != 0:
+        self.bg.generals[self.side].previous_tactic = self.bg.generals[self.side].selected_tactic
+      n = self.keymap_tactics.find(chr(key.c).upper()) # Number of the tactic pressed
+    if n != -1:
+      last_Tactic = n
       return "tactic{0}\n".format(n)
     return None
 
@@ -75,6 +85,23 @@ class BattleWindow(Window):
       libtcod.console_set_default_foreground(self.con_msgs, color)
       libtcod.console_print(self.con_msgs, 0, y, line)
       y += 1
+
+  def render_info(self, x, y):
+    libtcod.console_print(self.con_info, 0, 0, " " * INFO_WIDTH)
+    nskills = len(self.bg.generals[1].skills)
+    i=-1
+    if -13 < x < -1:
+      i = 0
+    elif BG_WIDTH + + 1 < x < BG_WIDTH + + 13:
+      i = 1
+    
+    nskills = len(self.bg.generals[i].skills)
+    if (5 + nskills * 2) > y > 3 and i is not -1:
+        skill = self.bg.generals[i].skills[(y-4)/nskills]
+        libtcod.console_set_default_foreground(self.con_info, libtcod.white)
+        libtcod.console_print(self.con_info, 0, 0, skill.description)
+    else:
+      super(BattleWindow, self).render_info(x, y)
 
   def render_side_panel(self, i, bar_length, bar_offset_x):
     libtcod.console_set_default_foreground(self.con_panels[i], libtcod.black)
