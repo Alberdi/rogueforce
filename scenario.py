@@ -61,6 +61,7 @@ class Scenario(Window):
 
   def deploy_general(self, general):
     if general.teleport(1 if general.side == 0 else 56+self.i, 21):
+      general.target = (4,21) if general.side == 0 else (52,21)
       general.deployed = True
       general.alive = True
       self.bg.generals.append(general)
@@ -68,6 +69,23 @@ class Scenario(Window):
                                 + " side.", general.color)
       return True
     return False
+
+  def get_next_tile(self, general):
+    for t in [(general.x+i, general.y+j) for i in range(-1,2) for j in range(-1,2)]:
+      if self.bg.tiles[t].entity == self.bg.tiles[general.target].entity:
+        return t
+    starting_tiles = general.get_passable_neighbours()
+    checked = [(general.x, general.y)]
+    for starting in starting_tiles:
+      tiles = [starting]
+      while tiles:
+        (x, y) = tiles.pop()
+        checked.append((x, y))
+        for t in [(x+i, y+j) for i in range(-1,2) for j in range(-1,2)]:
+          if self.bg.tiles[t].entity == self.bg.tiles[general.target].entity:
+            return starting
+          if self.bg.tiles[t].passable and t not in checked:
+            tiles.append(t)
 
   def increment_requisition(self):
     for f in self.bg.fortresses:
@@ -87,14 +105,16 @@ class Scenario(Window):
           if match:
             g = self.factions[i].generals[int(match.group(1))]
             (x, y) = (int(match.group(2)), int(match.group(3)))
+            if not self.bg.is_inside(x, y):
+              return
             target = self.bg.tiles[(x, y)].entity
             home = self.bg.tiles[(g.x, g.y)].entity
             if (target in self.bg.fortresses and home in self.bg.fortresses and g in home.guests):
               for (f, tile) in home.connected_fortresses:
                 if f == target:
-                  # Send general g out from fortress home to fortress target
-                  (g.last_x, g.last_y) = (home.x, home.y)
+                  # Send general g out from fortress home to fortress target thorugh tile
                   (g.x, g.y) = tile
+                  g.target = (target.x, target.y)
                   home.unhost(g)
                   return
 
@@ -141,11 +161,8 @@ class Scenario(Window):
   def update_all(self):
     self.increment_requisition()
     for g in self.bg.generals:
-      if not g.deployed: continue
-      for f in self.bg.fortresses:
-        if g in f.guests:
-          # If the general is in a fortress, we do nothing
-          continue
+      if not g.deployed:
+        continue
       enemy = g.enemy_reachable()
       if enemy is not None and enemy.side != NEUTRAL_SIDE:
         if enemy in self.bg.fortresses:
@@ -157,13 +174,13 @@ class Scenario(Window):
         else:
           self.start_battle([g, enemy])
       else:
-        dx = 1 if g.side == 0 else -1
-        dy = 0
-        entity = self.bg.tiles[(g.x+dx, g.y+dy)].entity
-        if entity in self.bg.fortresses:
-          entity.host(g)
-        else:
-          g.move(dx, dy)
+        t = self.get_next_tile(g)
+        if t:
+          entity = self.bg.tiles[t].entity
+          if entity in self.bg.fortresses:
+            entity.host(g)
+          else:
+            g.move(t[0]-g.x, t[1]-g.y)
 
 
 if __name__=="__main__":

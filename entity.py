@@ -54,7 +54,7 @@ class Entity(object):
 
   def get_passable_neighbours(self):
     neighbours = [(self.x+i, self.y+j) for i in range(-1,2) for j in range(-1,2)] 
-    return filter(lambda t: self.bg.tiles[t].passable, neighbours)
+    return filter(lambda t: self.bg.tiles[t].passable and t != (self.x, self.y), neighbours)
 
   def get_pushed(self, dx, dy):
     self.pushed = False
@@ -171,7 +171,7 @@ class Fortress(BigEntity):
     starting_tiles = [(self.x+i, self.y+j) for i in range(-1,3) for j in range(-1,3)] 
     # Remove those inside it
     checked = [(self.x+i, self.y+j) for i in range(0,2) for j in range(0,2)]
-    filter(lambda x: x not in checked, starting_tiles)
+    starting_tiles = filter(lambda t: self.bg.tiles[t].passable and t not in checked, starting_tiles)
     # Try every reachable tile from the fortress and save the connections
     for starting in starting_tiles:
       tiles = [starting]
