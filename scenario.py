@@ -67,6 +67,9 @@ class Scenario(Window):
     for f in self.bg.fortresses:
       if f.side != NEUTRAL_SIDE:
         self.requisition[f.side] += f.requisition_production
+    for i in [0,1]:
+      if self.requisition[i] > self.max_requisition:
+        self.requisition[i] = self.max_requisition
 
   def process_messages(self, turn):
     for i in [0,1]:
