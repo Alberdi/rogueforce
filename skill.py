@@ -2,7 +2,7 @@ from effect import *
 from entity import *
 
 class Skill(object):
-  def __init__(self, general, function, max_cd, parameters=[], quote="", area=None):
+  def __init__(self, general, function, max_cd, parameters=[], quote="", description="", area=None):
     self.general = general
     self.function = function
     self.max_cd = max_cd
@@ -10,6 +10,7 @@ class Skill(object):
     self.parameters = parameters
     self.area = area
     self.quote = quote
+    self.description = description
 
   def apply_function(self, tiles):
     did_anything = False

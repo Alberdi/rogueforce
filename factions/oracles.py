@@ -28,9 +28,12 @@ class Gemekaa(General):
 
   def initialize_skills(self):
     self.skills = []
-    self.skills.append(Skill(self, apply_status, 50, [Blind(None, 30)], "Lightstruck", AllBattleground(self.bg, is_minion, self)))
-    self.skills.append(Skill(self, place_entity, 25, [Thunder(self.bg)], "Thunderstruck", SingleTarget(self.bg)))
-    self.skills.append(Skill(self, place_entity, 100, [Thunder(self.bg, power=5, area=Circle(self.bg, radius=5))], "Thunderstruck", SingleTarget(self.bg)))
+    self.skills.append(Skill(self, apply_status, 50, [Blind(None, 30)], "Lightstruck",
+                      "Blinds all minions", AllBattleground(self.bg, is_minion, self)))
+    self.skills.append(Skill(self, place_entity, 25, [Thunder(self.bg)], "Thunderstruck",
+                      "A powerful lightning strikes near the target", SingleTarget(self.bg)))
+    self.skills.append(Skill(self, place_entity, 100, [Thunder(self.bg, power=5, area=Circle(self.bg, radius=5))], "Thunderstruck",
+                      "A lightning from above creates a wide explosion", SingleTarget(self.bg)))
 
   def use_skill(self, i, x, y):
     if i == 0:

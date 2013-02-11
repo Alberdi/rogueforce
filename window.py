@@ -176,7 +176,12 @@ class Window(object):
           libtcod.console_set_default_foreground(self.con_info, entity.original_color)
           libtcod.console_print(self.con_info, 0, 0, entity.name.capitalize() + ": HP %02d/%02d, PW %d" %
             (entity.hp, entity.max_hp, entity.power))
-
+    """
+    else:
+      libtcod.console_set_default_foreground(self.con_info, libtcod.white)
+      libtcod.console_print(self.con_info, INFO_WIDTH-7, 0, "%02d/%02d" % (x, y))
+    """
+    
   def render_msgs(self):
     y = 0
     for (line, color) in self.game_msgs:
