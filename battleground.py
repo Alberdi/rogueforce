@@ -19,6 +19,11 @@ class Battleground(object):
       self.default_tiles()
     self.tiles[(-1, -1)] = Tile(-1, -1)
     self.hovered = []
+    self.connect_fortresses()
+
+  def connect_fortresses(self):
+    for f in self.fortresses:
+      f.get_connections()
 
   def default_tiles(self):
     for x in range(self.width):

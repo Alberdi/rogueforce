@@ -51,7 +51,11 @@ class Entity(object):
   
   def get_char(self, x, y):
     return self.char  
-  
+
+  def get_passable_neighbours(self):
+    neighbours = [(self.x+i, self.y+j) for i in range(-1,2) for j in range(-1,2)] 
+    return filter(lambda t: self.bg.tiles[t].passable, neighbours)
+
   def get_pushed(self, dx, dy):
     self.pushed = False
     self.move(dx, dy)
@@ -149,9 +153,8 @@ class Fortress(BigEntity):
   def __init__(self, battleground, x, y, side=NEUTRAL_SIDE, chars=[':']*4, colors=[libtcod.white]*4, requisition_production=1):
     super(Fortress, self).__init__(battleground, x, y, side, chars, colors)
     self.capacity = len(chars)
+    self.connected_fortresses = []
     self.guests = []
-    self.original_chars = chars
-    self.original_colors = colors
     self.requisition_production = requisition_production
 
   def can_be_attacked(self):
@@ -162,6 +165,25 @@ class Fortress(BigEntity):
 
   def can_move(self, dx, dy):
     return False
+
+  def get_connections(self):
+    # Gather all tiles inside and surrounding the fortress
+    starting_tiles = [(self.x+i, self.y+j) for i in range(-1,3) for j in range(-1,3)] 
+    # Remove those inside it
+    checked = [(self.x+i, self.y+j) for i in range(0,2) for j in range(0,2)]
+    filter(lambda x: x not in checked, starting_tiles)
+    # Try every reachable tile from the fortress and save the connections
+    for starting in starting_tiles:
+      tiles = [starting]
+      while tiles:
+        (x, y) = tiles.pop()
+        checked.append((x, y))
+        for t in [(x+i, y+j) for i in range(-1,2) for j in range(-1,2)]:
+          entity = self.bg.tiles[t].entity
+          if entity in self.bg.fortresses and entity is not self and entity not in self.connected_fortresses:
+            self.connected_fortresses.append((entity, starting))
+          if self.bg.tiles[t].passable and t not in checked:
+            tiles.append(t)
 
   def host(self, entity):
     if not self.can_host(entity) or len(self.guests) >= self.capacity: return
@@ -175,10 +197,17 @@ class Fortress(BigEntity):
     self.guests.append(entity)
     self.update_body()
 
+  def refresh_chars(self):
+    self.chars = [':']*len(self.chars)
+    self.colors = [libtcod.white]*len(self.colors)
+    for i in range(len(self.guests)):
+      self.chars[i] = self.guests[i].char
+      self.colors[i] = self.guests[i].color
+
   def unhost(self, entity):
     self.guests.remove(entity)
-    self.chars[len(self.guests)] = self.original_char
-    self.colors[len(self.guests)] = self.original_color
+    self.bg.generals.append(entity)
+    self.refresh_chars()
     if not self.guests:
       self.side = NEUTRAL_SIDE
 

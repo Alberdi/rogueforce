@@ -7,7 +7,10 @@ from window import *
 
 import libtcodpy as libtcod
 
+import re
+
 KEYMAP_GENERALS = "QWERTYUIOP"
+MOVEGEN_PATTERN = re.compile("move_gen(\d) \((-?\d+),(-?\d+)\)")
 
 class Scenario(Window):
   def __init__(self, battleground, side, factions, host = None, port = None, window_id = 0):
@@ -48,6 +51,9 @@ class Scenario(Window):
       g = self.factions[self.side].generals[n]
       if g.deployed:
         self.selected_general = g
+        if not self.bg.is_inside(x, y):
+          return
+        return "move_gen{0} ({1},{2})\n".format(n, x, y) 
       else:
         self.selected_general = None
         return "apply_req{0}\n".format(n)
@@ -76,6 +82,21 @@ class Scenario(Window):
       if turn in self.messages[i]:
         if self.messages[i][turn].startswith("apply_req"):
           self.apply_requisition(self.factions[i].generals[int(self.messages[i][turn][9])])
+        else:
+          match = MOVEGEN_PATTERN.match(self.messages[i][turn])
+          if match:
+            g = self.factions[i].generals[int(match.group(1))]
+            (x, y) = (int(match.group(2)), int(match.group(3)))
+            target = self.bg.tiles[(x, y)].entity
+            home = self.bg.tiles[(g.x, g.y)].entity
+            if (target in self.bg.fortresses and home in self.bg.fortresses and g in home.guests):
+              for (f, tile) in home.connected_fortresses:
+                if f == target:
+                  # Send general g out from fortress home to fortress target
+                  (g.last_x, g.last_y) = (home.x, home.y)
+                  (g.x, g.y) = tile
+                  home.unhost(g)
+                  return
 
   def render_side_panel(self, i, bar_length, bar_offset_x):
     libtcod.console_set_default_foreground(self.con_panels[i], libtcod.white)
