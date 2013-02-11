@@ -60,7 +60,7 @@ class Minion(Entity):
     if self.next_action <= 0:
       self.reset_action()
       enemy = self.enemy_reachable()
-      if enemy and not self.pushed:
+      if enemy != None:
         enemy.get_attacked(self)
       else:
         self.follow_tactic()
