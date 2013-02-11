@@ -43,12 +43,12 @@ class Battleground(object):
 
   def load_tiles(self, tilefile):
     forts = []
-    unpassables = ['#']
+    passables = ['.', ':']
     f = open(os.path.join("data", tilefile), 'r')
     for y in range(self.height):
       x = 0
       for c in f.readline():
-        self.tiles[(x,y)] = Tile(x, y, c, c not in unpassables)
+        self.tiles[(x,y)] = Tile(x, y, c, c in passables)
         if c == ':':
           forts.append((x,y))
         x += 1
