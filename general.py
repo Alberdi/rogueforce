@@ -18,9 +18,10 @@ class General(Minion):
     self.minion = Minion(self.bg, self.side)
     self.skills = []
     self.starting_minions = 101
-    self.tactics = [tactic.forward, tactic.stop, tactic.backward, tactic.go_sides, tactic.go_center, tactic.attack_general, tactic.defend_general]
-    self.tactic_quotes = ["Forward", "Stop/Fire", "Backward", "Go sides", "Go center", "Attack", "Defend"]
+    self.tactics = [tactic.stop, tactic.forward, tactic.backward, tactic.go_sides, tactic.go_center, tactic.attack_general, tactic.defend_general]
+    self.tactic_quotes = ["Stop/Fire", "Forward", "Backward", "Go sides", "Go center", "Attack", "Defend"]
     self.selected_tactic = self.tactics[0]
+    self.previous_tactic = self.tactics[0]
 
   def ai_action(self, turn):
     return None
@@ -82,8 +83,8 @@ class Conway(General):
   def __init__(self, battleground, side, x=-1, y=-1, name="Conway", color=libtcod.green):
     super(Conway, self).__init__(battleground, side, x, y, name, color)
     self.death_quote = "This is more like a game of... death"
-    self.tactics = [tactic.null, tactic.stop]
-    self.tactic_quotes = ["Live life", "Stop"]
+    self.tactics = [tactic.stop, tactic.null]
+    self.tactic_quotes = ["Stop", "Live life"]
     self.selected_tactic = self.tactics[0]
 
   def initialize_skills(self):

@@ -36,8 +36,18 @@ class BattleWindow(Window):
       else: # Use the skill
         self.hover_function = None
         return "skill{0} ({1},{2})\n".format(n, x, y)
-    n = self.keymap_tactics.find(chr(key.c).upper()) # Number of the tactic pressed
-    if n != -1: 
+    if chr(key.c) == ' ':
+      if self.bg.generals[self.side].tactics.index(self.bg.generals[self.side].selected_tactic) == 0:
+        n = self.bg.generals[self.side].tactics.index(self.bg.generals[self.side].previous_tactic)
+      else:
+        self.bg.generals[self.side].previous_tactic = self.bg.generals[self.side].selected_tactic
+        n = 0
+    else:
+      if self.bg.generals[self.side].tactics.index(self.bg.generals[self.side].selected_tactic) != 0:
+        self.bg.generals[self.side].previous_tactic = self.bg.generals[self.side].selected_tactic
+      n = self.keymap_tactics.find(chr(key.c).upper()) # Number of the tactic pressed
+    if n != -1:
+      last_Tactic = n
       return "tactic{0}\n".format(n)
     return None
 
