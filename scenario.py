@@ -62,6 +62,7 @@ class Scenario(Window):
   def deploy_general(self, general):
     if general.teleport(1 if general.side == 0 else 56+self.i, 21):
       general.target = (4,21) if general.side == 0 else (52,21)
+      general.home = general.target
       general.deployed = True
       general.alive = True
       self.bg.generals.append(general)
@@ -114,6 +115,7 @@ class Scenario(Window):
                 if f == target:
                   # Send general g out from fortress home to fortress target thorugh tile
                   (g.x, g.y) = tile
+                  g.home = (home.x, home.y)
                   g.target = (target.x, target.y)
                   home.unhost(g)
                   return
@@ -163,7 +165,7 @@ class Scenario(Window):
     for g in self.bg.generals:
       if not g.deployed:
         continue
-      enemy = g.enemy_reachable()
+      enemy = g.enemy_reachable(diagonals=True)
       if enemy is not None and enemy.side != NEUTRAL_SIDE:
         if enemy in self.bg.fortresses:
           if enemy.guests:
@@ -179,8 +181,10 @@ class Scenario(Window):
           entity = self.bg.tiles[t].entity
           if entity in self.bg.fortresses:
             entity.host(g)
-          else:
+          elif g.can_move(t[0]-g.x, t[1]-g.y):
             g.move(t[0]-g.x, t[1]-g.y)
+          else:
+            g.target = g.home
 
 
 if __name__=="__main__":

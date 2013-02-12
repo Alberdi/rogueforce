@@ -48,7 +48,7 @@ class Battleground(object):
 
   def load_tiles(self, tilefile):
     forts = []
-    passables = ['.', ':']
+    passables = ['.']
     f = open(os.path.join("data", tilefile), 'r')
     for y in range(self.height):
       x = 0
