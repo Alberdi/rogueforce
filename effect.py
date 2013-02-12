@@ -1,9 +1,9 @@
 import entity
-
+from math import copysign
 import libtcodpy as libtcod
 
 class Effect(entity.Entity):
-  def __init__(self, battleground, x, y, side=entity.NEUTRAL_SIDE, char=' ', color=libtcod.white):
+  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char=' ', color=libtcod.white):
     saved = battleground.tiles[(x, y)].entity
     super(Effect, self).__init__(battleground, x, y, side, char, color)
     self.bg.tiles[(x, y)].entity = saved
@@ -81,6 +81,42 @@ class Explosion(Effect):
     else:
       self.do_attack()
       self.dissapear()
+
+class Slash(Effect):
+  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='A', color=libtcod.white, power=5, steps=9, goto=1, area=None):
+    super(Slash, self).__init__(battleground, x, y, side, color)
+    self.general = self.bg.generals[side]
+    self.max_steps = steps
+    self.step = 0;
+    self.power = power
+    self.center_x = x
+    self.center_y = y
+    self.direction = 0; 
+    self.chars = ['|', '\\', '-', '/']
+    self.goto = goto
+    self.directions = [(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0),(-1,1)]
+
+  def clone(self, x, y):
+    if self.bg.is_inside(x, y):
+      return self.__class__(self.bg, self.general.x, self.general.y, self.side, self.char, self.original_color, self.power, self.max_steps, self.goto)
+    return None
+
+  def update(self):
+    if not self.alive:
+      return
+    self.char = self.chars[(self.step+self.direction)%4]
+    self.tp(self.general.x, self.general.y)
+    self.move(*self.directions[(self.step+self.direction)%8])
+    self.step += int(copysign(1, self.goto))
+    self.do_attack()
+    if abs(self.step) >= self.max_steps:
+      self.dissapear()
+
+  def tp(self, x, y):
+    self.bg.tiles[(self.x, self.y)].effects.remove(self)
+    self.x = x
+    self.y = y
+    self.bg.tiles[(self.x, self.y)].effects.append(self)
 
 class Thunder(Effect):
   def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='|', color=libtcod.lighter_red, power=30, area=None):

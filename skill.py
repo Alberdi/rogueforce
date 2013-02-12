@@ -5,6 +5,7 @@ class Skill(object):
   def __init__(self, general, function, max_cd, parameters=[], quote="", description="", area=None):
     self.general = general
     self.function = function
+    self.original_max_cd = max_cd
     self.max_cd = max_cd
     self.cd = 0
     self.parameters = parameters

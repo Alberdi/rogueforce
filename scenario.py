@@ -190,7 +190,7 @@ class Scenario(Window):
 if __name__=="__main__":
   battleground = Battleground(BG_WIDTH, BG_HEIGHT, "map.txt")
   factions = []
-  factions.append(Oracles(battleground, 0))
+  factions.append(Saviours(battleground, 0))
   factions.append(Oracles(battleground, 1))
   scenario = Scenario(battleground, 0, factions) 
   scenario.loop()
