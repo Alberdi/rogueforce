@@ -61,9 +61,12 @@ class General(Minion):
     self.requisition = 0
 
   def update(self):
-    if not self.alive: return
-    for s in self.skills: s.update()
-    for s in self.statuses: s.update()
+    if not self.alive:
+      return
+    for s in self.skills:
+      s.update()
+    for s in self.statuses:
+      s.update()
 
   def update_color(self):
     pass
