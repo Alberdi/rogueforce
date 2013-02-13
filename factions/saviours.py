@@ -20,7 +20,7 @@ class Ares(General):
 
   def initialize_skills(self):
     self.skills = []
-    self.skills.append(Skill(self, place_entity, 10, [Effect(self.bg, char='q', color=libtcod.red)], "Die",
+    self.skills.append(Skill(self, place_entity, 10, [Blinking(self.bg, char='q', color=libtcod.red)], "Die",
                       "Place a flag to charge against it", SingleTarget(self.bg)))
     self.skills.append(Skill(self, place_entity, 30, [Slash(self.bg, side=self.side, steps=5, goto=-1)], "Left slash",
                       "Slashes the right side", SingleTarget(self.bg)))
@@ -32,7 +32,7 @@ class Ares(General):
   def update(self):
     super(Ares, self).update()
     if self.selected_tactic == tactic.null:
-      if self.next_action <= 0:
+      if self.next_action <= 0 and self.flag:
         self.reset_action()
         dx = self.flag.x - self.x
         dy = self.flag.y - self.y

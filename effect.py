@@ -59,6 +59,29 @@ class Arrow(Effect):
     self.move(1 if self.side == 0 else -1, 0)
     self.do_attack(True)
 
+class Blinking(Effect):
+  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char=' ', color=libtcod.white):
+    super(Blinking, self).__init__(battleground, x, y, side, char, color)
+    self.visible = True
+
+  def dissapear(self):
+    if self.visible:
+      self.bg.tiles[(self.x, self.y)].effects.remove(self)
+    self.alive = False
+
+  def update(self):
+    if not self.alive:
+      return
+    if self.next_action <= 0:
+      self.reset_action()
+      if self.visible:
+        self.bg.tiles[(self.x, self.y)].effects.remove(self)
+      else:
+        self.bg.tiles[(self.x, self.y)].effects.append(self)
+      self.visible = not self.visible
+    else:
+      self.next_action -= 1
+
 class Darkness(Effect):
   def __init__(self, battleground, x, y, duration):
     super(Darkness, self).__init__(battleground, x, y, entity.NEUTRAL_SIDE, ' ')
