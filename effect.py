@@ -36,6 +36,14 @@ class Effect(entity.Entity):
     self.y += dy
     self.bg.tiles[(self.x, self.y)].effects.append(self)
 
+  def teleport(self, x, y):
+    self.bg.tiles[(self.x, self.y)].effects.remove(self)
+    self.x = x
+    self.y = y
+    self.bg.tiles[(self.x, self.y)].effects.append(self)
+    return True
+
+
 class Arrow(Effect):
   def __init__(self, battleground, x, y, side, power, attack_effects = ['>', '<']):
     super(Arrow, self).__init__(battleground, x, y, side, attack_effects[side], libtcod.light_red)
@@ -83,7 +91,7 @@ class Explosion(Effect):
       self.dissapear()
 
 class Slash(Effect):
-  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='A', color=libtcod.white, power=5, steps=9, goto=1, area=None):
+  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='|', color=libtcod.white, power=10, steps=8, goto=1, area=None):
     super(Slash, self).__init__(battleground, x, y, side, color)
     self.general = self.bg.generals[side]
     self.max_steps = steps
@@ -104,19 +112,14 @@ class Slash(Effect):
   def update(self):
     if not self.alive:
       return
+    if abs(self.step) >= self.max_steps:
+      self.dissapear()
+      return
     self.char = self.chars[(self.step+self.direction)%4]
-    self.tp(self.general.x, self.general.y)
+    self.teleport(self.general.x, self.general.y)
     self.move(*self.directions[(self.step+self.direction)%8])
     self.step += int(copysign(1, self.goto))
     self.do_attack()
-    if abs(self.step) >= self.max_steps:
-      self.dissapear()
-
-  def tp(self, x, y):
-    self.bg.tiles[(self.x, self.y)].effects.remove(self)
-    self.x = x
-    self.y = y
-    self.bg.tiles[(self.x, self.y)].effects.append(self)
 
 class Thunder(Effect):
   def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='|', color=libtcod.lighter_red, power=30, area=None):
