@@ -41,11 +41,11 @@ class General(Minion):
 
   def initialize_skills(self):
     self.skills = []
-    self.skills.append(Skill(self, heal, 50, [100], "Don't die!", "", SingleTarget(self.bg, is_ally_minion, self)))
-    self.skills.append(Skill(self, heal, 50, [20], "Heal you all men!",  "", AllBattleground(self.bg, is_minion, self)))
-    self.skills.append(Skill(self, place_entity, 50, [Mine(self.bg)], "Can't touch this", "", SingleTarget(self.bg, is_empty)))
-    self.skills.append(Skill(self, sonic_waves, 50, [10, 3], "Sonic Waves", ""))
-    self.skills.append(Skill(self, water_pusher, 50, [], "Hidro Pump", "", SingleTarget(self.bg)))
+    self.skills.append(Skill(self, heal, 50, [100], "Don't die!", "1", SingleTarget(self.bg, is_ally_minion, self)))
+    self.skills.append(Skill(self, heal, 50, [20], "Heal you all men!",  "2", AllBattleground(self.bg, is_minion, self)))
+    self.skills.append(Skill(self, place_entity, 50, [Mine(self.bg)], "Can't touch this", "3", SingleTarget(self.bg, is_empty)))
+    self.skills.append(Skill(self, sonic_waves, 50, [10, 3], "Sonic Waves", "4"))
+    self.skills.append(Skill(self, water_pusher, 50, [], "Hidro Pump", "5", SingleTarget(self.bg)))
 
   def recount_minions_alive(self):
     self.minions_alive = len(filter(lambda x: x.alive and x.side == self.side, self.bg.minions))

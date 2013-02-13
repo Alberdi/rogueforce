@@ -97,9 +97,9 @@ class BattleWindow(Window):
     
     nskills = len(self.bg.generals[i].skills)
     if (5 + nskills * 2) > y > 3 and i is not -1:
-        skill = self.bg.generals[i].skills[(y-4)/nskills]
-        libtcod.console_set_default_foreground(self.con_info, libtcod.white)
-        libtcod.console_print(self.con_info, 0, 0, skill.description)
+      skill = self.bg.generals[i].skills[(y-5)/2]
+      libtcod.console_set_default_foreground(self.con_info, libtcod.white)
+      libtcod.console_print(self.con_info, 0, 0, skill.description)
     else:
       super(BattleWindow, self).render_info(x, y)
 
