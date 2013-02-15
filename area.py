@@ -20,7 +20,7 @@ class AllBattleground(Area):
     return self.bg.tiles.values()
 
 class Arc(Area):
-  def __init__(self, bg, sieve_function=None, general=None, origin=(0,0), angle=360, ratio_y=1, steps=100):
+  def __init__(self, bg, sieve_function=None, general=None, origin=(0,0), angle=360, ratio_y=1, steps=50):
     super(Arc, self).__init__(bg, sieve_function, general)
     self.origin = origin
     self.ratio_y = ratio_y
