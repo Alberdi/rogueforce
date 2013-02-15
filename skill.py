@@ -1,5 +1,6 @@
 from effect import *
 from entity import *
+import area
 
 class Skill(object):
   def __init__(self, general, function, max_cd, parameters=[], quote="", description="", area=None):
@@ -41,6 +42,10 @@ class Skill(object):
       return self.function(self.general, *self.parameters)
     return self.apply_function(self.area.get_tiles(x, y))
 
+
+def add_path(general, tile, entity):
+  entity.path.append(tile)
+  return True
 
 def apply_status(general, tile, status):
   status.clone(tile.entity)

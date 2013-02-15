@@ -53,6 +53,7 @@ class General(Minion):
   def start_battle(self):
     self.initialize_skills()
     self.command_tactic(0)
+    self.formation.place_minions()
 
   def start_scenario(self):
     self.deployed = False

@@ -19,6 +19,7 @@ class Entity(object):
     self.pushed = False
     self.alive = True
     self.statuses = []
+    self.path = []
 
   def can_be_attacked(self):
     return False
@@ -67,7 +68,7 @@ class Entity(object):
   def move(self, dx, dy):
     if self.pushed:
       self.pushed = False
-      return
+      return False
     next_tile = self.bg.tiles[(self.x+dx, self.y+dy)]
     if self.can_move(dx, dy):
       if next_tile.entity is not None:
@@ -76,6 +77,17 @@ class Entity(object):
       next_tile.entity = self
       self.x += dx
       self.y += dy
+      return True
+    return False
+
+  def move_path(self):
+    if self.path:
+      next_tile = self.path.pop(0)
+      if self.move(next_tile.x - self.x, next_tile.y - self.y):
+        return True
+      else:
+        self.path.insert(0, next_tile)
+    return False
 
   def reset_action(self):
     self.next_action = self.default_next_action
@@ -114,12 +126,9 @@ class BigEntity(Entity):
     return True  
 
   def clear_body(self):
-    x = self.x
-    y = self.y
-    self.bg.tiles[(x, y)].entity = None
-    self.bg.tiles[(x+1, y)].entity = None
-    self.bg.tiles[(x, y+1)].entity = None
-    self.bg.tiles[(x+1, y+1)].entity = None
+    for i in range(self.length):
+      for j in range(self.length):
+        self.bg.tiles[(self.x+i, self.y+j)].entity = None
     
   def die(self):
     self.clear_body()
@@ -144,10 +153,9 @@ class BigEntity(Entity):
       self.update_body()
 
   def update_body(self):
-    self.bg.tiles[(self.x, self.y)].entity = self
-    self.bg.tiles[(self.x+1, self.y)].entity = self
-    self.bg.tiles[(self.x, self.y+1)].entity = self
-    self.bg.tiles[(self.x+1, self.y+1)].entity = self      
+    for i in range(self.length):
+      for j in range(self.length):
+        self.bg.tiles[(self.x+i, self.y+j)].entity = self
       
 class Fortress(BigEntity):
   def __init__(self, battleground, x, y, side=NEUTRAL_SIDE, chars=[':']*4, colors=[libtcod.white]*4, requisition_production=1):

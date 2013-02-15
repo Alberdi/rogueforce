@@ -1,3 +1,4 @@
+from factions import mechanics
 from factions import oracles
 from factions import saviours
 import general
@@ -7,6 +8,11 @@ class Faction(object):
     self.bg = battleground
     self.side = side
     self.generals = generals
+
+class Mechanics(Faction):
+  def __init__(self, battleground, side):
+    generals = [mechanics.Flappy(battleground, side)]
+    super(Mechanics, self).__init__(battleground, side, generals, "Mechanics")
 
 class Oracles(Faction):
   def __init__(self, battleground, side):
