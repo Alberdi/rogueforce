@@ -131,7 +131,7 @@ class Scenario(Window):
       libtcod.console_set_default_foreground(self.con_panels[i], g.color if g == self.selected_general else libtcod.white)
       libtcod.console_print(self.con_panels[i], bar_offset_x-1, line, " " + g.name)
       libtcod.console_set_default_foreground(self.con_panels[i], libtcod.black)
-      libtcod.console_put_char_ex(self.con_panels[i], bar_offset_x-1, line+1, self.keymap_generals[j], g.color, libtcod.black)
+      libtcod.console_put_char_ex(self.con_panels[i], bar_offset_x-1, line+1, KEYMAP_GENERALS[j], g.color, libtcod.black)
       if not g.deployed:
         self.render_bar(self.con_panels[i], bar_offset_x, line+1, bar_length, g.requisition, g.cost, libtcod.dark_blue, libtcod.sky, libtcod.black)
       else: 
@@ -190,7 +190,7 @@ class Scenario(Window):
 if __name__=="__main__":
   battleground = Battleground(BG_WIDTH, BG_HEIGHT, "map.txt")
   factions = []
-  factions.append(Saviours(battleground, 0))
+  factions.append(Mechanics(battleground, 0))
   factions.append(Oracles(battleground, 1))
   scenario = Scenario(battleground, 0, factions) 
   scenario.loop()

@@ -16,8 +16,6 @@ SKILL_PATTERN = re.compile("skill(\d) \((-?\d+),(-?\d+)\)")
 class BattleWindow(Window):
   def __init__(self, battleground, side, host = None, port = None, window_id = 1):
     for i in [0,1]:
-      battleground.generals[i].formation.place_minions()
-      battleground.generals[i].command_tactic(0)
       battleground.generals[i].start_battle()
 
     self.keymap_skills = KEYMAP_SKILLS[0:len(battleground.generals[side].skills)]
@@ -127,13 +125,16 @@ class BattleWindow(Window):
       libtcod.console_print(self.con_panels[i], bar_offset_x, line, KEYMAP_TACTICS[s] + ": " + self.bg.generals[i].tactic_quotes[s])
       line += 2
 
+from factions import mechanics
 if __name__=="__main__":
   bg = Battleground(BG_WIDTH, BG_HEIGHT)
-  bg.generals = [Emperor(bg, 0, 3, 21), General(bg, 1, 56, 21)]
+  bg.generals = [mechanics.Flappy(bg, 0, 3, 21), mechanics.Flappy(bg, 1, 56, 21)]
   bg.generals[0].start_scenario()
   bg.generals[1].start_scenario()
   if len(sys.argv) == 4: 
     battle = BattleWindow(bg, int(sys.argv[1]), sys.argv[2], int(sys.argv[3]))
-  else:
+  elif len(sys.argv) == 2:
     battle = BattleWindow(bg, int(sys.argv[1]))
+  else:
+    battle = BattleWindow(bg, 0)
   battle.loop()

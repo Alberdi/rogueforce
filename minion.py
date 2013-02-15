@@ -73,9 +73,10 @@ class Minion(Entity):
     self.color = libtcod.Color(255, c, c)
 
 class BigMinion(BigEntity, Minion):
-  def __init__(self, battleground, side, x=-1, y=-1, name="Giant", color=libtcod.white):
-    BigEntity.__init__(self, battleground, side, x, y, name, color)
-    Minion.__init__(self, battleground, x, y, side, name, color)
+  def __init__(self, battleground, side, x=-1, y=-1, name="Giant", chars=['G']*4, colors=[libtcod.white]*4):
+    BigEntity.__init__(self, battleground, x, y, side, chars, colors)
+    Minion.__init__(self, battleground, side, x, y, name)
+    self.hp *= self.length*2
     
   def clone(self, x, y):
     for (pos_x, pos_y) in [(x+i, y+j) for i in range (0, self.length) for j in range (0, self.length)]:

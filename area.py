@@ -1,4 +1,5 @@
 from sieve import Sieve
+import math
 
 class Area(object):
   def __init__(self, bg, sieve_function=None, general=None):
@@ -17,6 +18,35 @@ class Area(object):
 class AllBattleground(Area):
   def get_all_tiles(self, x, y):
     return self.bg.tiles.values()
+
+class Arc(Area):
+  def __init__(self, bg, sieve_function=None, general=None, origin=(0,0), angle=360, ratio_y=1, steps=50):
+    super(Arc, self).__init__(bg, sieve_function, general)
+    self.origin = origin
+    self.ratio_y = ratio_y
+    self.start_angle = math.radians(angle)
+    self.steps = steps
+    self.step_angle = self.start_angle / self.steps
+
+  def get_all_tiles(self, x, y):
+    if not self.bg.is_inside(x, y):
+      return []
+    tiles = []
+    center_x = (self.origin[0] + x) / 2.0
+    center_y = self.origin[1]
+    radius = abs(self.origin[0] - x) / 2.0
+    direction = math.copysign(1, self.origin[0] - x)
+    xx = int(round(center_x + math.cos(self.start_angle) * radius * direction))
+    yy = int(round(center_y + math.sin(self.start_angle) * radius * self.ratio_y))
+    if self.bg.is_inside(xx, yy):
+      tiles.append(self.bg.tiles[(xx, yy)])
+    for i in range(1, self.steps+1):
+      angle = self.start_angle + i * self.step_angle
+      xx = int(round(center_x + math.cos(angle) * radius * direction))
+      yy = int(round(center_y + math.sin(angle) * radius * self.ratio_y))
+      if self.bg.is_inside(xx, yy) and self.bg.tiles[(xx, yy)] not in tiles:
+        tiles.append(self.bg.tiles[(xx, yy)])
+    return tiles
 
 class Circle(Area):
   def __init__(self, bg, sieve_function=None, general=None, radius=5):

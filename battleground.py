@@ -84,9 +84,12 @@ class Tile(object):
     return self.passable and (self.entity == None or self.entity.is_ally(passenger))
 
   def draw(self, con):
-    if len(self.effects) > 0: drawable = self.effects[-1]
-    elif self.entity is not None: drawable = self.entity
-    else: drawable = self
+    if len(self.effects) > 0:
+      drawable = self.effects[-1]
+    elif self.entity:
+      drawable = self.entity
+    else:
+      drawable = self
     libtcod.console_put_char_ex(con, self.x, self.y, drawable.get_char(drawable.x-self.x,drawable.y-self.y), drawable.color, self.bg_color)
   
   def hover(self, color=libtcod.blue):

@@ -35,6 +35,7 @@ class Effect(entity.Entity):
     self.x += dx
     self.y += dy
     self.bg.tiles[(self.x, self.y)].effects.append(self)
+    return True
 
   def teleport(self, x, y):
     self.bg.tiles[(self.x, self.y)].effects.remove(self)
@@ -175,6 +176,15 @@ class Thunder(Effect):
         for t in self.area.get_tiles(self.x, self.y):
           if (t.x, t.y) != (e.x, e.y):
             e.clone(t.x, t.y)
+
+class Pathing(Effect):
+  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char=' ', color=libtcod.white):
+    super(Pathing, self).__init__(battleground, x, y, side, char, color)
+
+  def update(self):
+    if not self.alive:
+      return
+    self.move_path()
 
 class Wave(Effect):
   def __init__(self, battleground, x, y, side, power):
