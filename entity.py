@@ -106,7 +106,7 @@ class Entity(object):
 
 class BigEntity(Entity):
   def __init__(self, battleground, x, y, side, chars=["a", "b", "c", "d"], colors=[libtcod.white]*4):
-    super(BigEntity, self).__init__(battleground, x, y, side, chars[0], colors[0])
+    super(BigEntity, self).__init__(battleground, side, x, y, chars[0], colors[0])
     self.chars = chars
     self.colors = colors
     self.length = int(math.sqrt(len(self.chars)).real)

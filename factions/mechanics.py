@@ -1,6 +1,6 @@
 from area import *
 from general import General
-from minion import Minion
+from minion import Minion, BigMinion
 from skill import *
 import sieve
 
@@ -18,6 +18,7 @@ class Flappy(General):
                              Arc(self.bg, origin=(self.gobmerang.x, self.y), ratio_y=0.6)))
   def start_battle(self):
     self.gobmerang = Pathing(self.bg, self.x + (-3 if self.side else 3), self.y, self.side, char='G')
-    self.slingshot = BigEntity(self.bg, self.x + (-4 if self.side else 2), self.y-1, self.side, chars=['H']*9, colors=[libtcod.white]*9)
+    self.slingshot = BigMinion(self.bg, self.side, self.x + (-4 if self.side else 2), self.y-1, name="Slingmerang",
+                               chars=['H']*9, colors=[libtcod.white]*9)
     super(Flappy, self).start_battle()
 
