@@ -20,6 +20,6 @@ class Saviours(Faction):
   def __init__(self, battleground, side):
     generals = []
     generals.append(saviours.Ares(battleground, side))
-    generals.append(general.General(battleground, side))
+    generals.append(saviours.Archer(battleground, side))
     generals.append(general.Emperor(battleground, side))
     super(Saviours, self).__init__(battleground, side, generals, "Saviours")
