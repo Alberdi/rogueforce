@@ -83,6 +83,37 @@ class Blinking(Effect):
     else:
       self.next_action -= 1
 
+class Boulder(Effect):
+  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='o', color=libtcod.white, power=10, delay=0, delta_power=-2):
+    super(Boulder, self).__init__(battleground, x, y, side, char, color)
+    self.power = power
+    self.delta_power = delta_power
+    self.delay = delay
+
+  def clone(self, x, y): 
+    if self.bg.is_inside(x, y):
+      return self.__class__(self.bg, x, y, self.side, self.char, self.original_color, self.power, self.delay, self.delta_power)
+    return None
+
+  def update(self):
+    if not self.alive:
+      return
+    self.move_path()
+    if self.delay > 0:
+      self.delay -= 1
+      if self.delay == 0:
+        self.char = self.char.title()
+      return
+    entity = self.bg.tiles[(self.x, self.y)].entity
+    if entity:
+      entity.get_attacked(self)
+      self.dissapear()
+      return
+    self.power += self.delta_power
+    if not self.path or self.power == 0:
+      self.dissapear()
+      return
+
 class Darkness(Effect):
   def __init__(self, battleground, x, y, duration):
     super(Darkness, self).__init__(battleground, x, y, entity.NEUTRAL_SIDE, ' ')
@@ -113,6 +144,15 @@ class Explosion(Effect):
     else:
       self.do_attack()
       self.dissapear()
+
+class Pathing(Effect):
+  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char=' ', color=libtcod.white):
+    super(Pathing, self).__init__(battleground, x, y, side, char, color)
+
+  def update(self):
+    if not self.alive:
+      return
+    self.move_path()
 
 class Slash(Effect):
   def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='|', color=libtcod.white, power=10, steps=8, goto=1, area=None):
@@ -176,15 +216,6 @@ class Thunder(Effect):
         for t in self.area.get_tiles(self.x, self.y):
           if (t.x, t.y) != (e.x, e.y):
             e.clone(t.x, t.y)
-
-class Pathing(Effect):
-  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char=' ', color=libtcod.white):
-    super(Pathing, self).__init__(battleground, x, y, side, char, color)
-
-  def update(self):
-    if not self.alive:
-      return
-    self.move_path()
 
 class Wave(Effect):
   def __init__(self, battleground, x, y, side, power):
