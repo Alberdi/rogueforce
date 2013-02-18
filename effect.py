@@ -1,5 +1,8 @@
 import entity
+import status
+
 from math import copysign
+
 import libtcodpy as libtcod
 
 class Effect(entity.Entity):
@@ -144,6 +147,37 @@ class Explosion(Effect):
     else:
       self.do_attack()
       self.dissapear()
+
+class Lava(Effect):
+  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char=None, color=libtcod.red, power=5, duration=10):
+    super(Lava, self).__init__(battleground, x, y, side, char, color)
+    self.power = power
+    self.original_duration = duration
+    self.duration = duration
+    self.bg.tiles[(self.x, self.y)].hover(color)
+    self.burning_status =  status.Poison(None, power=1, tbt=2, ticks=1, name="Burnt")
+    entity = self.bg.tiles[(self.x, self.y)].entity
+    if entity:
+      entity.get_attacked(self)
+
+  def clone(self, x, y): 
+    if self.bg.is_inside(x, y):
+      return self.__class__(self.bg, x, y, self.side, self.char, self.original_color, self.power, self.original_duration)
+    return None
+
+  def update(self):
+    if not self.alive:
+      return
+    if self.duration == 0:
+      self.bg.tiles[(self.x, self.y)].unhover()
+      self.dissapear()
+    if self.path:
+      tile = self.path.pop(0)
+      self.clone(tile.x, tile.y)
+    entity = self.bg.tiles[(self.x, self.y)].entity
+    if entity:
+      self.burning_status.clone(entity)
+    self.duration -= 1
 
 class Pathing(Effect):
   def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char=' ', color=libtcod.white):

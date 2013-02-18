@@ -1,12 +1,18 @@
 class Status(object):
-  def __init__(self, entity, duration = 9999):
+  def __init__(self, entity, duration=9999, name="Status"):
     self.duration = duration
     self.entity = entity
-    if entity != None: # Not a prototype
+    self.name = name
+    if entity: # Not a prototype
+      for s in self.entity.statuses:
+        if s.name == self.name:
+          # We refresh the duration if it's bigger
+          s.duration = max(s.duration, self.duration)
+          return
       self.entity.statuses.append(self)
   
   def clone(self, entity):
-    return self.__class__(entity, self.duration)
+    return self.__class__(entity, self.duration, self.name)
 
   def end(self):
     self.duration = -1
@@ -23,8 +29,8 @@ class Status(object):
         self.end()
 
 class Blind(Status):
-  def __init__(self, entity, duration = 9999):
-    super(Blind, self).__init__(entity, duration)
+  def __init__(self, entity, duration=9999, name="Blindness"):
+    super(Blind, self).__init__(entity, duration, name)
     self.saved_power = 0
     if entity != None:
       (self.saved_power, entity.power) = (entity.power, self.saved_power)
@@ -34,8 +40,8 @@ class Blind(Status):
     super(Blind, self).end()
 
 class FreezeCooldowns(Status):
-  def __init__(self, entity, duration = 9999):
-    super(FreezeCooldowns, self).__init__(entity, duration)
+  def __init__(self, entity, duration=9999, name="Freeze cooldowns"):
+    super(FreezeCooldowns, self).__init__(entity, duration, name)
 
   def tick(self):
     for s in self.entity.skills:
@@ -43,7 +49,7 @@ class FreezeCooldowns(Status):
 
 class Poison(Status):
   # tbt = time between ticks
-  def __init__(self, entity, power, tbt = 0, ticks = 9999):
+  def __init__(self, entity, power, tbt=0, ticks=9999, name="Poison"):
     # Duration is not exact, it lasts a few more updates, but that shouldn't be a problem.
     super(Poison, self).__init__(entity, ticks*(tbt+1))
     self.tbt = tbt
@@ -52,13 +58,13 @@ class Poison(Status):
     self.timer = 0
 
   def clone(self, entity):
-    return self.__class__(entity, self.power, self.tbt, self.ticks)
+    return self.__class__(entity, self.power, self.tbt, self.ticks, self.name)
 
   def tick(self):
     self.timer -= 1
     if self.timer < 0:
       self.entity.get_attacked(self)
       self.timer = self.tbt
-      self.ticks -= 1
-      if self.ticks == 0: self.duration = -1 # end
+      #self.ticks -= 1
+      #if self.ticks == 0: self.duration = -1 # end
 

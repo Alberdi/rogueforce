@@ -24,6 +24,8 @@ class Flappy(General):
                              Arc(self.bg, origin=(self.gobmerang.x, self.y), ratio_y=0.6)))
     self.skills.append(Skill(self, place_entity, 5, [Boulder(self.bg, delay=5)], "Drop the boulder!", "Tells Gobmerang to drop a boulder",
                              SingleTarget(self.bg)))
+    self.skills.append(Skill(self, place_entity, 5, [Lava(self.bg)], "Burn them from above!", "Tells Gobmerang to drop a cauldron of oil",
+                             SingleTarget(self.bg)))
 
   def start_battle(self):
     self.gobmerang = Pathing(self.bg, self.x + (-3 if self.side else 3), self.y, self.side, char='G')
@@ -55,10 +57,11 @@ class Flappy(General):
         self.slingshot_drawn = False
         self.gobmerang_shot = False
         return True
-    elif i == 1:
+    elif i == 1 or i == 2:
       if not self.gobmerang_shot and len(self.gobmerang.path) > 3:
-        if super(Flappy, self).use_skill(i, self.gobmerang.path[2].x, self.gobmerang.path[2].y):
-          self.bg.effects[-1].path = self.gobmerang.path[2:15]
+        index = 2 if i == 1 else 0
+        if super(Flappy, self).use_skill(i, self.gobmerang.path[index].x, self.gobmerang.path[index].y):
+          self.bg.effects[-1].path = self.gobmerang.path[index:15]
           self.gobmerang_shot = True
           return True
     else:

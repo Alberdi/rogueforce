@@ -84,7 +84,7 @@ class Tile(object):
     return self.passable and (self.entity == None or self.entity.is_ally(passenger))
 
   def draw(self, con):
-    if len(self.effects) > 0:
+    if len(self.effects) > 0 and self.effects[-1].char:
       drawable = self.effects[-1]
     elif self.entity:
       drawable = self.entity
