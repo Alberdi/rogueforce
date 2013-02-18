@@ -114,6 +114,30 @@ class Explosion(Effect):
       self.do_attack()
       self.dissapear()
 
+class Pathing(Effect):
+  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char=' ', color=libtcod.white):
+    super(Pathing, self).__init__(battleground, x, y, side, char, color)
+
+  def update(self):
+    if not self.alive:
+      return
+    self.move_path()
+
+class Pointing_Arrow(Pathing):
+  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, power=10, char='>'):
+    super(Pointing_Arrow, self).__init__(battleground, x, y, side, char)
+    self.power = power
+    
+  def clone(self, x, y):
+    return self.__class__(self.bg, x, y, self.side, self.power, self.char)
+
+  def update(self):
+    if not self.alive: return
+    if not self.bg.is_inside(self.x, self.y):
+      self.dissapear()
+    self.do_attack(True)
+    super(Pointing_Arrow, self).update()
+
 class Slash(Effect):
   def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='|', color=libtcod.white, power=10, steps=8, goto=1, area=None):
     super(Slash, self).__init__(battleground, x, y, side, color)
@@ -176,15 +200,6 @@ class Thunder(Effect):
         for t in self.area.get_tiles(self.x, self.y):
           if (t.x, t.y) != (e.x, e.y):
             e.clone(t.x, t.y)
-
-class Pathing(Effect):
-  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char=' ', color=libtcod.white):
-    super(Pathing, self).__init__(battleground, x, y, side, char, color)
-
-  def update(self):
-    if not self.alive:
-      return
-    self.move_path()
 
 class Wave(Effect):
   def __init__(self, battleground, x, y, side, power):

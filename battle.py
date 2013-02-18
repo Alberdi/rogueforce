@@ -2,6 +2,7 @@ from area import SingleTarget
 from battleground import Battleground
 from general import *
 from window import *
+from factions import saviours
 
 import libtcodpy as libtcod
 
@@ -128,7 +129,7 @@ class BattleWindow(Window):
 from factions import mechanics
 if __name__=="__main__":
   bg = Battleground(BG_WIDTH, BG_HEIGHT)
-  bg.generals = [mechanics.Flappy(bg, 0, 3, 21), mechanics.Flappy(bg, 1, 56, 21)]
+  bg.generals = [saviours.Archer(bg, 0, 3, 21), mechanics.Flappy(bg, 1, 56, 21)]
   bg.generals[0].start_scenario()
   bg.generals[1].start_scenario()
   if len(sys.argv) == 4: 
