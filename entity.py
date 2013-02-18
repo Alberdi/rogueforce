@@ -163,6 +163,7 @@ class Fortress(BigEntity):
     self.capacity = len(chars)
     self.connected_fortresses = []
     self.guests = []
+    self.name = "Fortress"
     self.requisition_production = requisition_production
 
   def can_be_attacked(self):
