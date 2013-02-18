@@ -84,7 +84,7 @@ class Blinking(Effect):
       self.next_action -= 1
 
 class Boulder(Effect):
-  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='o', color=libtcod.white, power=10, delay=0, delta_power=-2):
+  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='O', color=libtcod.white, power=10, delay=0, delta_power=-2):
     super(Boulder, self).__init__(battleground, x, y, side, char, color)
     self.power = power
     self.delta_power = delta_power
@@ -102,13 +102,13 @@ class Boulder(Effect):
     if self.delay > 0:
       self.delay -= 1
       if self.delay == 0:
-        self.char = self.char.title()
+        self.char = self.char.lower()
       return
     entity = self.bg.tiles[(self.x, self.y)].entity
     if entity:
       entity.get_attacked(self)
-      self.dissapear()
-      return
+      #self.dissapear()
+      #return
     self.power += self.delta_power
     if not self.path or self.power == 0:
       self.dissapear()

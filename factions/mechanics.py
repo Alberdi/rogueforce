@@ -25,7 +25,7 @@ class Flappy(General):
     self.skills = []
     self.skills.append(Skill(self, add_path, 5, [self.gobmerang], "Fire the Gobmerang!", "Launches Gobmerang to fly high in the air",
                              Arc(self.bg, origin=(self.gobmerang.x, self.y), ratio_y=0.6)))
-    self.skills.append(Skill(self, place_entity, 5, [Boulder(self.bg, char='o', delay=5)], "Drop the boulder!", "Tells Gobmerang to drop a boulder",
+    self.skills.append(Skill(self, place_entity, 5, [Boulder(self.bg, delay=5)], "Drop the boulder!", "Tells Gobmerang to drop a boulder",
                              SingleTarget(self.bg)))
 
   def start_battle(self):
