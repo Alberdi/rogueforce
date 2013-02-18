@@ -18,9 +18,6 @@ class Flappy(General):
     else:
       self.slingshot.chars[8], self.slingshot.chars[5] = self.slingshot.chars[5], self.slingshot.chars[8]
 
-  def gobmerang_flying(self):
-    return (self.slingshot.x+1, self.slingshot.y+1) != (self.gobmerang.x, self.gobmerang.y)
-
   def initialize_skills(self):
     self.skills = []
     self.skills.append(Skill(self, add_path, 5, [self.gobmerang], "Fire the Gobmerang!", "Launches Gobmerang to fly high in the air",
@@ -40,16 +37,18 @@ class Flappy(General):
   def update(self):
     if not self.alive:
       return
-    if self.skills[0].cd == self.skills[0].max_cd-1 and not self.slingshot_drawn:
+    if not self.slingshot.alive and self.gobmerang.alive and not self.gobmerang.path:
+      self.gobmerang.dissapear()
+    elif self.skills[0].cd == self.skills[0].max_cd-1 and not self.slingshot_drawn:
       self.draw_slingshot()
       self.slingshot_drawn = True
     super(Flappy, self).update()
 
   def use_skill(self, i, x, y):
     if i == 0:
-      if self.gobmerang_flying():
+      if self.gobmerang.path:
         return False
-      if super(Flappy, self).use_skill(i, x, y):
+      if self.slingshot.alive and super(Flappy, self).use_skill(i, x, y):
         # Gobmerang needs to return to the slingshot afterwards
         self.gobmerang.path.append(self.bg.tiles[(self.gobmerang.x, self.gobmerang.y)])
         self.draw_slingshot()
