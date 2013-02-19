@@ -3,9 +3,9 @@ from math import copysign
 import libtcodpy as libtcod
 
 class Effect(entity.Entity):
-  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char=' ', color=libtcod.white):
+  def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char=' ', color=libtcod.white):
     saved = battleground.tiles[(x, y)].entity
-    super(Effect, self).__init__(battleground, x, y, side, char, color)
+    super(Effect, self).__init__(battleground, side, x, y, char, color)
     self.bg.tiles[(x, y)].entity = saved
     self.bg.tiles[(x, y)].effects.append(self)
     if x != -1:
@@ -16,7 +16,7 @@ class Effect(entity.Entity):
 
   def clone(self, x, y): 
     if self.bg.is_inside(x, y):
-      return self.__class__(self.bg, x, y, self.side, self.char, self.original_color)
+      return self.__class__(self.bg, self.side, x, y, self.char, self.original_color)
     return None
 
   def dissapear(self):
@@ -45,8 +45,8 @@ class Effect(entity.Entity):
 
 
 class Arrow(Effect):
-  def __init__(self, battleground, x, y, side, power, attack_effects = ['>', '<']):
-    super(Arrow, self).__init__(battleground, x, y, side, attack_effects[side], libtcod.light_red)
+  def __init__(self, battleground, side, x, y, power, attack_effects = ['>', '<']):
+    super(Arrow, self).__init__(battleground, side, x, y, attack_effects[side], libtcod.light_red)
     self.power = power
     self.do_attack()
 
@@ -60,8 +60,8 @@ class Arrow(Effect):
     self.do_attack(True)
 
 class Blinking(Effect):
-  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char=' ', color=libtcod.white):
-    super(Blinking, self).__init__(battleground, x, y, side, char, color)
+  def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char=' ', color=libtcod.white):
+    super(Blinking, self).__init__(battleground, side, x, y, char, color)
     self.visible = True
 
   def dissapear(self):
@@ -84,7 +84,7 @@ class Blinking(Effect):
 
 class Darkness(Effect):
   def __init__(self, battleground, x, y, duration):
-    super(Darkness, self).__init__(battleground, x, y, entity.NEUTRAL_SIDE, ' ')
+    super(Darkness, self).__init__(battleground, entity.NEUTRAL_SIDE, x, y, ' ')
     self.duration = duration
 
   def update(self):
@@ -93,13 +93,13 @@ class Darkness(Effect):
     if self.duration <= 0: self.dissapear()
 
 class Explosion(Effect):
-  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='*', color=libtcod.lighter_red, power=10):
-    super(Explosion, self).__init__(battleground, x, y, side, char, color)
+  def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char='*', color=libtcod.lighter_red, power=10):
+    super(Explosion, self).__init__(battleground, side, x, y, char, color)
     self.power = power
 
   def clone(self, x, y): 
     if self.bg.is_inside(x, y):
-      return self.__class__(self.bg, x, y, self.side, self.char, self.original_color, self.power)
+      return self.__class__(self.bg, self.side, x, y, self.char, self.original_color, self.power)
     return None
 
   def update(self):
@@ -114,8 +114,8 @@ class Explosion(Effect):
       self.dissapear()
 
 class Slash(Effect):
-  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='|', color=libtcod.white, power=10, steps=8, goto=1, area=None):
-    super(Slash, self).__init__(battleground, x, y, side, color)
+  def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char='|', color=libtcod.white, power=10, steps=8, goto=1, area=None):
+    super(Slash, self).__init__(battleground, side, x, y, color)
     self.general = self.bg.generals[side]
     self.max_steps = steps
     self.step = 0;
@@ -129,7 +129,7 @@ class Slash(Effect):
 
   def clone(self, x, y):
     if self.bg.is_inside(x, y):
-      return self.__class__(self.bg, self.general.x, self.general.y, self.side, self.char, self.original_color, self.power, self.max_steps, self.goto)
+      return self.__class__(self.bg, self.side, self.general.x, self.general.y, self.char, self.original_color, self.power, self.max_steps, self.goto)
     return None
 
   def update(self):
@@ -145,17 +145,17 @@ class Slash(Effect):
     self.do_attack()
 
 class Thunder(Effect):
-  def __init__(self, battleground, x=-1, y=-1, side=entity.NEUTRAL_SIDE, char='|', color=libtcod.lighter_red, power=30, area=None):
+  def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char='|', color=libtcod.lighter_red, power=30, area=None):
     self.target_y = y
     self.power = power
     self.area = area
     if x != -1:
       y = y-5 if y-5 >= 0 else 0
-    super(Thunder, self).__init__(battleground, x, y, side, char, color)
+    super(Thunder, self).__init__(battleground, side, x, y, char, color)
 
   def clone(self, x, y): 
     if self.bg.is_inside(x, y):
-      return self.__class__(self.bg, x, y, self.side, self.char, self.original_color, self.power, self.area)
+      return self.__class__(self.bg, self.side, x, y, self.char, self.original_color, self.power, self.area)
     return None
 
   def update(self):
@@ -170,15 +170,15 @@ class Thunder(Effect):
       self.color = libtcod.lighter_red
     else:
       self.dissapear()
-      e = Explosion(self.bg, self.x, self.y, self.side, '*', libtcod.lighter_red, self.power)
+      e = Explosion(self.bg, self.side, self.x, self.y, '*', libtcod.lighter_red, self.power)
       if self.area:
         for t in self.area.get_tiles(self.x, self.y):
           if (t.x, t.y) != (e.x, e.y):
             e.clone(t.x, t.y)
 
 class Wave(Effect):
-  def __init__(self, battleground, x, y, side, power):
-    super(Wave, self).__init__(battleground, x, y, side, '~', libtcod.light_blue)
+  def __init__(self, battleground, side, x, y, power):
+    super(Wave, self).__init__(battleground, side, x, y, '~', libtcod.light_blue)
     self.power = power
     self.entities_attacked = []
     self.do_attack()
