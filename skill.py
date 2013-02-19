@@ -115,7 +115,7 @@ def sonic_waves(general, power, waves):
     x = general.x+1-(i+1)/2 if general.side == 0 else general.x-1+(i+1)/2
     y = general.y+(((i+1)/2)*(-1 if i%2 == 0 else 1))
     if general.bg.is_inside(x,y):
-      general.bg.effects.append(Wave(general.bg, x, y, general.side, power))
+      general.bg.effects.append(Wave(general.bg, general.side, x, y, power))
   return waves > 0
 
 def water_pusher(general, tile):

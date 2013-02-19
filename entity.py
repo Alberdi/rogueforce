@@ -4,7 +4,7 @@ import cmath as math
 NEUTRAL_SIDE = 555
 
 class Entity(object):
-  def __init__(self, battleground, x=-1, y=-1, side=NEUTRAL_SIDE, char=' ', color=libtcod.white):
+  def __init__(self, battleground, side=NEUTRAL_SIDE, x=-1, y=-1, char=' ', color=libtcod.white):
     self.bg = battleground
     self.x = x
     self.y = y
@@ -43,7 +43,7 @@ class Entity(object):
 
   def clone(self, x, y): 
     if self.bg.is_inside(x, y) and self.bg.tiles[(x, y)].entity is None and self.bg.tiles[(x, y)].is_passable(self):
-      return self.__class__(self.bg, x, y, self.side, self.char, self.original_color)
+      return self.__class__(self.bg, self.side, x, y, self.char, self.original_color)
     return None
 
   def die(self):
@@ -105,7 +105,7 @@ class Entity(object):
       s.update()
 
 class BigEntity(Entity):
-  def __init__(self, battleground, x, y, side, chars=["a", "b", "c", "d"], colors=[libtcod.white]*4):
+  def __init__(self, battleground, side, x, y, chars=["a", "b", "c", "d"], colors=[libtcod.white]*4):
     super(BigEntity, self).__init__(battleground, side, x, y, chars[0], colors[0])
     self.chars = chars
     self.colors = colors
@@ -158,8 +158,8 @@ class BigEntity(Entity):
         self.bg.tiles[(self.x+i, self.y+j)].entity = self
       
 class Fortress(BigEntity):
-  def __init__(self, battleground, x, y, side=NEUTRAL_SIDE, chars=[':']*4, colors=[libtcod.white]*4, requisition_production=1):
-    super(Fortress, self).__init__(battleground, x, y, side, chars, colors)
+  def __init__(self, battleground, side=NEUTRAL_SIDE, x=-1, y=-1, chars=[':']*4, colors=[libtcod.white]*4, requisition_production=1):
+    super(Fortress, self).__init__(battleground, side, x, y, chars, colors)
     self.capacity = len(chars)
     self.connected_fortresses = []
     self.guests = []
@@ -222,7 +222,7 @@ class Fortress(BigEntity):
 
 class Mine(Entity):
   def __init__(self, battleground, x=-1, y=-1, power=50):
-    super(Mine, self).__init__(battleground, x, y, NEUTRAL_SIDE, 'X', libtcod.red)
+    super(Mine, self).__init__(battleground, NEUTRAL_SIDE, x, y, 'X', libtcod.red)
     self.power = power
 
   def can_be_attacked(self):

@@ -59,7 +59,7 @@ class Battleground(object):
         x += 1
     f.close()
     for f in forts:
-      self.fortresses.append(entity.Fortress(self, f[0], f[1], entity.NEUTRAL_SIDE, [self.tiles[f].char]*4, [libtcod.white]*4))
+      self.fortresses.append(entity.Fortress(self, entity.NEUTRAL_SIDE, f[0], f[1], [self.tiles[f].char]*4, [libtcod.white]*4))
 
   def unhover_tiles(self):
     for t in self.hovered:

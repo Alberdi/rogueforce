@@ -7,7 +7,7 @@ import tactic
 
 class Minion(Entity):
   def __init__(self, battleground, side, x=-1, y=-1, name="minion", color=libtcod.white):
-    super(Minion, self).__init__(battleground, x, y, side, name[0], color)
+    super(Minion, self).__init__(battleground, side, x, y, name[0], color)
     self.name = name
     self.max_hp = 20
     self.hp = 20
@@ -74,8 +74,8 @@ class Minion(Entity):
 
 class BigMinion(BigEntity, Minion):
   def __init__(self, battleground, side, x=-1, y=-1, name="Giant", chars=['G']*4, colors=[libtcod.white]*4):
-    BigEntity.__init__(self, battleground, x, y, side, chars, colors)
-    Minion.__init__(self, battleground, side, x, y, name)
+    BigEntity.__init__(self, battleground, side, x, y, chars, colors)
+    Minion.__init__(self, battleground, side, x, y, name, colors[0])
     self.max_hp *= self.length
     self.hp = self.max_hp
     
@@ -83,7 +83,7 @@ class BigMinion(BigEntity, Minion):
     for (pos_x, pos_y) in [(x+i, y+j) for i in range (0, self.length) for j in range (0, self.length)]:
       if not self.bg.is_inside(pos_x, pos_y) or self.bg.tiles[(pos_x, pos_y)].entity is not None or not self.bg.tiles[(x, y)].is_passable(self):
         return None
-    entity = self.__class__(self.bg, x, y, self.side, self.name, self.color)
+    entity = self.__class__(self.bg, self.side, x, y, self.name, self.color)
     entity.update_body()
     return entity
 
@@ -115,5 +115,5 @@ class RangedMinion(Minion):
     if self.tactic is None: return
     next_x = self.x+1 if self.side == 0 else self.x-1
     if self.tactic == tactic.stop and self.bg.tiles[(next_x, self.y)].entity == None:
-      self.bg.effects.append(Arrow(self.bg, next_x, self.y, self.side, self.ranged_power, self.attack_effects))
+      self.bg.effects.append(Arrow(self.bg, self.side, next_x, self.y, self.ranged_power, self.attack_effects))
     else: super(RangedMinion, self).follow_tactic()
