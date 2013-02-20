@@ -26,6 +26,8 @@ class Flappy(General):
                              SingleTarget(self.bg)))
     self.skills.append(Skill(self, place_entity, 5, [Lava(self.bg)], "Burn them from above!", "Tells Gobmerang to drop a cauldron of oil",
                              SingleTarget(self.bg)))
+    self.skills.append(Skill(self, place_entity, 5, [Explosion(self.bg, power=20)], "Last chance, boom the machine!", "Explodes the slingshot",
+                             CustomArea(self.bg, tiles=Circle(self.bg, radius=4).get_all_tiles(self.slingshot.x+1, self.slingshot.y+1))))
 
   def start_battle(self):
     self.gobmerang = Pathing(self.bg, self.side, self.x + (-3 if self.side else 3), self.y, char='G')
@@ -64,7 +66,8 @@ class Flappy(General):
           self.bg.effects[-1].path = self.gobmerang.path[index:15]
           self.gobmerang_shot = True
           return True
-    else:
-      return super(Flappy, self).use_skill(i, x, y)
+    elif i == 3:
+      if self.slingshot.alive:
+        return super(Flappy, self).use_skill(i, x, y)
     return False
 
