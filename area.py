@@ -44,7 +44,9 @@ class Arc(Area):
       angle = self.start_angle + i * self.step_angle
       xx = int(round(center_x + math.cos(angle) * radius * direction))
       yy = int(round(center_y + math.sin(angle) * radius * self.ratio_y))
-      if self.bg.is_inside(xx, yy) and self.bg.tiles[(xx, yy)] not in tiles:
+      if not self.bg.is_inside(xx, yy):
+        return []
+      if self.bg.tiles[(xx, yy)] not in tiles:
         tiles.append(self.bg.tiles[(xx, yy)])
     return tiles
 
