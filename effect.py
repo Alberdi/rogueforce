@@ -28,8 +28,9 @@ class Effect(entity.Entity):
 
   def do_attack(self, dissapear=False):
     entity = self.bg.tiles[(self.x, self.y)].entity
-    if entity is not None and entity.can_be_attacked():
-      if not entity.is_ally(self): entity.get_attacked(self)
+    if entity and entity.can_be_attacked():
+      if not entity.is_ally(self):
+        entity.get_attacked(self)
       if dissapear:
         self.dissapear()
 
@@ -107,11 +108,7 @@ class Boulder(Effect):
       if self.delay == 0:
         self.char = self.char.lower()
       return
-    entity = self.bg.tiles[(self.x, self.y)].entity
-    if entity:
-      entity.get_attacked(self)
-      #self.dissapear()
-      #return
+    self.do_attack()
     self.power += self.delta_power
     if not self.path or self.power == 0:
       self.dissapear()
