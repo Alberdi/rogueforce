@@ -26,10 +26,13 @@ class Flappy(General):
                              SingleTarget(self.bg)))
     self.skills.append(Skill(self, place_entity, 5, [Lava(self.bg)], "Burn them from above!", "Tells Gobmerang to drop a cauldron of oil",
                              SingleTarget(self.bg)))
+    self.skills.append(Skill(self, add_path, 5, [], "Fire the Gobmerang!", "Launches Gobmerang to fly high in the air",
+                             Arc(self.bg, origin=(self.x, self.y+1), ratio_y=1.2, steps=120)))
     self.skills.append(Skill(self, place_entity, 5, [Explosion(self.bg, power=20)], "Last chance, boom the machine!", "Explodes the slingshot",
                              CustomArea(self.bg, tiles=Circle(self.bg, radius=4).get_all_tiles(self.slingshot.x+1, self.slingshot.y+1))))
 
   def start_battle(self):
+    self.boomerang = Bouncing(self.bg, char="(" if self.side else ")")
     self.gobmerang = Pathing(self.bg, self.side, self.x + (-3 if self.side else 3), self.y, char='G')
     self.slingshot = BigMinion(self.bg, self.side, self.x + (-4 if self.side else 2), self.y-1, name="Slingmerang",
                                chars=list("//>\\~ ~\\|") if self.side else list("//|\\~ ~\\<"), colors=[libtcod.white]*9)
@@ -67,6 +70,15 @@ class Flappy(General):
           self.gobmerang_shot = True
           return True
     elif i == 3:
+      clone = self.boomerang.clone(x,y)
+      clone.path = []
+      self.skills[i].parameters = [clone]
+      if super(Flappy, self).use_skill(i, x, y):
+        return True
+      else:
+        clone.dissapear()
+        return False
+    elif i == 4:
       if self.slingshot.alive:
         return super(Flappy, self).use_skill(i, x, y)
     return False

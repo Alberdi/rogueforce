@@ -112,7 +112,33 @@ class Boulder(Effect):
     self.power += self.delta_power
     if not self.path or self.power == 0:
       self.dissapear()
+
+class Bouncing(Effect):
+  def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char='o', color=libtcod.white, power=5, path=[]):
+    super(Bouncing, self).__init__(battleground, side, x, y, char, color)
+    self.path = path
+    self.power = power
+    self.direction = 1
+    self.position = 1
+
+  def clone(self, x, y): 
+    if self.bg.is_inside(x, y):
+      return self.__class__(self.bg, self.side, x, y, self.char, self.original_color, self.power, self.path)
+    return None
+
+  def update(self):
+    if not self.alive:
       return
+    t = self.path[self.position % len(self.path)]
+    if self.position == 0:
+      self.dissapear()
+      return
+    self.teleport(t.x, t.y)
+    entity = self.bg.tiles[(self.x, self.y)].entity
+    if entity:
+      self.do_attack()
+      self.direction *= -1
+    self.position += self.direction
 
 class Darkness(Effect):
   def __init__(self, battleground, x, y, duration):
