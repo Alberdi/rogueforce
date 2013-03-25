@@ -71,6 +71,8 @@ class Flappy(General):
           return True
     elif i == 3:
       clone = self.boomerang.clone(x,y)
+      if not clone:
+        return False
       clone.path = []
       self.skills[i].parameters = [clone]
       if super(Flappy, self).use_skill(i, x, y):
