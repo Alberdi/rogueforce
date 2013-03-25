@@ -130,7 +130,7 @@ class Bouncing(Effect):
     if not self.alive:
       return
     t = self.path[self.position % len(self.path)]
-    if self.position == 0:
+    if self.position == 0 or self.position == len(self.path)-1:
       self.dissapear()
       return
     self.teleport(t.x, t.y)
