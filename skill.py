@@ -102,6 +102,16 @@ def place_entity(general, tile, entity):
   clone = entity.clone(tile.x, tile.y)
   return clone is not None
 
+def recall_entity(general, tile):
+  for m in general.bg.minions:
+    if m.is_ally(general):
+      for s in m.statuses:
+        if s.name == "Vanished" and m.teleport(tile.x, tile.y):
+          s.end()
+          m.teleport(tile.x, tile.y)
+          return True
+  return False
+
 def restock_minions(general, number):
   #TODO: this can be a lot cleaner
   tmp = general.minions_alive

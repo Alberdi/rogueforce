@@ -93,7 +93,7 @@ class Entity(object):
     self.next_action = self.default_next_action
 
   def teleport(self, x, y):
-    if self.bg.tiles[(x, y)].entity is None:
+    if self.bg.tiles[(x, y)].entity is None and self.bg.tiles[(x, y)].is_passable(self):
       self.bg.tiles[(x, y)].entity = self
       self.bg.tiles[(self.x, self.y)].entity = None
       (self.x, self.y) = (x, y)
