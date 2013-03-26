@@ -1,6 +1,8 @@
 from area import *
 from general import General
+from sieve import *
 from skill import *
+from status import *
 
 import libtcodpy as libtcod
 
@@ -15,7 +17,8 @@ class Starcall(General):
   def initialize_skills(self):
     self.skills = []
     self.skills.append(Skill(self, null, 5))
-    self.skills.append(Skill(self, null, 5))
+    self.skills.append(Skill(self, apply_status, 5, [Shield(None, 20)], "Watch out!",
+                      "Shields minion from upcoming damage", AllBattleground(self.bg, is_ally_minion, self)))
     self.skills.append(Skill(self, place_entity, 5, [Thunder(self.bg, power=30)], "Thunderstruck",
                       "A powerful lightning strikes near the target", SingleTarget(self.bg)))
     self.skills.append(Skill(self, place_entity, 5, [Thunder(self.bg, power=10, area=Circle(self.bg, radius=5))], "Thunderstruck",

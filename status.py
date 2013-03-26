@@ -1,3 +1,5 @@
+import libtcodpy as libtcod
+
 class Status(object):
   def __init__(self, entity, duration=9999, name="Status"):
     self.duration = duration
@@ -17,6 +19,9 @@ class Status(object):
   def end(self):
     self.duration = -1
     self.entity.statuses.remove(self)
+
+  def entity_attacked(self, attacker):
+    pass
 
   def tick(self):
     pass
@@ -68,3 +73,17 @@ class Poison(Status):
       #self.ticks -= 1
       #if self.ticks == 0: self.duration = -1 # end
 
+class Shield(Status):
+  def __init__(self, entity, duration=9999, name="Shield"):
+    super(Shield, self).__init__(entity, duration, name)
+    if entity:
+      entity.color = libtcod.dark_yellow
+
+  def end(self):
+    super(Shield, self).end()
+    self.entity.update_color()
+
+  def entity_attacked(self, attacker):
+    if self.duration > 0:
+      self.entity.hp += attacker.power
+      self.end()

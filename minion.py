@@ -42,6 +42,8 @@ class Minion(Entity):
     self.tactic(self)
 
   def get_attacked(self, enemy):
+    for s in self.statuses:
+      s.entity_attacked(enemy)
     self.hp -= enemy.power
     if self.hp > 0:
       self.update_color()
