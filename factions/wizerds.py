@@ -17,7 +17,7 @@ class Starcall(General):
   def initialize_skills(self):
     self.skills = []
     self.skills.append(Skill(self, apply_status, 5, [Vanishing(None, 10, 50)], "Black hole",
-                      "Vanishes a group of minions", Circle(self.bg, radius=3)))
+                      "Vanishes a group of minions", Circle(self.bg, is_ally_minion, self, radius=3)))
     self.skills.append(Skill(self, apply_status, 5, [Shield(None, 20)], "Watch out!",
                       "Shields minion from upcoming damage", AllBattleground(self.bg, is_ally_minion, self)))
     self.skills.append(Skill(self, place_entity, 5, [Thunder(self.bg, power=30)], "Thunderstruck",
