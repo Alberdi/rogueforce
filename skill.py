@@ -1,6 +1,8 @@
 from effect import *
 from entity import *
+
 import area
+import status
 
 class Skill(object):
   def __init__(self, general, function, max_cd, parameters=[], quote="", description="", area=None):
@@ -117,6 +119,14 @@ def sonic_waves(general, power, waves):
     if general.bg.is_inside(x,y):
       general.bg.effects.append(Wave(general.bg, general.side, x, y, power))
   return waves > 0
+
+def vanish_minion(general, tile, duration):
+  if general.bg.is_inside(tile.x, tile.y):
+    entity = general.bg.tiles[(tile.x, tile.y)].entity
+    if entity:
+      status.Vanished(entity, duration)
+      return True
+  return False
 
 def water_pusher(general, tile):
   did_anything = False

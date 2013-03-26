@@ -87,3 +87,20 @@ class Shield(Status):
     if self.duration > 0:
       self.entity.hp += attacker.power
       self.end()
+
+class Vanished(Status):
+  def __init__(self, entity, duration=9999, name="Vanished"):
+    super(Vanished, self).__init__(entity, duration, name)
+    if entity:
+      (self.x, self.y) = (entity.x, entity.y)
+      entity.bg.tiles[(entity.x, entity.y)].entity = None
+      (entity.x, entity.y) = (-1, -1)
+      entity.next_action = 100
+
+  def end(self):
+    super(Vanished, self).end()
+    if self.entity.teleport(self.x, self.y):
+      self.entity.reset_action()
+    else:
+      self.entity.die()
+
