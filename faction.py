@@ -1,6 +1,7 @@
 from factions import mechanics
 from factions import oracles
 from factions import saviours
+from factions import wizerds
 import general
 
 class Faction(object):
@@ -28,4 +29,8 @@ class Saviours(Faction):
     generals.append(saviours.Ares(battleground, side))
     generals.append(general.General(battleground, side))
     generals.append(general.Emperor(battleground, side))
-    super(Saviours, self).__init__(battleground, side, generals, "Saviours")
+
+class Wizerds(Faction):
+  def __init__(self, battleground, side):
+    generals = [wizerds.Flappy(battleground, side)]
+    super(Wizerds, self).__init__(battleground, side, generals, "Wizerds")
