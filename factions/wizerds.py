@@ -22,7 +22,7 @@ class Starcall(General):
                       "Shields minion from upcoming damage", AllBattleground(self.bg, is_ally_minion, self)))
     self.skills.append(Skill(self, place_entity, 5, [Thunder(self.bg, power=30)], "Thunderstruck",
                       "A powerful lightning strikes near the target", SingleTarget(self.bg)))
-    self.skills.append(Skill(self, place_entity, 5, [Thunder(self.bg, power=10, area=Circle(self.bg, radius=5))], "Thunderstruck",
+    self.skills.append(Skill(self, place_entity, 50, [Thunder(self.bg, power=10, area=Circle(self.bg, radius=5))], "Thunderstruck",
                       "A lightning from above creates a wide explosion", SingleTarget(self.bg)))
 
   def use_skill(self, i, x, y):
