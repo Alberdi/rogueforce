@@ -97,6 +97,10 @@ class Vanished(Status):
       (entity.x, entity.y) = (-1, -1)
       entity.next_action = 100
 
+  def update(self):
+    super(Vanished, self).update()
+    self.entity.next_action = 100
+
   def end(self):
     super(Vanished, self).end()
     if self.entity.teleport(self.x, self.y):
@@ -104,3 +108,22 @@ class Vanished(Status):
     else:
       self.entity.die()
 
+class Vanishing(Status):
+  def __init__(self, entity, duration=9999, vanished_duration=9999, name="Vanishing"):
+    super(Vanishing, self).__init__(entity, duration, name)
+    self.vanished_duration = vanished_duration
+
+  def clone(self, entity):
+    return self.__class__(entity, self.duration, self.vanished_duration, self.name)
+
+  def update(self):
+    super(Vanishing, self).update()
+    self.entity.next_action = 100
+    tile = self.entity.bg.tiles[(self.entity.x, self.entity.y)]
+    self.entity.color = libtcod.color_lerp(self.entity.color, tile.bg_color, 1-(self.duration/10.0))
+
+  def end(self):
+    super(Vanishing, self).end()
+    self.entity.update_color()
+    self.entity.reset_action()
+    Vanished(self.entity, self.vanished_duration)
