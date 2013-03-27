@@ -27,7 +27,7 @@ class Starcall(General):
   def start_battle(self):
     super(Starcall, self).start_battle()
     self.rand.seed(1574)
-    self.alternative_skill = Skill(self, recall_entity, 10, [], "Black exit",
+    self.alternative_skill = Skill(self, recall_entity, 10, [10], "Black exit",
                              "Recalls the vanished minions", Circle(self.bg, radius=3))
 
   def use_skill(self, i, x, y):

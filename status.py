@@ -73,6 +73,23 @@ class Poison(Status):
       #self.ticks -= 1
       #if self.ticks == 0: self.duration = -1 # end
 
+class Recalling(Status):
+  def __init__(self, entity, duration=9999, name="Recalling"):
+    super(Recalling, self).__init__(entity, duration, name)
+    self.color = self.entity.color
+
+  def update(self):
+    super(Recalling, self).update()
+    if self.duration > 0:
+      self.entity.next_action = 100
+      tile = self.entity.bg.tiles[(self.entity.x, self.entity.y)]
+      self.entity.color = libtcod.color_lerp(tile.bg_color, self.color, 1-(self.duration/10.0))
+
+  def end(self):
+    super(Recalling, self).end()
+    self.entity.update_color()
+    self.entity.reset_action()
+
 class Shield(Status):
   def __init__(self, entity, duration=9999, name="Shield"):
     super(Shield, self).__init__(entity, duration, name)
@@ -118,9 +135,10 @@ class Vanishing(Status):
 
   def update(self):
     super(Vanishing, self).update()
-    self.entity.next_action = 100
-    tile = self.entity.bg.tiles[(self.entity.x, self.entity.y)]
-    self.entity.color = libtcod.color_lerp(self.entity.color, tile.bg_color, 1-(self.duration/10.0))
+    if self.duration > 0:
+      self.entity.next_action = 100
+      tile = self.entity.bg.tiles[(self.entity.x, self.entity.y)]
+      self.entity.color = libtcod.color_lerp(self.entity.color, tile.bg_color, 1-(self.duration/10.0))
 
   def end(self):
     super(Vanishing, self).end()

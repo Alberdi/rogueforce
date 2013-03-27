@@ -102,13 +102,14 @@ def place_entity(general, tile, entity):
   clone = entity.clone(tile.x, tile.y)
   return clone is not None
 
-def recall_entity(general, tile):
+def recall_entity(general, tile, duration):
   for m in general.bg.minions:
     if m.is_ally(general):
       for s in m.statuses:
         if s.name == "Vanished" and m.teleport(tile.x, tile.y):
           s.end()
           m.teleport(tile.x, tile.y)
+          status.Recalling(m, duration)
           return True
   return False
 
