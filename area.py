@@ -2,16 +2,19 @@ from sieve import Sieve
 import math
 
 class Area(object):
-  def __init__(self, bg, sieve_function=None, general=None):
+  def __init__(self, bg, sieve_function=None, general=None, reach_function=None):
     self.bg = bg
     self.general = general
-    self.sieve = None if sieve_function is None else Sieve(general, sieve_function)
+    self.sieve = Sieve(general, sieve_function) if sieve_function else None
+    self.reach = Sieve(general, reach_function) if reach_function else None
 
   def get_all_tiles(self, x, y):
     return self.get_tiles()
 
   def get_tiles(self, x, y):
-    if self.sieve is None:
+    if self.reach and not self.reach.apply(x, y):
+      return None
+    if not self.sieve:
       return self.get_all_tiles(x, y)
     return filter(self.sieve.apply, self.get_all_tiles(x, y))
 

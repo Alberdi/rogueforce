@@ -1,3 +1,5 @@
+import area
+
 class Sieve(object):
   def __init__(self, general, function):
     self.general = general
@@ -26,3 +28,7 @@ def is_enemy_general(general, tile):
 
 def is_minion(general, tile):
   return tile.entity is not None and tile.entity in general.bg.minions
+
+def is_midrange(general, tile):
+  a = area.Circle(general.bg, radius=25)
+  return tile in a.get_tiles(general.x, general.y)
