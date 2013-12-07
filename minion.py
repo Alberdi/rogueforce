@@ -1,7 +1,8 @@
-from effect import Arrow
 from entity import Entity
 from entity import BigEntity
 import libtcodpy as libtcod
+
+import effect
 import tactic
 
 
@@ -13,6 +14,7 @@ class Minion(Entity):
     self.hp = 20
     self.power = 5
     self.tactic = tactic.null
+    self.attack_effect = effect.TempEffect(self.bg, char='/' if side else '\\')
 
   def can_be_attacked(self):
     return True
@@ -45,6 +47,8 @@ class Minion(Entity):
     for s in self.statuses:
       s.entity_attacked(enemy)
     self.hp -= enemy.power
+    if enemy.attack_effect:
+      enemy.attack_effect.clone(self.x, self.y)
     if self.hp > 0:
       self.update_color()
     else:
@@ -117,5 +121,5 @@ class RangedMinion(Minion):
     if self.tactic is None: return
     next_x = self.x+1 if self.side == 0 else self.x-1
     if self.tactic == tactic.stop and self.bg.tiles[(next_x, self.y)].entity == None:
-      self.bg.effects.append(Arrow(self.bg, self.side, next_x, self.y, self.ranged_power, self.attack_effects))
+      self.bg.effects.append(effect.Arrow(self.bg, self.side, next_x, self.y, self.ranged_power, self.attack_effects))
     else: super(RangedMinion, self).follow_tactic()

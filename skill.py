@@ -72,7 +72,7 @@ def create_minions(general, l):
 
 def darkness(general, tile, duration):
   if tile.passable:
-    d = Darkness(general.bg, tile.x, tile.y, duration)
+    d = TempEffect(general.bg, x=tile.x, y=tile.y, char=' ', duration=duration)
     general.bg.effects.append(d)
   return tile.passable
 

@@ -140,16 +140,6 @@ class Bouncing(Effect):
       self.direction *= -1
     self.position += self.direction
 
-class Darkness(Effect):
-  def __init__(self, battleground, x, y, duration):
-    super(Darkness, self).__init__(battleground, entity.NEUTRAL_SIDE, x, y, ' ')
-    self.duration = duration
-
-  def update(self):
-    if not self.alive: return
-    self.duration -= 1
-    if self.duration <= 0: self.dissapear()
-
 class Explosion(Effect):
   def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char='*', color=libtcod.lighter_red, power=10):
     super(Explosion, self).__init__(battleground, side, x, y, char, color)
@@ -241,6 +231,22 @@ class Slash(Effect):
     self.move(*self.directions[(self.step+self.direction)%8])
     self.step += int(copysign(1, self.goto))
     self.do_attack()
+
+class TempEffect(Effect):
+  def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char=' ', color=libtcod.white, duration=1):
+    super(TempEffect, self).__init__(battleground, side, x, y, char)
+    self.duration = duration
+
+  def clone(self, x, y): 
+    if self.bg.is_inside(x, y):
+      return self.__class__(self.bg, self.side, x, y, self.char, self.original_color, self.duration)
+    return None
+
+  def update(self):
+    if not self.alive: return
+    self.duration -= 1
+    if self.duration <= 0:
+      self.dissapear()
 
 class Thunder(Effect):
   def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char='|', color=libtcod.lighter_red, power=30, area=None):

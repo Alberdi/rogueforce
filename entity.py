@@ -20,6 +20,7 @@ class Entity(object):
     self.alive = True
     self.statuses = []
     self.path = []
+    self.attack_effect = None
 
   def can_be_attacked(self):
     return False
