@@ -45,7 +45,7 @@ class Scenario(Window):
       general.requisition += self.requisition[general.side]
       self.requisition[general.side] = 0
 
-  def check_input(self, key, x, y):
+  def check_input(self, key, mouse, x, y):
     n = self.keymap_generals.find(chr(key.c).upper()) # Number of the general pressed
     if n != -1:
       g = self.factions[self.side].generals[n]

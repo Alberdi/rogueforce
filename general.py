@@ -14,6 +14,7 @@ class General(Minion):
     self.max_hp = 100
     self.cost = 250
     self.death_quote = "..."
+    self.flag = None
     self.formation = Rows(self)
     self.minion = Minion(self.bg, self.side)
     self.skills = []
@@ -47,6 +48,14 @@ class General(Minion):
     self.skills.append(Skill(self, sonic_waves, 50, [10, 3], "Sonic Waves", "4"))
     self.skills.append(Skill(self, water_pusher, 50, [], "Hidro Pump", "5", SingleTarget(self.bg)))
 
+  def place_flag(self, x, y):
+    if self.flag:
+      self.flag.dissapear()
+    if self.bg.is_inside(x, y):
+      self.flag = Blinking(self.bg, self.side, x, y, 'q', self.original_color)
+    else:
+      self.flag = None
+
   def recount_minions_alive(self):
     self.minions_alive = len(filter(lambda x: x.alive and x.side == self.side, self.bg.minions))
 
@@ -68,6 +77,17 @@ class General(Minion):
       s.update()
     for s in self.statuses:
       s.update()
+    if self.next_action <= 0:
+      if self.flag and self.bg.is_inside(self.flag.x, self.flag.y):
+        self.reset_action()
+        dx = self.flag.x - self.x
+        dy = self.flag.y - self.y
+        self.move(copysign(1, dx) if dx else 0, copysign(1,dy) if dy else 0)
+        if (self.x, self.y) == (self.flag.x, self.flag.y):
+          self.place_flag(-1, -1)
+    else:
+      self.next_action -= 1
+      
 
   def update_color(self):
     pass

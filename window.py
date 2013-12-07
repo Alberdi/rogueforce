@@ -121,7 +121,7 @@ class Window(object):
         (x, y) = (mouse.cx-BG_OFFSET_X, mouse.cy-BG_OFFSET_Y)
         if key.vk == libtcod.KEY_ESCAPE:
           return None
-        s = self.check_input(key, x, y)
+        s = self.check_input(key, libtcod.mouse_get_status(), x, y)
         if s is not None:
           self.messages[self.side][turn] = s
 

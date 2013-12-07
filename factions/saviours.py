@@ -14,37 +14,15 @@ class Ares(General):
     self.death_quote = "I lost a battle, but..."
     self.starting_minions = 0
     self.flag = None
-    self.tactics = [tactic.stop, tactic.null]
-    self.tactic_quotes = ["Stop", "To flag"]
-    self.previous_tactic = self.tactics[1]
+    self.tactics = [tactic.null]
+    self.tactic_quotes = ["Slash'em all!"]
 
   def initialize_skills(self):
     self.skills = []
-    self.skills.append(Skill(self, place_entity, 10, [Blinking(self.bg, char='q', color=libtcod.red)], "Die",
-                      "Place a flag to charge against it", SingleTarget(self.bg)))
     self.skills.append(Skill(self, place_entity, 30, [Slash(self.bg, side=self.side, steps=5, goto=-1)], "Left slash",
                       "Slashes the right side", SingleTarget(self.bg)))
     self.skills.append(Skill(self, place_entity, 30, [Slash(self.bg, side=self.side, steps=5)], "Right slash",
                       "Slashes the left side", SingleTarget(self.bg)))
     self.skills.append(Skill(self, place_entity, 30, [Slash(self.bg, side=self.side)], "Round slash",
                       "Slashes all round", SingleTarget(self.bg)))
-
-  def update(self):
-    super(Ares, self).update()
-    if self.selected_tactic == tactic.null:
-      if self.next_action <= 0 and self.flag:
-        self.reset_action()
-        dx = self.flag.x - self.x
-        dy = self.flag.y - self.y
-        self.move(copysign(1, dx) if dx else 0, copysign(1, dy) if dy else 0)
-      else:
-        self.next_action -= 1
-
-  def use_skill(self, i, x, y):
-    if super(Ares, self).use_skill(i, x, y):
-      self.skills[i].max_cd = self.skills[i].original_max_cd
-      if i == 0:
-        if self.flag:
-          self.flag.dissapear()
-        self.flag = self.bg.effects[-1]
 

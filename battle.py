@@ -11,6 +11,7 @@ import re
 KEYMAP_SKILLS = "QWERTYUIOP"
 KEYMAP_TACTICS = "ZXCVBNM"
 
+FLAG_PATTERN = re.compile("flag \((-?\d+),(-?\d+)\)")
 SKILL_PATTERN = re.compile("skill(\d) \((-?\d+),(-?\d+)\)")
 
 class BattleWindow(Window):
@@ -26,7 +27,10 @@ class BattleWindow(Window):
     ai_side = (self.side+1)%2
     return self.bg.generals[ai_side].ai_action(turn)
 
-  def check_input(self, key, x, y):
+  def check_input(self, key, mouse, x, y):
+    if mouse.rbutton_pressed:
+      self.bg.generals[self.side].place_flag(x, y)
+      return "flag ({0},{1})\n".format(x, y)
     n = self.keymap_skills.find(chr(key.c).upper()) # Number of the skill pressed
     if n != -1: 
       if chr(key.c).istitle(): # With uppercase we show the area
@@ -70,12 +74,18 @@ class BattleWindow(Window):
   def process_messages(self, turn):
     for i in [0,1]:
       if turn in self.messages[i]:
-        match = SKILL_PATTERN.match(self.messages[i][turn])
-        if match is not None:
-          if self.bg.generals[i].use_skill(*map(int, match.groups())):
-            self.message(self.bg.generals[i].name + ": " + self.bg.generals[i].skills[int(match.group(1))].quote, self.bg.generals[i].color)
-        elif self.messages[i][turn].startswith("tactic"):
+        if self.messages[i][turn].startswith("tactic"):
           self.bg.generals[i].command_tactic(int(self.messages[i][turn][6]))
+        else:
+          match = FLAG_PATTERN.match(self.messages[i][turn])
+          if match:
+            self.bg.generals[i].place_flag(int(match.group(1)), int(match.group(2)))
+          else:
+            match = SKILL_PATTERN.match(self.messages[i][turn])
+            if match:
+              if self.bg.generals[i].use_skill(*map(int, match.groups())):
+                self.message(self.bg.generals[i].name + ": " + self.bg.generals[i].skills[int(match.group(1))].quote,
+                             self.bg.generals[i].color)
 
   def render_msgs(self):
     y = 0
