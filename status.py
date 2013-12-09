@@ -53,11 +53,19 @@ class FreezeCooldowns(Status):
     for s in self.entity.skills:
       s.change_cd(-1)
 
+class Haste(Status):
+  def __init__(self, entity, duration=9999, name="Haste", speedup=0):
+    super(Haste, self).__init__(entity, duration, name)
+    self.speedup = speedup
+
+  def tick(self):
+    self.entity.next_action -= 1
+
 class Poison(Status):
   # tbt = time between ticks
   def __init__(self, entity, power, tbt=0, ticks=9999, name="Poison"):
     # Duration is not exact, it lasts a few more updates, but that shouldn't be a problem.
-    super(Poison, self).__init__(entity, ticks*(tbt+1))
+    super(Poison, self).__init__(entity, ticks*(tbt+1), name)
     self.tbt = tbt
     self.ticks = ticks
     self.power = power

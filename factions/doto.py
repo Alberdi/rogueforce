@@ -22,18 +22,20 @@ class Ox(General):
    
   def initialize_skills(self):
     self.skills = []
-    self.skills.append(Skill(self, apply_status, 10, [Taunted(None, self, 3, 20)], "Berserker's Call",
+    self.skills.append(Skill(self, apply_status, 20, [Taunted(None, self, 3, 20)], "Berserker's Call",
                       "Taunts nearby units and gains bonus armor during the duration",
-                      Circle(self.bg, is_enemy, self, None, True, 10)))
-    self.skills.append(Skill(self, apply_status, 10, [PoisonHunger(None, 1, 6, 20)], "Battle Hunger",
+                      Circle(self.bg, is_enemy, self, None, True, 5)))
+    self.skills.append(Skill(self, apply_status, 30, [PoisonHunger(None, 1, 6, 20)], "Battle Hunger",
                       "Enemy gets slowed and takes damage over time until it kills a unit",
                       SingleTarget(self.bg, is_enemy, self, is_inrange_close)))
-    self.skills.append(Skill(self, place_entity, 10, [Slash(self.bg, side=self.side)], "Counter Helix",
+    self.skills.append(Skill(self, place_entity, 5, [Slash(self.bg, side=self.side)], "Counter Helix",
                       "When attacked, performs a helix counter attack", SingleTarget(self.bg)))
+    self.skills.append(Skill(self, decapitate, 75, [0.33], "Culling Blade",
+                      "Decapitates enemies with low health.", SingleTarget(self.bg, is_enemy, self, is_adjacent)))
 
   def start_battle(self):
     super(Ox, self).start_battle()
-    self.rand.seed(hash("Ox"))
+    self.rand.seed(hash(self.name))
 
   def use_skill(self, i, x, y):
     if i == self.helix_index:

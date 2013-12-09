@@ -8,6 +8,12 @@ class Sieve(object):
   def apply(self, tile):
     return self.function(self.general, tile)
 
+def is_adjacent(general, tile):
+  return abs(tile.x - general.x) <= 1 and abs(tile.y - general.y) <= 1
+
+def is_ally(general, tile):
+  if tile.entity is None: return False
+  return tile.entity.is_ally(general)
 
 def is_ally_general(general, tile):
   if tile.entity is None: return False

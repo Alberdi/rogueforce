@@ -12,7 +12,7 @@ class Area(object):
   def get_all_tiles(self, x, y):
     return self.get_tiles()
 
-  def get_tiles(self, x, y):
+  def get_tiles(self, x=-1, y=-1):
     if self.selfcentered:
       (x, y) = (self.general.x, self.general.y)
     if self.reach and self.bg.is_inside(x, y) and not self.reach.apply(self.bg.tiles[(x, y)]):

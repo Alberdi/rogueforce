@@ -43,10 +43,14 @@ class Minion(Entity):
   def follow_tactic(self):
     self.tactic(self)
 
-  def get_attacked(self, enemy):
-    self.hp -= max(0, enemy.power - self.armor)
-    if enemy.attack_effect:
-      enemy.attack_effect.clone(self.x, self.y)
+  def get_attacked(self, enemy, power=None, attack_effect=None):
+    if not power:
+      power = enemy.power
+    if not attack_effect:
+      attack_effect = enemy.attack_effect
+    self.hp -= max(0, power - self.armor)
+    if attack_effect:
+      attack_effect.clone(self.x, self.y)
     if self.hp > 0:
       self.update_color()
     else:

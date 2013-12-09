@@ -140,6 +140,26 @@ class Bouncing(Effect):
       self.direction *= -1
     self.position += self.direction
 
+class EffectLoop(Effect):
+  def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, chars=[' '], color=libtcod.white, duration=1):
+    super(EffectLoop, self).__init__(battleground, side, x, y, chars[0], color)
+    self.chars = chars
+    self.duration = duration
+    self.index = 0
+
+  def clone(self, x, y): 
+    if self.bg.is_inside(x, y):
+      return self.__class__(self.bg, self.side, x, y, self.chars, self.original_color, self.duration)
+    return None
+
+  def update(self):
+    if not self.alive: return
+    self.duration -= 1
+    self.char = self.chars[self.index]
+    self.index = (self.index+1) % len(self.chars)
+    if self.duration < 0:
+      self.dissapear()
+
 class Explosion(Effect):
   def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char='*', color=libtcod.lighter_red, power=10):
     super(Explosion, self).__init__(battleground, side, x, y, char, color)

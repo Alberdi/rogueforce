@@ -2,6 +2,8 @@ from effect import *
 from entity import *
 
 import area
+import effect
+import sieve
 import status
 
 class Skill(object):
@@ -76,6 +78,17 @@ def darkness(general, tile, duration):
     d = TempEffect(general.bg, x=tile.x, y=tile.y, char=' ', duration=duration)
     general.bg.effects.append(d)
   return tile.passable
+
+def decapitate(general, tile, threshold=1.0):
+  effect.EffectLoop(general.bg, x=tile.x, y=tile.y, chars=['-', '\\', 'v'], color=general.color, duration=3)
+  if tile.entity.hp/float(tile.entity.max_hp) > threshold:
+    tile.entity.get_attacked(general, int(tile.entity.max_hp*threshold/2))
+  else: # Decapitated
+    tile.entity.get_attacked(general, 9999)
+    a = area.Circle(general.bg, sieve.is_ally, general, None, True, 8)
+    for t in a.get_tiles():
+      apply_status(general, t, status.Haste(None, 10, "Decapitation haste", 3))
+  return True
 
 def heal(general, tile, amount):
   if tile.entity.hp == tile.entity.max_hp: return False
