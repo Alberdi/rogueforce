@@ -50,11 +50,16 @@ class General(Minion):
 
   def place_flag(self, x, y):
     if self.flag:
+      if (self.flag.x, self.flag.y) == (x,y):
+        return
       self.flag.dissapear()
     if self.bg.is_inside(x, y):
       self.flag = Blinking(self.bg, self.side, x, y, 'q', self.original_color)
     else:
       self.flag = None
+
+  def recommand_tactic(self):
+    self.command_tactic(self.tactics.index(self.selected_tactic))
 
   def recount_minions_alive(self):
     self.minions_alive = len(filter(lambda x: x.alive and x.side == self.side, self.bg.minions))
@@ -88,9 +93,8 @@ class General(Minion):
     else:
       self.next_action -= 1
       
-
   def update_color(self):
-    pass
+    self.color = self.original_color
 
   def use_skill(self, i, x, y):
     skill = self.skills[i]

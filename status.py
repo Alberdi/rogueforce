@@ -1,3 +1,5 @@
+import tactic
+
 import libtcodpy as libtcod
 
 class Status(object):
@@ -21,9 +23,6 @@ class Status(object):
   def end(self):
     self.duration = -1
     self.entity.statuses.remove(self)
-
-  def entity_attacked(self, attacker):
-    pass
 
   def tick(self):
     pass
@@ -107,19 +106,47 @@ class Recalling(Status):
     self.entity.reset_action()
 
 class Shield(Status):
-  def __init__(self, entity, duration=9999, name="Shield"):
+  def __init__(self, entity, duration=9999, name="Shield", armor=0):
     super(Shield, self).__init__(entity, duration, name)
+    self.armor = armor
     if entity:
+      entity.armor += armor
       entity.color = libtcod.dark_yellow
+
+  def clone(self, entity):
+    return self.__class__(entity, self.duration, self.name, self.armor)
 
   def end(self):
     super(Shield, self).end()
     self.entity.update_color()
+    self.entity.armor -= self.armor
 
-  def entity_attacked(self, attacker):
-    if self.duration > 0:
-      self.entity.hp += attacker.power
-      self.end()
+class Taunted(Status):
+  def __init__(self, entity, taunter, armor=0, duration=9999, name="Taunted"):
+    super(Taunted, self).__init__(entity, duration, name)
+    self.taunter = taunter
+    self.armor = armor
+    shield_name = name + " shield"
+    if entity:
+      for s in taunter.statuses:
+        if s.name == shield_name:
+          return
+      Shield(taunter, duration, shield_name, armor)
+
+  def clone(self, entity):
+    return self.__class__(entity, self.taunter, self.armor, self.duration, self.name)
+
+  def end(self):
+    super(Taunted, self).end()
+    if self.entity in self.entity.bg.minions:
+      self.entity.bg.generals[self.entity.side].recommand_tactic()
+
+  def update(self):
+    super(Taunted, self).update()
+    if self.entity in self.entity.bg.generals:
+      self.entity.place_flag(self.taunter.x, self.taunter.y)
+    elif self.entity in self.entity.bg.minions:
+      self.entity.tactic = tactic.attack_general
 
 class Vanished(Status):
   def __init__(self, entity, duration=9999, name="Vanished"):

@@ -5,13 +5,13 @@ import libtcodpy as libtcod
 import effect
 import tactic
 
-
 class Minion(Entity):
   def __init__(self, battleground, side, x=-1, y=-1, name="minion", color=libtcod.white):
     super(Minion, self).__init__(battleground, side, x, y, name[0], color)
     self.name = name
     self.max_hp = 20
     self.hp = 20
+    self.armor = 0
     self.power = 5
     self.tactic = tactic.null
     self.attack_effect = effect.TempEffect(self.bg, char='/' if side else '\\')
@@ -44,9 +44,7 @@ class Minion(Entity):
     self.tactic(self)
 
   def get_attacked(self, enemy):
-    for s in self.statuses:
-      s.entity_attacked(enemy)
-    self.hp -= enemy.power
+    self.hp -= max(0, enemy.power - self.armor)
     if enemy.attack_effect:
       enemy.attack_effect.clone(self.x, self.y)
     if self.hp > 0:
@@ -66,6 +64,8 @@ class Minion(Entity):
 
   def update(self):
     if not self.alive: return
+    for s in self.statuses:
+      s.update()
     if self.next_action <= 0:
       self.reset_action()
       enemy = self.enemy_reachable()
@@ -74,7 +74,6 @@ class Minion(Entity):
       else:
         self.follow_tactic()
     else: self.next_action -= 1
-    for s in self.statuses: s.update()
 
   def update_color(self):
     # We change the color to indicate that the minion is wounded

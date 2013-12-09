@@ -13,7 +13,7 @@ class Ox(General):
     super(Ox, self).__init__(battleground, side, x, y, name, color)
     self.rand = random.Random()
     self.max_hp = 300
-    self.helix_index = 1
+    self.helix_index = 2
 
   def get_attacked(self, enemy):
     if self.rand.randint(1,6) == 6:
@@ -22,6 +22,9 @@ class Ox(General):
    
   def initialize_skills(self):
     self.skills = []
+    self.skills.append(Skill(self, apply_status, 10, [Taunted(None, self, 3, 20)], "Berserker's Call",
+                      "Taunts nearby units and gains bonus armor during the duration",
+                      Circle(self.bg, is_enemy, self, None, True, 10)))
     self.skills.append(Skill(self, apply_status, 10, [PoisonHunger(None, 1, 6, 20)], "Battle Hunger",
                       "Enemy gets slowed and takes damage over time until it kills a unit",
                       SingleTarget(self.bg, is_enemy, self, is_inrange_close)))

@@ -14,7 +14,7 @@ class Area(object):
 
   def get_tiles(self, x, y):
     if self.selfcentered:
-      (x, y) = (general.x, general.y)
+      (x, y) = (self.general.x, self.general.y)
     if self.reach and self.bg.is_inside(x, y) and not self.reach.apply(self.bg.tiles[(x, y)]):
       return []
     if not self.sieve:
@@ -26,8 +26,9 @@ class AllBattleground(Area):
     return self.bg.tiles.values()
 
 class Arc(Area):
-  def __init__(self, bg, sieve_function=None, general=None, origin=(0,0), angle=360, ratio_y=1, steps=50):
-    super(Arc, self).__init__(bg, sieve_function, general)
+  def __init__(self, bg, sieve_function=None, general=None, reach_function=None, selfcentered=False,
+               origin=(0,0), angle=360, ratio_y=1, steps=50):
+    super(Arc, self).__init__(bg, sieve_function, general, reach_function, selfcentered)
     self.origin = origin
     self.ratio_y = ratio_y
     self.start_angle = math.radians(angle)
@@ -57,8 +58,8 @@ class Arc(Area):
     return tiles
 
 class Circle(Area):
-  def __init__(self, bg, sieve_function=None, general=None, radius=5):
-    super(Circle, self).__init__(bg, sieve_function, general)
+  def __init__(self, bg, sieve_function=None, general=None, reach_function=None, selfcentered=False, radius=5):
+    super(Circle, self).__init__(bg, sieve_function, general, reach_function, selfcentered)
     self.radius = radius
 
   def get_all_tiles(self, x, y):
