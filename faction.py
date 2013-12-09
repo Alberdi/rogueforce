@@ -1,3 +1,4 @@
+from factions import doto
 from factions import mechanics
 from factions import oracles
 from factions import saviours
@@ -9,6 +10,11 @@ class Faction(object):
     self.bg = battleground
     self.side = side
     self.generals = generals
+
+class Doto(Faction):
+  def __init__(self, battleground, side):
+    generals = [doto.Ox(battleground, side)]
+    super(Doto, self).__init__(battleground, side, generals, "Doto")
 
 class Mechanics(Faction):
   def __init__(self, battleground, side):

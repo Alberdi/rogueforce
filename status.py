@@ -5,6 +5,8 @@ class Status(object):
     self.duration = duration
     self.entity = entity
     self.name = name
+    self.attack_effect = None
+    self.owner = None
     if entity: # Not a prototype
       for s in self.entity.statuses:
         if s.name == self.name:
@@ -72,6 +74,20 @@ class Poison(Status):
       self.timer = self.tbt
       #self.ticks -= 1
       #if self.ticks == 0: self.duration = -1 # end
+
+class PoisonHunger(Poison):
+  def __init__(self, entity, power, tbt=0, ticks=9999, name="PoisonHunger"):
+    super(PoisonHunger, self).__init__(entity, power, tbt, ticks, name)
+    if entity:
+      self.entity_kills = entity.kills
+
+  def tick(self):
+    if not self.entity.alive or self.entity.kills > self.entity_kills:
+      self.duration = -1
+    else:
+      self.entity.next_action += 1
+      self.owner.next_action -= 1
+      super(PoisonHunger, self).tick()
 
 class Recalling(Status):
   def __init__(self, entity, duration=9999, name="Recalling"):

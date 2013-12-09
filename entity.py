@@ -21,6 +21,8 @@ class Entity(object):
     self.statuses = []
     self.path = []
     self.attack_effect = None
+    self.kills = 0
+    self.owner = None
 
   def can_be_attacked(self):
     return False
@@ -70,6 +72,7 @@ class Entity(object):
     if self.pushed:
       self.pushed = False
       return False
+    (dx,dy) = (int(dx), int(dy))
     next_tile = self.bg.tiles[(self.x+dx, self.y+dy)]
     if self.can_move(dx, dy):
       if next_tile.entity is not None:

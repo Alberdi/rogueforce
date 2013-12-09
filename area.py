@@ -2,18 +2,21 @@ from sieve import Sieve
 import math
 
 class Area(object):
-  def __init__(self, bg, sieve_function=None, general=None, reach_function=None):
+  def __init__(self, bg, sieve_function=None, general=None, reach_function=None, selfcentered=False):
     self.bg = bg
     self.general = general
     self.sieve = Sieve(general, sieve_function) if sieve_function else None
     self.reach = Sieve(general, reach_function) if reach_function else None
+    self.selfcentered = selfcentered
 
   def get_all_tiles(self, x, y):
     return self.get_tiles()
 
   def get_tiles(self, x, y):
-    if self.reach and not self.reach.apply(x, y):
-      return None
+    if self.selfcentered:
+      (x, y) = (general.x, general.y)
+    if self.reach and self.bg.is_inside(x, y) and not self.reach.apply(self.bg.tiles[(x, y)]):
+      return []
     if not self.sieve:
       return self.get_all_tiles(x, y)
     return filter(self.sieve.apply, self.get_all_tiles(x, y))

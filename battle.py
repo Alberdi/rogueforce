@@ -135,10 +135,10 @@ class BattleWindow(Window):
       libtcod.console_print(self.con_panels[i], bar_offset_x, line, KEYMAP_TACTICS[s] + ": " + self.bg.generals[i].tactic_quotes[s])
       line += 2
 
-from factions import mechanics, wizerds
+from factions import mechanics, wizerds, doto
 if __name__=="__main__":
   bg = Battleground(BG_WIDTH, BG_HEIGHT)
-  bg.generals = [wizerds.Starcall(bg, 0, 3, 21), mechanics.Flappy(bg, 1, 56, 21)]
+  bg.generals = [doto.Ox(bg, 0, 58, 21), mechanics.Flappy(bg, 1, 56, 21)]
   bg.generals[0].start_scenario()
   bg.generals[1].start_scenario()
   if len(sys.argv) == 4: 

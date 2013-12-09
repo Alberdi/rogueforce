@@ -54,6 +54,10 @@ class Minion(Entity):
     else:
       self.hp = 0
       self.die()
+      if enemy.owner:
+        enemy.owner.kills += 1
+      else:
+        enemy.kills += 1
 
   def get_healed(self, amount):
     self.hp += amount

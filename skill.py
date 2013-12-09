@@ -50,7 +50,8 @@ def add_path(general, tile, entity):
   return True
 
 def apply_status(general, tile, status):
-  status.clone(tile.entity)
+  clone = status.clone(tile.entity)
+  clone.owner = general
   return True
 
 def consume(general, tile, hp_gain=1, delta_cd=1):
@@ -100,6 +101,7 @@ def null(general):
 
 def place_entity(general, tile, entity):
   clone = entity.clone(tile.x, tile.y)
+  clone.owner = general
   return clone is not None
 
 def recall_entity(general, tile, duration):
