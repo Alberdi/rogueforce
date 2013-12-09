@@ -13,7 +13,8 @@ class Faction(object):
 
 class Doto(Faction):
   def __init__(self, battleground, side):
-    generals = [doto.Ox(battleground, side)]
+    generals = [doto.Ox(battleground, side),
+                doto.Bloodrotter(battlegound, side)]
     super(Doto, self).__init__(battleground, side, generals, "Doto")
 
 class Mechanics(Faction):

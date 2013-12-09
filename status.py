@@ -10,6 +10,7 @@ class Status(object):
     self.attack_effect = None
     self.attack_type = "magical"
     self.owner = None
+    self.kills = 0
     if entity: # Not a prototype
       for s in self.entity.statuses:
         if s.name == self.name:
@@ -24,6 +25,11 @@ class Status(object):
   def end(self):
     self.duration = -1
     self.entity.statuses.remove(self)
+
+  def register_kill(self, killed):
+    self.kills += 1
+    if self.owner:
+      self.owner.kills += 1
 
   def tick(self):
     pass
@@ -46,9 +52,27 @@ class Blind(Status):
     self.entity.power = self.saved_power
     super(Blind, self).end()
 
+class Empower(Status):
+  def __init__(self, entity, owner, duration=9999, name="Empower", power_ratio=0):
+    super(Empower, self).__init__(entity, duration, name)
+    self.power_ratio = power_ratio
+    self.owner = owner
+    if entity:
+      self.bonus_power = int(entity.power * power_ratio)
+      entity.power += self.bonus_power
+
+  def clone(self, entity):
+    return self.__class__(entity, self.owner, self.duration, self.name, self.power_ratio)
+
+  def end(self):
+    super(Empower, self).end()
+    self.entity.power -= self.bonus_power
+
 class FreezeCooldowns(Status):
   def __init__(self, entity, duration=9999, name="Freeze cooldowns"):
     super(FreezeCooldowns, self).__init__(entity, duration, name)
+    if self.entity and self.entity not in entity.bg.generals:
+      self.end()
 
   def tick(self):
     for s in self.entity.skills:
@@ -80,8 +104,6 @@ class Poison(Status):
     if self.timer < 0:
       self.entity.get_attacked(self)
       self.timer = self.tbt
-      #self.ticks -= 1
-      #if self.ticks == 0: self.duration = -1 # end
 
 class PoisonHunger(Poison):
   def __init__(self, entity, power, tbt=0, ticks=9999, name="PoisonHunger"):

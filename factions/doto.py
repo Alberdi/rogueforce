@@ -8,6 +8,39 @@ import libtcodpy as libtcod
 
 import random
 
+class Bloodrotter(General):
+  def __init__(self, battleground, side, x=-1, y=-1, name="Bloodrotter", color=libtcod.darker_red):
+    super(Bloodrotter, self).__init__(battleground, side, x, y, name, color)
+    self.thirst_charges = 0
+    self.prev_thirst_charges = 0
+
+  def initialize_skills(self):
+    self.skills = []
+    bloodrage_duration = 20
+    self.skills.append(Skill(self, apply_statuses, 20,
+                       [[Empower(None, self, bloodrage_duration, "Bloodrage empower", 1),
+                         FreezeCooldowns(None, bloodrage_duration, "Bloodrage silence"),
+                         Poison(None, 1, 2, int(bloodrage_duration/2), "Bloodrage poison")]],
+                       "Bloodrage", "Gives higher power to a unit, but takes damage and gets silenced",
+                      SingleTarget(self.bg, is_unit, self, is_inrange_close)))
+
+  def register_kill(self, killed):
+    super(Bloodrotter, self).register_kill(killed)
+    # Blood Bath
+    self.get_healed(int(killed.max_hp * 0.25))
+
+  def thirst(self, enemy):
+    self.thirst_charges = (enemy.max_hp-enemy.hp)/int(enemy.max_hp*0.2)
+    diff = self.thirst_charges - self.prev_thirst_charges
+    if diff:
+      self.power += 3 * diff
+      self.prev_thirst_charges = self.thirst_charges
+
+  def update(self):
+    self.thirst(self.bg.generals[(self.side+1)%2])
+    self.next_action -= self.thirst_charges
+    super(Bloodrotter, self).update()
+
 class Ox(General):
   def __init__(self, battleground, side, x=-1, y=-1, name="Ox", color=libtcod.dark_red):
     super(Ox, self).__init__(battleground, side, x, y, name, color)

@@ -94,6 +94,11 @@ class Entity(object):
         self.path.insert(0, next_tile)
     return False
 
+  def register_kill(self, killed):
+    self.kills += 1
+    if self.owner:
+      self.owner.kills += 1
+
   def reset_action(self):
     self.next_action = self.default_next_action
 

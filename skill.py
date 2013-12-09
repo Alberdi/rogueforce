@@ -56,6 +56,11 @@ def apply_status(general, tile, status):
   clone.owner = general
   return True
 
+def apply_statuses(general, tile, statuses):
+  for s in statuses:
+    apply_status(general, tile, s)
+  return statuses != []
+
 def consume(general, tile, hp_gain=1, delta_cd=1):
   tile.entity.die()
   general.get_healed(hp_gain)

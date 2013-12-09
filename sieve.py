@@ -27,7 +27,7 @@ def is_empty(general, tile):
   return tile.entity is None
 
 def is_enemy(general, tile):
-  return tile.entity is not None and not tile.entity.is_ally(general)
+  return tile.entity and not tile.entity.is_ally(general)
 
 def is_enemy_general(general, tile):
   return tile.entity == general.bg.generals[(general.side+1)%2]
@@ -43,5 +43,8 @@ def is_inrange_long(general, tile):
   return is_inrange(general, tile, 30)
 
 def is_minion(general, tile):
-  return tile.entity is not None and tile.entity in general.bg.minions
+  return tile.entity and tile.entity in general.bg.minions
+
+def is_unit(general, tile):
+  return tile.entity and (tile.entity in general.bg.minions or tile.entity in general.bg.generals)
 
