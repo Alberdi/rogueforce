@@ -138,7 +138,7 @@ class BattleWindow(Window):
 from factions import doto
 if __name__=="__main__":
   bg = Battleground(BG_WIDTH, BG_HEIGHT)
-  bg.generals = [doto.Bloodrotter(bg, 0, 58, 21), doto.Ox(bg, 1, 56, 21)]
+  bg.generals = [doto.Bloodrotter(bg, 0, 3, 21), doto.Ox(bg, 1, 56, 21)]
   bg.generals[0].start_scenario()
   bg.generals[1].start_scenario()
   if len(sys.argv) == 4: 

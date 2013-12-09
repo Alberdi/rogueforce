@@ -114,8 +114,17 @@ def minion_lwss(general, tile):
   return create_minions(general,\
     [(x-1*j, y-1), (x, y-1), (x+1*j, y-1), (x+2*j, y-1), (x-2*j, y), (x+2*j, y), (x+2*j, y+1), (x-2*j, y+2), (x+1*j, y+2)])
 
-def null(general):
+def nuke(general, tile, nuke_power, nuke_effect=None, nuke_type="magical"):
+  tile.entity.get_attacked(general, nuke_power, nuke_effect, nuke_type)
   return True
+
+def nuke_statuses(general, tile, nuke_power, nuke_effect=None, nuke_type="magical", statuses=[]):
+  nuke(general, tile, nuke_power, nuke_effect, nuke_type)
+  apply_statuses(general, tile, statuses)
+  return True
+
+def null(general):
+  return False
 
 def place_entity(general, tile, entity):
   clone = entity.clone(tile.x, tile.y)

@@ -1,15 +1,16 @@
+import effect
 import tactic
 
 import libtcodpy as libtcod
 
 class Status(object):
-  def __init__(self, entity, duration=9999, name="Status"):
-    self.duration = duration
+  def __init__(self, entity=None, owner=None, duration=9999, name="Status"):
     self.entity = entity
+    self.owner = owner
+    self.duration = duration
     self.name = name
     self.attack_effect = None
     self.attack_type = "magical"
-    self.owner = None
     self.kills = 0
     if entity: # Not a prototype
       for s in self.entity.statuses:
@@ -20,7 +21,7 @@ class Status(object):
       self.entity.statuses.append(self)
   
   def clone(self, entity):
-    return self.__class__(entity, self.duration, self.name)
+    return self.__class__(entity, self.owner, self.duration, self.name)
 
   def end(self):
     self.duration = -1
@@ -41,9 +42,26 @@ class Status(object):
       if self.duration <= 0:
         self.end()
 
+class Bleeding(Status):
+  def __init__(self, entity=None, owner=None, power=0, duration=9999, name="Bleeding"):
+    super(Bleeding, self).__init__(entity, owner, duration, name)
+    self.power = power
+    if entity:
+      (self.last_x, self.last_y) = (entity.x, entity.y)
+
+  def clone(self, entity):
+    return self.__class__(entity, self.owner, self.power, self.duration, self.name)
+
+  def tick(self):
+    if (self.last_x, self.last_y) != (self.entity.x, self.entity.y):
+      diff = max(abs(self.last_x - self.entity.x), abs(self.last_y - self.entity.y))
+      self.entity.get_attacked(self.owner, diff*self.power, None, "magical")
+      effect.TempEffect(self.entity.bg, self.entity.side, self.last_x, self.last_y, '*', libtcod.darker_red)
+      (self.last_x, self.last_y) = (self.entity.x, self.entity.y)
+
 class Blind(Status):
-  def __init__(self, entity, duration=9999, name="Blindness"):
-    super(Blind, self).__init__(entity, duration, name)
+  def __init__(self, entity=None, duration=9999, name="Blindness"):
+    super(Blind, self).__init__(entity, None, duration, name)
     self.saved_power = 0
     if entity != None:
       (self.saved_power, entity.power) = (entity.power, self.saved_power)
@@ -53,10 +71,9 @@ class Blind(Status):
     super(Blind, self).end()
 
 class Empower(Status):
-  def __init__(self, entity, owner, duration=9999, name="Empower", power_ratio=0):
-    super(Empower, self).__init__(entity, duration, name)
+  def __init__(self, entity=None, owner=None, duration=9999, name="Empower", power_ratio=0):
+    super(Empower, self).__init__(entity, owner, duration, name)
     self.power_ratio = power_ratio
-    self.owner = owner
     if entity:
       self.bonus_power = int(entity.power * power_ratio)
       entity.power += self.bonus_power
@@ -69,8 +86,8 @@ class Empower(Status):
     self.entity.power -= self.bonus_power
 
 class FreezeCooldowns(Status):
-  def __init__(self, entity, duration=9999, name="Freeze cooldowns"):
-    super(FreezeCooldowns, self).__init__(entity, duration, name)
+  def __init__(self, entity=None, owner=None, duration=9999, name="Freeze cooldowns"):
+    super(FreezeCooldowns, self).__init__(entity, owner, duration, name)
     if self.entity and self.entity not in entity.bg.generals:
       self.end()
 
@@ -79,8 +96,8 @@ class FreezeCooldowns(Status):
       s.change_cd(-1)
 
 class Haste(Status):
-  def __init__(self, entity, duration=9999, name="Haste", speedup=0):
-    super(Haste, self).__init__(entity, duration, name)
+  def __init__(self, entity=None, duration=9999, name="Haste", speedup=0):
+    super(Haste, self).__init__(entity, None, duration, name)
     self.speedup = speedup
 
   def tick(self):
@@ -88,16 +105,16 @@ class Haste(Status):
 
 class Poison(Status):
   # tbt = time between ticks
-  def __init__(self, entity, power, tbt=0, ticks=9999, name="Poison"):
+  def __init__(self, entity=None, owner=None, power=0, tbt=0, ticks=9999, name="Poison"):
     # Duration is not exact, it lasts a few more updates, but that shouldn't be a problem.
-    super(Poison, self).__init__(entity, ticks*(tbt+1), name)
+    super(Poison, self).__init__(entity, owner, ticks*(tbt+1), name)
     self.tbt = tbt
     self.ticks = ticks
     self.power = power
     self.timer = 0
 
   def clone(self, entity):
-    return self.__class__(entity, self.power, self.tbt, self.ticks, self.name)
+    return self.__class__(entity, self.owner, self.power, self.tbt, self.ticks, self.name)
 
   def tick(self):
     self.timer -= 1
@@ -106,8 +123,8 @@ class Poison(Status):
       self.timer = self.tbt
 
 class PoisonHunger(Poison):
-  def __init__(self, entity, power, tbt=0, ticks=9999, name="PoisonHunger"):
-    super(PoisonHunger, self).__init__(entity, power, tbt, ticks, name)
+  def __init__(self, entity=None, owner=None, power=0, tbt=0, ticks=9999, name="PoisonHunger"):
+    super(PoisonHunger, self).__init__(entity, owner, power, tbt, ticks, name)
     if entity:
       self.entity_kills = entity.kills
 
@@ -120,8 +137,8 @@ class PoisonHunger(Poison):
       super(PoisonHunger, self).tick()
 
 class Recalling(Status):
-  def __init__(self, entity, duration=9999, name="Recalling"):
-    super(Recalling, self).__init__(entity, duration, name)
+  def __init__(self, entity=None, duration=9999, name="Recalling"):
+    super(Recalling, self).__init__(entity, None, duration, name)
     self.color = self.entity.color
 
   def update(self):
@@ -137,8 +154,8 @@ class Recalling(Status):
     self.entity.reset_action()
 
 class Shield(Status):
-  def __init__(self, entity, duration=9999, name="Shield", armor=0, armor_type="physical"):
-    super(Shield, self).__init__(entity, duration, name)
+  def __init__(self, entity=None, duration=9999, name="Shield", armor=0, armor_type="physical"):
+    super(Shield, self).__init__(entity, None, duration, name)
     self.armor = armor
     self.armor_type = armor_type
     if entity:
@@ -154,19 +171,18 @@ class Shield(Status):
     self.entity.armor[self.armor_type] -= self.armor
 
 class Taunted(Status):
-  def __init__(self, entity, taunter, armor=0, duration=9999, name="Taunted"):
-    super(Taunted, self).__init__(entity, duration, name)
-    self.taunter = taunter
+  def __init__(self, entity=None, owner=None, armor=0, duration=9999, name="Taunted"):
+    super(Taunted, self).__init__(entity, owner, duration, name)
     self.armor = armor
     shield_name = name + " shield"
     if entity:
-      for s in taunter.statuses:
+      for s in owner.statuses:
         if s.name == shield_name:
           return
-      Shield(taunter, duration, shield_name, armor)
+      Shield(owner, duration, shield_name, armor)
 
   def clone(self, entity):
-    return self.__class__(entity, self.taunter, self.armor, self.duration, self.name)
+    return self.__class__(entity, self.owner, self.armor, self.duration, self.name)
 
   def end(self):
     super(Taunted, self).end()
@@ -176,13 +192,13 @@ class Taunted(Status):
   def update(self):
     super(Taunted, self).update()
     if self.entity in self.entity.bg.generals:
-      self.entity.place_flag(self.taunter.x, self.taunter.y)
+      self.entity.place_flag(self.owner.x, self.owner.y)
     elif self.entity in self.entity.bg.minions:
       self.entity.tactic = tactic.attack_general
 
 class Vanished(Status):
-  def __init__(self, entity, duration=9999, name="Vanished"):
-    super(Vanished, self).__init__(entity, duration, name)
+  def __init__(self, entity=None, duration=9999, name="Vanished"):
+    super(Vanished, self).__init__(entity, None, duration, name)
     if entity:
       (self.x, self.y) = (entity.x, entity.y)
       entity.bg.tiles[(entity.x, entity.y)].entity = None
@@ -201,8 +217,8 @@ class Vanished(Status):
       self.entity.die()
 
 class Vanishing(Status):
-  def __init__(self, entity, duration=9999, vanished_duration=9999, name="Vanishing"):
-    super(Vanishing, self).__init__(entity, duration, name)
+  def __init__(self, entity=None, duration=9999, vanished_duration=9999, name="Vanishing"):
+    super(Vanishing, self).__init__(entity, None, duration, name)
     self.vanished_duration = vanished_duration
 
   def clone(self, entity):

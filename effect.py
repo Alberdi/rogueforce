@@ -254,7 +254,7 @@ class Slash(Effect):
 
 class TempEffect(Effect):
   def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char=' ', color=libtcod.white, duration=1):
-    super(TempEffect, self).__init__(battleground, side, x, y, char)
+    super(TempEffect, self).__init__(battleground, side, x, y, char, color)
     self.duration = duration
 
   def clone(self, x, y): 
@@ -265,7 +265,7 @@ class TempEffect(Effect):
   def update(self):
     if not self.alive: return
     self.duration -= 1
-    if self.duration <= 0:
+    if self.duration < 0:
       self.dissapear()
 
 class Thunder(Effect):
