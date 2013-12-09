@@ -84,7 +84,7 @@ def decapitate(general, tile, threshold=1.0):
   if tile.entity.hp/float(tile.entity.max_hp) > threshold:
     tile.entity.get_attacked(general, int(tile.entity.max_hp*threshold/2))
   else: # Decapitated
-    tile.entity.get_attacked(general, 9999)
+    tile.entity.get_attacked(general, 9999, attack_type="magical")
     a = area.Circle(general.bg, sieve.is_ally, general, None, True, 8)
     for t in a.get_tiles():
       apply_status(general, t, status.Haste(None, 10, "Decapitation haste", 3))

@@ -5,13 +5,15 @@ import libtcodpy as libtcod
 import effect
 import tactic
 
+from collections import defaultdict
+
 class Minion(Entity):
   def __init__(self, battleground, side, x=-1, y=-1, name="minion", color=libtcod.white):
     super(Minion, self).__init__(battleground, side, x, y, name[0], color)
     self.name = name
     self.max_hp = 20
     self.hp = 20
-    self.armor = 0
+    self.armor = defaultdict(lambda: 0)
     self.power = 5
     self.tactic = tactic.null
     self.attack_effect = effect.TempEffect(self.bg, char='/' if side else '\\')
@@ -43,12 +45,14 @@ class Minion(Entity):
   def follow_tactic(self):
     self.tactic(self)
 
-  def get_attacked(self, enemy, power=None, attack_effect=None):
+  def get_attacked(self, enemy, power=None, attack_effect=None, attack_type=None):
     if not power:
       power = enemy.power
     if not attack_effect:
       attack_effect = enemy.attack_effect
-    self.hp -= max(0, power - self.armor)
+    if not attack_type:
+      attack_type = enemy.attack_type
+    self.hp -= max(0, power - self.armor[attack_type])
     if attack_effect:
       attack_effect.clone(self.x, self.y)
     if self.hp > 0:

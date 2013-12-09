@@ -21,6 +21,7 @@ class Entity(object):
     self.statuses = []
     self.path = []
     self.attack_effect = None
+    self.attack_type = "physical"
     self.kills = 0
     self.owner = None
 

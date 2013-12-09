@@ -8,6 +8,7 @@ class Status(object):
     self.entity = entity
     self.name = name
     self.attack_effect = None
+    self.attack_type = "magical"
     self.owner = None
     if entity: # Not a prototype
       for s in self.entity.statuses:
@@ -114,20 +115,21 @@ class Recalling(Status):
     self.entity.reset_action()
 
 class Shield(Status):
-  def __init__(self, entity, duration=9999, name="Shield", armor=0):
+  def __init__(self, entity, duration=9999, name="Shield", armor=0, armor_type="physical"):
     super(Shield, self).__init__(entity, duration, name)
     self.armor = armor
+    self.armor_type = armor_type
     if entity:
-      entity.armor += armor
+      entity.armor[armor_type] += armor
       entity.color = libtcod.dark_yellow
 
   def clone(self, entity):
-    return self.__class__(entity, self.duration, self.name, self.armor)
+    return self.__class__(entity, self.duration, self.name, self.armor, self.armor_type)
 
   def end(self):
     super(Shield, self).end()
     self.entity.update_color()
-    self.entity.armor -= self.armor
+    self.entity.armor[self.armor_type] -= self.armor
 
 class Taunted(Status):
   def __init__(self, entity, taunter, armor=0, duration=9999, name="Taunted"):
