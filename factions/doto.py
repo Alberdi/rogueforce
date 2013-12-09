@@ -48,10 +48,12 @@ class Ox(General):
     self.max_hp = 300
     self.helix_index = 2
 
-  def get_attacked(self, enemy):
-    if self.rand.randint(1,6) == 6:
+  def get_attacked(self, enemy, power=None, attack_effect=None, attack_type=None):
+    if not attack_type:
+      attack_type = enemy.attack_type
+    if attack_type == "physical" and self.rand.randint(1,6) == 6:
       self.use_skill(-1, 0, 0)      
-    super(Ox, self).get_attacked(enemy)
+    super(Ox, self).get_attacked(enemy, power, attack_effect, attack_type)
    
   def initialize_skills(self):
     self.skills = []
