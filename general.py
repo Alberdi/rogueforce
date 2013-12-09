@@ -102,7 +102,7 @@ class General(Minion):
       if skill.use(x, y):
         for s in self.skills:
           s.change_cd(-5)
-        skill.change_max_cd(skill.max_cd)
+        #skill.change_max_cd(skill.max_cd)
         skill.reset_cd()
         return True
     return False
