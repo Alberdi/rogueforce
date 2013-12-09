@@ -83,13 +83,16 @@ class General(Minion):
     for s in self.statuses:
       s.update()
     if self.next_action <= 0:
+      self.reset_action()
       if self.flag and self.bg.is_inside(self.flag.x, self.flag.y):
-        self.reset_action()
         dx = self.flag.x - self.x
         dy = self.flag.y - self.y
         if not self.move(copysign(1, dx) if dx else 0, copysign(1,dy) if dy else 0) \
             or (self.x, self.y) == (self.flag.x, self.flag.y):
           self.place_flag(-1, -1)
+      else:
+        if not self.try_attack():
+          self.next_action = -1
     else:
       self.next_action -= 1
       

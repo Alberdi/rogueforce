@@ -70,16 +70,19 @@ class Minion(Entity):
     if self.hp > self.max_hp: self.hp = self.max_hp
     self.update_color()
 
+  def try_attack(self):
+    enemy = self.enemy_reachable()
+    if enemy:
+      enemy.get_attacked(self)
+    return enemy != None
+    
   def update(self):
     if not self.alive: return
     for s in self.statuses:
       s.update()
     if self.next_action <= 0:
       self.reset_action()
-      enemy = self.enemy_reachable()
-      if enemy != None:
-        enemy.get_attacked(self)
-      else:
+      if not self.try_attack():
         self.follow_tactic()
     else: self.next_action -= 1
 
