@@ -87,8 +87,8 @@ class General(Minion):
         self.reset_action()
         dx = self.flag.x - self.x
         dy = self.flag.y - self.y
-        self.move(copysign(1, dx) if dx else 0, copysign(1,dy) if dy else 0)
-        if (self.x, self.y) == (self.flag.x, self.flag.y):
+        if not self.move(copysign(1, dx) if dx else 0, copysign(1,dy) if dy else 0) \
+            or (self.x, self.y) == (self.flag.x, self.flag.y):
           self.place_flag(-1, -1)
     else:
       self.next_action -= 1
