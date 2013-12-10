@@ -25,6 +25,7 @@ class General(Minion):
     self.previous_tactic = self.tactics[0]
     self.swap_cd = 0
     self.swap_max_cd = 200
+    self.swap_sickness = 10
 
   def ai_action(self, turn):
     return None
@@ -83,8 +84,13 @@ class General(Minion):
     if self.swap_cd >= self.swap_max_cd and len(r) > i:
       self.bg.generals[self.side] = r[i]
       r[i].swap_cd = 0
+      r[i].next_action = r[i].swap_sickness
       self.bg.tiles[(self.x, self.y)].entity = r[i]
       (r[i].x, r[i].y) = (self.x, self.y)
+      if self.flag:
+        r[i].place_flag(self.flag.x, self.flag.y)
+        self.flag.dissapear()
+        self.flag = None
       self.bg.reserves[self.side][i] = self
 
   def update(self):
