@@ -82,8 +82,10 @@ def copy_spell(general, tile):
     char = '?'
   else:
     char = '!'
+    old_skill = general.skills[general.copied_skill].name
     general.skills[general.copied_skill] = tile.entity.skills[tile.entity.last_skill_used].clone(general)
-    general.skills[general.copied_skill].cd = general.skills[general.copied_skill].max_cd
+    if general.skills[general.copied_skill].name != old_skill:
+      general.skills[general.copied_skill].cd = general.skills[general.copied_skill].max_cd
   TempEffect(general.bg, x=tile.x, y=tile.y, char=char, color=general.color)
   TempEffect(general.bg, x=general.x, y=general.y, char=char, color=general.color, duration=2)
   return True
