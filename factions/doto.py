@@ -104,7 +104,7 @@ class Rubock(General):
     self.skills.append(Skill(self, apply_status, 40, [Lifted(None, self, 15,
                       land_area=Circle(self.bg, is_enemy, self, radius=4),land_status=Stunned(None, self, 10))],
                       "Telekinesis", "Lifts an enemy  into the air that stuns around on landing",
-                      SingleTarget(self.bg, is_enemy, self, is_inrange_long)))
+                      SingleTarget(self.bg, is_enemy, self, is_inrange_close)))
     self.skills.append(Skill(self, copy_spell, 80, [], "Spell Steal", "Copies the last spell used by the enemy",
                       SingleTarget(self.bg, is_enemy_general, self, is_inrange_long)))
     self.skills.append(Skill(self, null, 1, [], "Spell Stolen", "Copy of the last spell used by the enemy"))

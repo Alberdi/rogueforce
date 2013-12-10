@@ -27,7 +27,7 @@ class General(Minion):
     self.selected_tactic = self.tactics[0]
     self.previous_tactic = self.tactics[0]
     self.swap_cd = 0
-    self.swap_max_cd = 2
+    self.swap_max_cd = 200
     self.swap_sickness = 10
     self.last_skill_used = -1
 
