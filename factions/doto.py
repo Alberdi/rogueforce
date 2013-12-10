@@ -103,5 +103,5 @@ class Rubock(General):
     self.skills = []
     self.skills.append(Skill(self, copy_spell, 6, [], "Spell Steal", "Copies the last spell used by the enemy",
                       SingleTarget(self.bg, is_enemy_general, self, is_inrange_long)))
-    self.skills.append(Skill(self, null, 1, [], "Spell Steal", "Copies the last spell used by the enemy"))
+    self.skills.append(Skill(self, null, 1, [], "Spell Stolen", "Copy of the last spell used by the enemy"))
 

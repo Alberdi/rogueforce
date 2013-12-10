@@ -200,6 +200,10 @@ class Window(object):
   def render_side_panel(self, i, bar_length, bar_offset_x):
     pass
 
+  def render_side_panel_clear(self, i, bar_length=11, bar_offset_x=4):
+    libtcod.console_set_default_background(self.con_panels[i], libtcod.black)
+    libtcod.console_rect(self.con_panels[i], bar_offset_x-1, 0, bar_length+1, 40, True, libtcod.BKGND_SET)
+
   def update_all(self):
     for g in self.bg.generals:
       g.update()

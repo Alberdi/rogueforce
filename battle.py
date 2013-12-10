@@ -86,7 +86,8 @@ class BattleWindow(Window):
         if m.startswith("tactic"):
           self.bg.generals[i].command_tactic(int(m[6]))
         elif m.startswith("swap"):
-          self.bg.generals[i].swap(int(m[4]))
+          if self.bg.generals[i].swap(int(m[4])):
+            self.render_side_panel_clear(i)
         else:
           match = FLAG_PATTERN.match(m)
           if match:
@@ -164,7 +165,7 @@ from factions import doto
 if __name__=="__main__":
   bg = Battleground(BG_WIDTH, BG_HEIGHT)
   bg.generals = [doto.Rubock(bg, 0, 58, 21), doto.Rubock(bg, 1, 56, 21)]
-  bg.reserves[0] = [doto.Bloodrotter(bg, 1), doto.Ox(bg, 0)]
+  bg.reserves[0] = [doto.Bloodrotter(bg, 0), doto.Ox(bg, 0)]
   bg.reserves[1] = [doto.Bloodrotter(bg, 1), doto.Ox(bg, 1)]
   for i in [0,1]:
     bg.generals[i].start_scenario()
