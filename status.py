@@ -213,8 +213,7 @@ class Taunted(Status):
   def __init__(self, entity=None, owner=None, duration=9999, name="Taunted"):
     super(Taunted, self).__init__(entity, owner, duration, name)
 
-  def update(self):
-    super(Taunted, self).update()
+  def tick(self):
     if self.entity in self.entity.bg.generals:
       self.entity.place_flag(self.owner.x, self.owner.y)
     elif self.entity in self.entity.bg.minions:
