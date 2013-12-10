@@ -8,6 +8,11 @@ class Area(object):
     self.sieve = Sieve(general, sieve_function) if sieve_function else None
     self.reach = Sieve(general, reach_function) if reach_function else None
     self.selfcentered = selfcentered
+  
+  def clone(self, general):
+    sieve = self.sieve.function if self.sieve else None
+    reach = self.reach.function if self.reach else None
+    return self.__class__(self.bg, sieve, general, reach, self.selfcentered)
 
   def get_all_tiles(self, x, y):
     return self.get_tiles()

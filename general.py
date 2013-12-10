@@ -26,6 +26,7 @@ class General(Minion):
     self.swap_cd = 0
     self.swap_max_cd = 200
     self.swap_sickness = 10
+    self.last_skill_used = -1
 
   def ai_action(self, turn):
     return None
@@ -126,6 +127,7 @@ class General(Minion):
           s.change_cd(-5)
         #skill.change_max_cd(skill.max_cd)
         skill.reset_cd()
+        self.last_skill_used = i
         return True
     return False
 

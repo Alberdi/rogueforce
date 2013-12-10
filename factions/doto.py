@@ -66,9 +66,10 @@ class Ox(General):
    
   def initialize_skills(self):
     self.skills = []
-    self.skills.append(Skill(self, apply_status, 20, [Taunted(None, self, 3, 20)], "Berserker's Call",
-                      "Taunts nearby units and gains bonus armor",
-                      Circle(self.bg, is_enemy, self, None, True, 5)))
+    taunt_duration = 20
+    self.skills.append(Skill(self, [apply_status, apply_status], 20, [[Taunted(None, self, taunt_duration)], 
+                       [Shield(name="Berserker's Call", armor=3, duration=taunt_duration), True]], "Berserker's Call",
+                      "Taunts nearby units and gains bonus armor", Circle(self.bg, is_enemy, self, None, True, 5), True))
     self.skills.append(Skill(self, apply_status, 30, [PoisonHunger(None, self, 1, 6, 20)], "Battle Hunger",
                       "Enemy gets slowed and takes damage until it kills a unit",
                       SingleTarget(self.bg, is_enemy, self, is_inrange_close)))
@@ -86,6 +87,21 @@ class Ox(General):
       # Counter helix can't be used like that
       return False
     else:
+      last = self.last_skill_used
       if i == -1:
         i = self.helix_index # Forced counter helix
       super(Ox, self).use_skill(i, x, y)
+      if i == self.helix_index:
+        self.last_skill_used = last
+
+class Rubock(General):
+  def __init__(self, battleground, side, x=-1, y=-1, name="Rubock", color=libtcod.green):
+    super(Rubock, self).__init__(battleground, side, x, y, name, color)
+    self.copied_skill = 1
+
+  def initialize_skills(self):
+    self.skills = []
+    self.skills.append(Skill(self, copy_spell, 6, [], "Spell Steal", "Copies the last spell used by the enemy",
+                      SingleTarget(self.bg, is_enemy_general, self, is_inrange_long)))
+    self.skills.append(Skill(self, null, 1, [], "Spell Steal", "Copies the last spell used by the enemy"))
+

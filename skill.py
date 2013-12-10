@@ -7,7 +7,7 @@ import sieve
 import status
 
 class Skill(object):
-  def __init__(self, general, function, max_cd, parameters=[], quote="", description="", area=None):
+  def __init__(self, general, function, max_cd, parameters=[], quote="", description="", area=None, multifunction=False):
     self.general = general
     self.function = function
     self.original_max_cd = max_cd
@@ -17,11 +17,16 @@ class Skill(object):
     self.area = area
     self.quote = quote
     self.description = description
+    self.multifunction = multifunction
 
   def apply_function(self, tiles):
     did_anything = False
     for t in tiles:
-      did_anything += self.function(self.general, t, *self.parameters)
+      if self.multifunction:
+        for i in range(0, len(self.function)):
+          did_anything += self.function[i](self.general, t, *self.parameters[i])
+      else:
+        did_anything += self.function(self.general, t, *self.parameters)
     return did_anything
 
   def change_cd(self, delta):
@@ -30,6 +35,10 @@ class Skill(object):
 
   def change_max_cd(self, delta):
     self.max_cd += delta
+
+  def clone(self, general):
+    return self.__class__(general, self.function, self.max_cd, self.parameters, self.quote, self.description,
+                          self.area.clone(general) if self.area else None, self.multifunction)
 
   def get_area_tiles(self, x, y):
     if self.area is None: return None
@@ -51,8 +60,8 @@ def add_path(general, tile, entity):
   entity.path.append(tile)
   return True
 
-def apply_status(general, tile, status):
-  clone = status.clone(tile.entity)
+def apply_status(general, tile, status, selfcast=False):
+  clone = status.clone(general if selfcast else tile.entity)
   clone.owner = general
   return True
 
@@ -68,6 +77,17 @@ def consume(general, tile, hp_gain=1, delta_cd=1):
     s.change_cd(delta_cd)
   return True
 
+def copy_spell(general, tile):
+  if tile.entity.last_skill_used == -1:
+    char = '?'
+  else:
+    char = '!'
+    general.skills[general.copied_skill] = tile.entity.skills[tile.entity.last_skill_used].clone(general)
+    general.skills[general.copied_skill].cd = general.skills[general.copied_skill].max_cd
+  TempEffect(general.bg, x=tile.x, y=tile.y, char=char, color=general.color)
+  TempEffect(general.bg, x=general.x, y=general.y, char=char, color=general.color, duration=2)
+  return True
+
 def create_minions(general, l):
   did_anything = False
   for (x, y) in l:
@@ -81,7 +101,6 @@ def create_minions(general, l):
 def darkness(general, tile, duration):
   if tile.passable:
     d = TempEffect(general.bg, x=tile.x, y=tile.y, char=' ', duration=duration)
-    general.bg.effects.append(d)
   return tile.passable
 
 def decapitate(general, tile, threshold=1.0):
@@ -92,7 +111,7 @@ def decapitate(general, tile, threshold=1.0):
     tile.entity.get_attacked(general, 9999, attack_type="magical")
     a = area.Circle(general.bg, sieve.is_ally, general, None, True, 8)
     for t in a.get_tiles():
-      apply_status(general, t, status.Haste(None, 10, "Decapitation haste", 3))
+      apply_status(general, t, status.Haste(None, 30, "Decapitation haste", 3))
   return True
 
 def heal(general, tile, amount):

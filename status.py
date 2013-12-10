@@ -12,11 +12,13 @@ class Status(object):
     self.attack_effect = None
     self.attack_type = "magical"
     self.kills = 0
+    self.duplicated = False
     if entity: # Not a prototype
       for s in self.entity.statuses:
         if s.name == self.name:
           # We refresh the duration if it's bigger
           s.duration = max(s.duration, self.duration)
+          self.duplicated = True
           return
       self.entity.statuses.append(self)
   
@@ -100,8 +102,11 @@ class Haste(Status):
     super(Haste, self).__init__(entity, None, duration, name)
     self.speedup = speedup
 
+  def clone(self, entity):
+    return self.__class__(entity, self.duration, self.name, self.speedup)
+
   def tick(self):
-    self.entity.next_action -= 1
+    self.entity.next_action -= self.speedup
 
 class Poison(Status):
   # tbt = time between ticks
@@ -158,7 +163,7 @@ class Shield(Status):
     super(Shield, self).__init__(entity, None, duration, name)
     self.armor = armor
     self.armor_type = armor_type
-    if entity:
+    if entity and not self.duplicated:
       entity.armor[armor_type] += armor
       entity.color = libtcod.dark_yellow
 
@@ -171,23 +176,8 @@ class Shield(Status):
     self.entity.armor[self.armor_type] -= self.armor
 
 class Taunted(Status):
-  def __init__(self, entity=None, owner=None, armor=0, duration=9999, name="Taunted"):
+  def __init__(self, entity=None, owner=None, duration=9999, name="Taunted"):
     super(Taunted, self).__init__(entity, owner, duration, name)
-    self.armor = armor
-    shield_name = name + " shield"
-    if entity:
-      for s in owner.statuses:
-        if s.name == shield_name:
-          return
-      Shield(owner, duration, shield_name, armor)
-
-  def clone(self, entity):
-    return self.__class__(entity, self.owner, self.armor, self.duration, self.name)
-
-  def end(self):
-    super(Taunted, self).end()
-    if self.entity in self.entity.bg.minions:
-      self.entity.bg.generals[self.entity.side].recommand_tactic()
 
   def update(self):
     super(Taunted, self).update()
