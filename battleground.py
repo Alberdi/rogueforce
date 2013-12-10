@@ -11,6 +11,7 @@ class Battleground(object):
     self.effects = []
     self.minions = []
     self.generals = []
+    self.reserves = [[], []]
     self.fortresses = []
     self.tiles = {}
     if tilefile:

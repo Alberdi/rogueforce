@@ -23,6 +23,8 @@ class General(Minion):
     self.tactic_quotes = ["Stop/Fire", "Forward", "Backward", "Go sides", "Go center", "Attack", "Defend"]
     self.selected_tactic = self.tactics[0]
     self.previous_tactic = self.tactics[0]
+    self.swap_cd = 0
+    self.swap_max_cd = 200
 
   def ai_action(self, turn):
     return None
@@ -67,13 +69,23 @@ class General(Minion):
   def start_battle(self):
     self.initialize_skills()
     self.command_tactic(0)
-    self.formation.place_minions()
+    self.swap_cd = 0
+    #self.formation.place_minions()
 
   def start_scenario(self):
     self.deployed = False
     self.hp = self.max_hp
     self.minions_alive = self.starting_minions
     self.requisition = 0
+
+  def swap(self, i):
+    r = self.bg.reserves[self.side]
+    if self.swap_cd >= self.swap_max_cd and len(r) > i:
+      self.bg.generals[self.side] = r[i]
+      r[i].swap_cd = 0
+      self.bg.tiles[(self.x, self.y)].entity = r[i]
+      (r[i].x, r[i].y) = (self.x, self.y)
+      self.bg.reserves[self.side][i] = self
 
   def update(self):
     if not self.alive:
@@ -82,6 +94,7 @@ class General(Minion):
       s.update()
     for s in self.statuses:
       s.update()
+    self.swap_cd = min(self.swap_cd+1, self.swap_max_cd)
     if self.next_action <= 0:
       self.reset_action()
       if self.flag and self.bg.is_inside(self.flag.x, self.flag.y):
