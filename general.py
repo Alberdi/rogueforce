@@ -4,9 +4,12 @@ from minion import *
 from sieve import *
 from skill import *
 from status import *
+import effect
+import tactic
 
 import libtcodpy as libtcod
-import tactic
+
+import math
 
 class General(Minion):
   def __init__(self, battleground, side, x=-1, y=-1, name="General", color=libtcod.orange):
@@ -58,7 +61,7 @@ class General(Minion):
         return
       self.flag.dissapear()
     if self.bg.is_inside(x, y):
-      self.flag = Blinking(self.bg, self.side, x, y, 'q', self.original_color)
+      self.flag = effect.Blinking(self.bg, self.side, x, y, 'q', self.original_color)
     else:
       self.flag = None
 
@@ -109,7 +112,7 @@ class General(Minion):
       if self.flag and self.bg.is_inside(self.flag.x, self.flag.y):
         dx = self.flag.x - self.x
         dy = self.flag.y - self.y
-        if not self.move(copysign(1, dx) if dx else 0, copysign(1,dy) if dy else 0) \
+        if not self.move(math.copysign(1, dx) if dx else 0, math.copysign(1,dy) if dy else 0) \
             or (self.x, self.y) == (self.flag.x, self.flag.y):
           self.place_flag(-1, -1)
       else:

@@ -1,4 +1,5 @@
 import effect
+import skill
 import tactic
 
 import libtcodpy as libtcod
@@ -108,6 +109,27 @@ class Haste(Status):
   def tick(self):
     self.entity.next_action -= self.speedup
 
+class Lifted(Status):
+  def __init__(self, entity=None, owner=None, duration=9999, name="Lifted", land_area=None, land_status=None):
+    super(Lifted, self).__init__(entity, owner, duration, name)
+    self.land_area = land_area
+    self.land_status = land_status
+    self.skill = skill.Skill(owner, skill.apply_status, 0, [land_status], area=land_area)
+    if entity:
+      effect.TempEffect(entity.bg, x=entity.x, y=entity.y, char='^', color=owner.color, duration=duration)
+
+  def clone(self, entity):
+    return self.__class__(entity, self.owner, self.duration, self.name, self.land_area, self.land_status)
+
+  def tick(self):
+    self.entity.reset_action()
+  
+  def end(self):
+    if self.land_status:
+      self.skill.use(self.entity.x, self.entity.y)
+      for t in self.land_area.get_tiles():
+        effect.TempEffect(self.entity.bg, x=t.x, y=t.y, char=',')
+
 class Poison(Status):
   # tbt = time between ticks
   def __init__(self, entity=None, owner=None, power=0, tbt=0, ticks=9999, name="Poison"):
@@ -174,6 +196,18 @@ class Shield(Status):
     super(Shield, self).end()
     self.entity.update_color()
     self.entity.armor[self.armor_type] -= self.armor
+
+class Stunned(Status):
+  def __init__(self, entity=None, owner=None, duration=9999, name="Stunned"):
+    super(Stunned, self).__init__(entity, owner, duration, name)
+    if entity:
+      self.effect = effect.Blinking(entity.bg, x=entity.x, y=entity.y, char='~', color=entity.color)
+
+  def end(self):
+    self.effect.dissapear()
+
+  def tick(self):
+    self.entity.reset_action()
 
 class Taunted(Status):
   def __init__(self, entity=None, owner=None, duration=9999, name="Taunted"):

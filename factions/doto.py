@@ -97,11 +97,15 @@ class Ox(General):
 class Rubock(General):
   def __init__(self, battleground, side, x=-1, y=-1, name="Rubock", color=libtcod.green):
     super(Rubock, self).__init__(battleground, side, x, y, name, color)
-    self.copied_skill = 1
+    self.copied_skill = 2
 
   def initialize_skills(self):
     self.skills = []
-    self.skills.append(Skill(self, copy_spell, 6, [], "Spell Steal", "Copies the last spell used by the enemy",
+    self.skills.append(Skill(self, apply_status, 40, [Lifted(None, self, 15,
+                      land_area=Circle(self.bg, is_enemy, self, radius=4),land_status=Stunned(None, self, 10))],
+                      "Telekinesis", "Lifts an enemy  into the air that stuns around on landing",
+                      SingleTarget(self.bg, is_enemy, self, is_inrange_long)))
+    self.skills.append(Skill(self, copy_spell, 80, [], "Spell Steal", "Copies the last spell used by the enemy",
                       SingleTarget(self.bg, is_enemy_general, self, is_inrange_long)))
     self.skills.append(Skill(self, null, 1, [], "Spell Stolen", "Copy of the last spell used by the enemy"))
 
