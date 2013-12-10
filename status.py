@@ -45,6 +45,24 @@ class Status(object):
       if self.duration <= 0:
         self.end()
 
+class Aura(Status):
+  def __init__(self, entity=None, owner=None, duration=9999, name="Aura", area=None, status=None):
+    super(Aura, self).__init__(entity, owner, duration, name)
+    self.area = area
+    self.tbt = 10
+    self.timer = 0
+    status.duration = self.tbt+2
+    self.skill = skill.Skill(owner, skill.apply_status, 0, [status], area=area)
+
+  def clone(self, entity):
+    return self.__class__(entity, self.owner, self.duration, self.name, self.area, self.status)
+
+  def tick(self):
+    self.timer -= 1
+    if self.timer < 0:
+      self.timer = self.tbt
+      self.skill.use(self.entity.x, self.entity.y)
+
 class Bleeding(Status):
   def __init__(self, entity=None, owner=None, power=0, duration=9999, name="Bleeding"):
     super(Bleeding, self).__init__(entity, owner, duration, name)
@@ -181,16 +199,18 @@ class Recalling(Status):
     self.entity.reset_action()
 
 class Shield(Status):
-  def __init__(self, entity=None, duration=9999, name="Shield", armor=0, armor_type="physical"):
+  def __init__(self, entity=None, duration=9999, name="Shield", armor=0, armor_type="physical", color=None):
     super(Shield, self).__init__(entity, None, duration, name)
     self.armor = armor
     self.armor_type = armor_type
+    self.color = color
     if entity and not self.duplicated:
       entity.armor[armor_type] += armor
-      entity.color = libtcod.dark_yellow
+      if color:
+        entity.color = color
 
   def clone(self, entity):
-    return self.__class__(entity, self.duration, self.name, self.armor, self.armor_type)
+    return self.__class__(entity, self.duration, self.name, self.armor, self.armor_type, self.color)
 
   def end(self):
     super(Shield, self).end()

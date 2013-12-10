@@ -105,7 +105,13 @@ class Rubock(General):
                       land_area=Circle(self.bg, is_enemy, self, radius=4),land_status=Stunned(None, self, 10))],
                       "Telekinesis", "Lifts an enemy  into the air that stuns around on landing",
                       SingleTarget(self.bg, is_enemy, self, is_inrange_close)))
+    self.skills.append(Skill(self, null, 1, [], "Null Field", "Grants magic resistance to all allies"))
     self.skills.append(Skill(self, copy_spell, 80, [], "Spell Steal", "Copies the last spell used by the enemy",
                       SingleTarget(self.bg, is_enemy_general, self, is_inrange_long)))
     self.skills.append(Skill(self, null, 1, [], "Spell Stolen", "Copy of the last spell used by the enemy"))
+
+  def start_battle(self):
+    super(Rubock, self).start_battle()
+    Aura(self, self, name="Null Field aura", area=Circle(self.bg, is_ally, self, radius=6),
+        status=Shield(name="Null Field", armor=2, armor_type="magical"))
 
