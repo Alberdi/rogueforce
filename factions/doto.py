@@ -22,7 +22,7 @@ class Bloodrotter(General):
     self.skills.append(Skill(self, apply_statuses, 20,
                        [[Empower(None, self, bloodrage_duration, "Bloodrage empower", 1),
                          FreezeCooldowns(None, self, bloodrage_duration, "Bloodrage silence"),
-                         Poison(None, self, 1, 1, bloodrage_duration, "Bloodrage poison")]],
+                         Poison(None, self, 1, 1, bloodrage_duration/2, "Bloodrage poison")]],
                        "Bloodrage", "Gives higher power to a unit, but takes damage and silence",
                       SingleTarget(self.bg, is_unit, self, is_inrange_close)))
     self.skills.append(Skill(self, null, 1, [], "Blood Bath", "Gain health for every unit killed"))
