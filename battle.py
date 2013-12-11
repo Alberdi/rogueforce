@@ -33,6 +33,8 @@ class BattleWindow(Window):
     return self.bg.generals[ai_side].ai_action(turn)
 
   def check_input(self, key, mouse, x, y):
+    if chr(key.c).upper() == 'S':
+      return "stop\n"
     if mouse.rbutton_pressed:
       self.bg.generals[self.side].place_flag(x, y)
       return "flag ({0},{1})\n".format(x, y)
@@ -83,7 +85,9 @@ class BattleWindow(Window):
     for i in [0,1]:
       if turn in self.messages[i]:
         m = self.messages[i][turn]
-        if m.startswith("tactic"):
+        if m.startswith("stop"):
+          self.bg.generals[i].place_flag(-1, -1)
+        elif m.startswith("tactic"):
           self.bg.generals[i].command_tactic(int(m[6]))
         elif m.startswith("swap"):
           if self.bg.generals[i].swap(int(m[4])):
