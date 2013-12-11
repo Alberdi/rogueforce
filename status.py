@@ -4,6 +4,8 @@ import tactic
 
 import libtcodpy as libtcod
 
+import random
+
 class Status(object):
   def __init__(self, entity=None, owner=None, duration=9999, name="Status"):
     self.entity = entity
@@ -147,6 +149,38 @@ class Lifted(Status):
       self.skill.use(self.entity.x, self.entity.y)
       for t in self.land_area.get_tiles():
         effect.TempEffect(self.entity.bg, x=t.x, y=t.y, char=',')
+
+class Jumping(Status):
+  def __init__(self, entity=None, owner=None, duration=9999, name="Jumping",
+               power=0, power_delta=0, area=None, status=None):
+    super(Jumping, self).__init__(entity, owner, duration, name)
+    self.area = area
+    self.status = status
+    self.power = power
+    self.power_delta = power_delta
+    self.rand = random.Random()
+    self.rand.seed(hash(name))
+    self.already_hit = []
+    if entity:
+      self.attack_effect = effect.TempEffect(entity.bg, char='-', color=owner.color if owner else libtcod.white)
+
+  def clone(self, entity):
+    return self.__class__(entity, self.owner, self.duration, self.name,
+                          self.power, self.power_delta, self.area, self.status)
+
+  def tick(self):
+    self.entity.get_attacked(self)
+    self.already_hit.append(self.entity)
+    self.status.clone(self.entity)
+    entities = [tile.entity for tile in self.area.get_tiles(self.entity.x, self.entity.y)
+                              if tile.entity not in self.already_hit]
+    if entities:
+      e = self.rand.choice(entities)
+      clone = self.clone(e)
+      clone.power += self.power_delta
+      clone.duration += 1
+      clone.rand = self.rand
+      clone.already_hit = self.already_hit
 
 class Poison(Status):
   # tbt = time between ticks

@@ -105,6 +105,10 @@ class Rubock(General):
                       land_area=Circle(self.bg, is_enemy, self, radius=4),land_status=Stunned(None, self, 10))],
                       "Telekinesis", "Lifts an enemy  into the air that stuns around on landing",
                       SingleTarget(self.bg, is_enemy, self, is_inrange_close)))
+    self.skills.append(Skill(self, apply_status, 40, [Jumping(None, self, 1, "Fade Bolt", 8, -1, 
+                      Circle(self.bg, is_enemy, self, radius=2), Empower(duration = 20, name="Fade Bolt debuff",
+                       power_ratio=-0.25))], "Fade Bolt", "Travels between units damaging and weakening them",
+                      SingleTarget(self.bg, is_enemy, self, is_inrange_close)))
     self.skills.append(Skill(self, null, 1, [], "Null Field", "Grants magic resistance to all allies"))
     self.skills.append(Skill(self, copy_spell, 80, [], "Spell Steal", "Copies the last spell used by the enemy",
                       SingleTarget(self.bg, is_enemy_general, self, is_inrange_long)))
