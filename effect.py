@@ -71,7 +71,7 @@ class Blinking(Effect):
 
   def dissapear(self):
     if self.visible:
-      self.bg.tiles[(self.x, self.y)].effects.remove(self)
+      super(Blinking, self).dissapear()
     self.alive = False
 
   def update(self):
