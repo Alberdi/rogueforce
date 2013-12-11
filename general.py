@@ -14,7 +14,7 @@ import math
 class General(Minion):
   def __init__(self, battleground, side, x=-1, y=-1, name="General", color=libtcod.orange):
     super(General, self).__init__(battleground, side, x, y, name, color)
-    self.max_hp = 100
+    self.max_hp = 300
     self.cost = 250
     self.death_quote = "..."
     self.flag = None
@@ -30,6 +30,8 @@ class General(Minion):
     self.swap_max_cd = 200
     self.swap_sickness = 10
     self.last_skill_used = -1
+    self.armor["physical"] = 2
+    self.power = 10
 
   def ai_action(self, turn):
     return None
@@ -74,7 +76,7 @@ class General(Minion):
   def start_battle(self):
     self.initialize_skills()
     self.command_tactic(0)
-    self.swap_cd = 0
+    self.swap_cd = 200
     #self.formation.place_minions()
 
   def start_scenario(self):

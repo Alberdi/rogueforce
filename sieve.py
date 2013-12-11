@@ -39,7 +39,7 @@ def is_inrange_close(general, tile):
   return is_inrange(general, tile, 8)
 
 def is_inrange_long(general, tile):
-  return is_inrange(general, tile, 30)
+  return is_inrange(general, tile, 20)
 
 def is_minion(general, tile):
   return tile.entity and tile.entity in general.bg.minions

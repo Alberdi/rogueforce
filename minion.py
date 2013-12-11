@@ -11,8 +11,8 @@ class Minion(Entity):
   def __init__(self, battleground, side, x=-1, y=-1, name="minion", color=libtcod.white):
     super(Minion, self).__init__(battleground, side, x, y, name[0], color)
     self.name = name
-    self.max_hp = 20
-    self.hp = 20
+    self.max_hp = 30
+    self.hp = 30
     self.armor = defaultdict(lambda: 0)
     self.power = 5
     self.tactic = tactic.null
