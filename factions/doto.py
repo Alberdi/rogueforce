@@ -96,6 +96,31 @@ class Ox(General):
         self.last_skill_used = last
       return skill_used
 
+class Pock(General):
+  def __init__(self, battleground, side, x=-1, y=-1, name="Pock", color=libtcod.sky):
+    super(Pock, self).__init__(battleground, side, x, y, name, color)
+    self.max_hp = 200
+    self.armor["physical"] = 1
+    self.orb = Orb(self.bg, self.side, char='o', color=self.color)
+    self.orb_index = 0
+
+  def initialize_skills(self):
+    self.skills = []
+    self.skills.append(Skill(self, place_entity, 60, [self.orb], "Illusory Orb",
+                       "Launches a magic orb that damages and might be teleported into",
+                       SingleTarget(self.bg, general=self, reach_function=is_inrange_long, selfcentered=True)))
+    self.skills.append(Skill(self, nuke_statuses, 70, [15, TempEffect(self.bg, char='`', color=self.color),
+                       "magical", [FreezeCooldowns(None, self, 20, "Waning Rift silence")]],
+                       "Waning Rift", "Deals damage and silences enemy units nearby",
+                       Circle(self.bg, is_enemy, self, selfcentered=True, radius=2)))
+
+  def use_skill(self, i, x, y):
+    skill_used = super(Pock, self).use_skill(i, x, y)
+    if skill_used and i == self.orb_index:
+      self.orb = self.bg.tiles[(self.x, self.y)].effects[-1]
+      self.orb.path = Line(self.bg, origin=(self.x, self.y)).get_tiles(x, y)[:20]
+    return skill_used
+
 class Rubock(General):
   def __init__(self, battleground, side, x=-1, y=-1, name="Rubock", color=libtcod.green):
     super(Rubock, self).__init__(battleground, side, x, y, name, color)

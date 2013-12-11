@@ -168,9 +168,9 @@ class BattleWindow(Window):
 from factions import doto
 if __name__=="__main__":
   bg = Battleground(BG_WIDTH, BG_HEIGHT)
-  bg.generals = [doto.Rubock(bg, 0, 30, 21), doto.Rubock(bg, 1, 56, 21)]
-  bg.reserves[0] = [doto.Bloodrotter(bg, 0), doto.Ox(bg, 0)]
-  bg.reserves[1] = [doto.Bloodrotter(bg, 1), doto.Ox(bg, 1)]
+  bg.generals = [doto.Pock(bg, 0, 38, 21), doto.Pock(bg, 1, 56, 21)]
+  for i in [0,1]:
+    bg.reserves[1] = [doto.Rubock(bg, i), doto.Bloodrotter(bg, i), doto.Ox(bg, i)]
   for i in [0,1]:
     bg.generals[i].start_scenario()
     for g in bg.reserves[i]:

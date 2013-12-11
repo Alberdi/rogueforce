@@ -1,9 +1,10 @@
 import entity
 import status
 
-from math import copysign
-
 import libtcodpy as libtcod
+
+from math import copysign
+import itertools
 
 class Effect(entity.Entity):
   def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char=' ', color=libtcod.white):
@@ -217,9 +218,29 @@ class Pathing(Effect):
     super(Pathing, self).__init__(battleground, side, x, y, char, color)
 
   def update(self):
-    if not self.alive:
-      return
-    self.move_path()
+    if self.alive and not self.move_path():
+      self.dissapear()
+
+class Orb(Pathing):
+  def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char='o', color=libtcod.white,
+               power=10, attack_type="magical"):
+    super(Orb, self).__init__(battleground, side, x, y, char, color)
+    self.power = power
+    self.attack_type = attack_type
+    self.attacked_entities = []
+
+  def clone(self, x, y): 
+    if self.bg.is_inside(x, y):
+      return self.__class__(self.bg, self.side, x, y, self.char, self.original_color, self.power, self.attack_type)
+
+  def update(self):
+    super(Orb, self).update()
+    if self.alive:
+      for (pos_x, pos_y) in itertools.product([-1,0,1], [-1,0,1]):
+        entity = self.bg.tiles[(self.x+pos_x), (self.y+pos_y)].entity
+        if entity and not entity.is_ally(self) and entity not in self.attacked_entities:
+          entity.get_attacked(self)
+          self.attacked_entities.append(entity)
 
 class Slash(Effect):
   def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char='|', color=libtcod.white, power=10, steps=8, goto=1, area=None):
