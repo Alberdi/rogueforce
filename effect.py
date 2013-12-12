@@ -237,10 +237,11 @@ class Orb(Pathing):
     super(Orb, self).update()
     if self.alive:
       for (pos_x, pos_y) in itertools.product([-1,0,1], [-1,0,1]):
-        entity = self.bg.tiles[(self.x+pos_x), (self.y+pos_y)].entity
-        if entity and not entity.is_ally(self) and entity not in self.attacked_entities:
-          entity.get_attacked(self)
-          self.attacked_entities.append(entity)
+        if self.bg.is_inside(self.x+pos_x, self.y+pos_y):
+          entity = self.bg.tiles[(self.x+pos_x), (self.y+pos_y)].entity
+          if entity and not entity.is_ally(self) and entity not in self.attacked_entities:
+            entity.get_attacked(self)
+            self.attacked_entities.append(entity)
 
 class Slash(Effect):
   def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char='|', color=libtcod.white, power=10, steps=8, goto=1, area=None):

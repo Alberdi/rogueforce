@@ -106,7 +106,7 @@ class Pock(General):
 
   def initialize_skills(self):
     self.skills = []
-    self.skills.append(Skill(self, place_entity, 2, [self.orb], "Illusory Orb",
+    self.skills.append(Skill(self, place_entity, 60, [self.orb], "Illusory Orb",
                        "Launches a magic orb that damages and might be teleported into",
                        SingleTarget(self.bg, general=self, reach_function=is_inrange_long, selfcentered=True)))
     self.skills.append(Skill(self, nuke_statuses, 70, [15, TempEffect(self.bg, char='`', color=self.color),
