@@ -102,22 +102,29 @@ class Pock(General):
     self.armor["physical"] = 1
     self.orb = Orb(self.bg, self.side, char='o', color=self.color)
     self.orb_index = 0
+    self.jaunt_index = 2
 
   def initialize_skills(self):
     self.skills = []
-    self.skills.append(Skill(self, place_entity, 60, [self.orb], "Illusory Orb",
+    self.skills.append(Skill(self, place_entity, 2, [self.orb], "Illusory Orb",
                        "Launches a magic orb that damages and might be teleported into",
                        SingleTarget(self.bg, general=self, reach_function=is_inrange_long, selfcentered=True)))
     self.skills.append(Skill(self, nuke_statuses, 70, [15, TempEffect(self.bg, char='`', color=self.color),
                        "magical", [FreezeCooldowns(None, self, 20, "Waning Rift silence")]],
                        "Waning Rift", "Deals damage and silences enemy units nearby",
                        Circle(self.bg, is_enemy, self, selfcentered=True, radius=2)))
+    self.skills.append(Skill(self, teleport, 20, [None, self], "Ethereal Jaunt", "Shifts into the Illusory Orb"))
 
   def use_skill(self, i, x, y):
+    if i == self.jaunt_index:
+      self.skills[i].parameters[0] = self.bg.tiles[(self.orb.x, self.orb.y)]
     skill_used = super(Pock, self).use_skill(i, x, y)
-    if skill_used and i == self.orb_index:
-      self.orb = self.bg.tiles[(self.x, self.y)].effects[-1]
-      self.orb.path = Line(self.bg, origin=(self.x, self.y)).get_tiles(x, y)[:20]
+    if skill_used:
+      if i == self.orb_index:
+        self.orb = self.bg.tiles[(self.x, self.y)].effects[-1]
+        self.orb.path = Line(self.bg, origin=(self.x, self.y)).get_tiles(x, y)[:20]
+      elif i == self.jaunt_index:
+        self.orb.dissapear()
     return skill_used
 
 class Rubock(General):

@@ -128,7 +128,7 @@ class General(Minion):
 
   def use_skill(self, i, x, y):
     skill = self.skills[i]
-    if skill.cd >= skill.max_cd:
+    if skill.is_ready():
       if skill.use(x, y):
         for s in self.skills:
           s.change_cd(-5)

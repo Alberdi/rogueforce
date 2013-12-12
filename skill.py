@@ -44,6 +44,9 @@ class Skill(object):
     if self.area is None: return None
     return self.area.get_tiles(x, y)
 
+  def is_ready(self):
+    return self.cd >= self.max_cd
+
   def reset_cd(self):
     self.cd = 0
 
@@ -197,6 +200,9 @@ def sonic_waves(general, power, waves):
     if general.bg.is_inside(x,y):
       general.bg.effects.append(Wave(general.bg, general.side, x, y, power))
   return waves > 0
+
+def teleport(general, tile, entity):
+  return entity.teleport(tile.x, tile.y)
 
 def water_pusher(general, tile):
   did_anything = False
