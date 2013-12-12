@@ -26,9 +26,8 @@ class Bloodrotter(General):
                          Poison(None, self, 1, 1, bloodrage_duration/2, "Bloodrage poison")]],
                        "Bloodrage", "Gives higher power to a unit, but takes damage and silence",
                       SingleTarget(self.bg, is_unit, self, is_inrange_close)))
-    self.skills.append(Skill(self, null, 1, [], "Blood Bath", "Gain health for every unit killed"))
-    self.skills.append(Skill(self, null, 1, [], "Thirst",
-                       "Gets damage and speed based on enemy's missing health"))
+    self.skills.append(DummySkill("Blood Bath", "Gain health for every unit killed"))
+    self.skills.append(DummySkill("Thirst", "Gets damage and speed based on enemy's missing health"))
     self.skills.append(Skill(self, nuke_statuses, 140, [40, TempEffect(self.bg, char='*', color=self.color),
                        "magical", [Bleeding(owner=self, power=30, duration=40, name="Rupture")]],
                        "Rupture", "Deals initial damage plus extra damage if the unit moves",
@@ -137,7 +136,7 @@ class Rubock(General):
                       Circle(self.bg, is_enemy, self, radius=2), Empower(duration = 20, name="Fade Bolt debuff",
                        power_ratio=-0.25))], "Fade Bolt", "Travels between units damaging and weakening them",
                       SingleTarget(self.bg, is_enemy, self, is_inrange_close)))
-    self.skills.append(Skill(self, null, 1, [], "Null Field", "Grants magic resistance to all allies"))
+    self.skills.append(DummySkill("Null Field", "Grants magic resistance to all allies"))
     self.skills.append(Skill(self, copy_spell, 140, [], "Spell Steal", "Copies the last spell used by the enemy",
                       SingleTarget(self.bg, is_enemy_general, self, is_inrange_long)))
     self.skills.append(Skill(self, null, 1, [], "Spell Stolen", "Copy of the last spell used by the enemy"))

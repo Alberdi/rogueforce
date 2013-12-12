@@ -55,6 +55,23 @@ class Skill(object):
       return self.function(self.general, *self.parameters)
     return self.apply_function(self.area.get_tiles(x, y))
 
+class DummySkill(Skill):
+  def __init__(self, quote, description):
+    super(DummySkill, self).__init__(None, null, 1, [], quote, description)
+    self.cd = 1
+
+  def change_cd(self, delta):
+    pass
+  
+  def reset_cd(self):
+    pass
+
+  def update(self):
+    pass
+
+  def use(self, x, y):
+    return False
+
 
 def add_path(general, tile, entity):
   entity.path.append(tile)

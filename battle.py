@@ -170,7 +170,7 @@ if __name__=="__main__":
   bg = Battleground(BG_WIDTH, BG_HEIGHT)
   bg.generals = [doto.Pock(bg, 0, 38, 21), doto.Pock(bg, 1, 56, 21)]
   for i in [0,1]:
-    bg.reserves[1] = [doto.Rubock(bg, i), doto.Bloodrotter(bg, i), doto.Ox(bg, i)]
+    bg.reserves[i] = [doto.Rubock(bg, i), doto.Bloodrotter(bg, i), doto.Ox(bg, i)]
   for i in [0,1]:
     bg.generals[i].start_scenario()
     for g in bg.reserves[i]:
