@@ -1,3 +1,4 @@
+from entity import Entity
 import effect
 import skill
 import tactic
@@ -212,6 +213,26 @@ class PoisonHunger(Poison):
       self.entity.next_action += 1
       self.owner.next_action -= 1
       super(PoisonHunger, self).tick()
+
+class Phasing(Status):
+  def __init__(self, entity=None, duration=9999, name="Phasing"):
+    super(Phasing, self).__init__(entity, None, duration, name)
+    if entity:
+      self.p_shield = Shield(entity, duration+1, "Phasing physical shield", 10000, "physical")
+      self.m_shield = Shield(entity, duration+1, "Phasing magical shield", 10000, "magical")
+      entity.bg.tiles[(entity.x, entity.y)].entity = None
+      entity.next_action = duration+1
+      self.placeholder = Entity(entity.bg, entity.side, entity.x, entity.y, 'u', entity.color)
+
+  def clone(self, entity):
+    return self.__class__(entity, self.duration, self.name)
+
+  def end(self):
+    super(Phasing, self).end()
+    self.p_shield.end()
+    self.m_shield.end()
+    self.placeholder.die()
+    self.entity.bg.tiles[(self.entity.x, self.entity.y)].entity = self.entity
 
 class Recalling(Status):
   def __init__(self, entity=None, duration=9999, name="Recalling"):

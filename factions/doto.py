@@ -102,7 +102,7 @@ class Pock(General):
     self.armor["physical"] = 1
     self.orb = Orb(self.bg, self.side, char='o', color=self.color)
     self.orb_index = 0
-    self.jaunt_index = 2
+    self.jaunt_index = 3
 
   def initialize_skills(self):
     self.skills = []
@@ -113,11 +113,17 @@ class Pock(General):
                        "magical", [FreezeCooldowns(None, self, 20, "Waning Rift silence")]],
                        "Waning Rift", "Deals damage and silences enemy units nearby",
                        Circle(self.bg, is_enemy, self, selfcentered=True, radius=2)))
+    self.skills.append(Skill(self, apply_status, 25, [Phasing(None, 5)], "Phase Shift",
+                       "Enter another dimension and get immune from harm",
+                       SingleTarget(self.bg, general=self, selfcentered=True)))
     self.skills.append(Skill(self, teleport, 20, [None, self], "Ethereal Jaunt", "Shifts into the Illusory Orb"))
 
   def use_skill(self, i, x, y):
     if i == self.jaunt_index:
-      self.skills[i].parameters[0] = self.bg.tiles[(self.orb.x, self.orb.y)]
+      if self.orb.alive:
+        self.skills[i].parameters[0] = self.bg.tiles[(self.orb.x, self.orb.y)]
+      else:
+        return False
     skill_used = super(Pock, self).use_skill(i, x, y)
     if skill_used:
       if i == self.orb_index:
