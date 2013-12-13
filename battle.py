@@ -7,6 +7,7 @@ import libtcodpy as libtcod
 
 import copy
 import re
+import sys
 
 KEYMAP_SKILLS = "QWERTYUIOP"
 KEYMAP_SWAP = "123456789"
@@ -85,6 +86,7 @@ class BattleWindow(Window):
     for i in [0,1]:
       if turn in self.messages[i]:
         m = self.messages[i][turn]
+        sys.stdout.write(str(i) + "," + str(turn) + "#" + m)
         if m.startswith("stop"):
           self.bg.generals[i].place_flag(-1, -1)
         elif m.startswith("tactic"):
