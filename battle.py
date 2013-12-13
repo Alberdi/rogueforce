@@ -83,6 +83,7 @@ class BattleWindow(Window):
 
   def process_messages(self, turn):
     for i in [0,1]:
+      sys.stdout.write(str(turn) + "#" + str((self.bg.generals[i].x, self.bg.generals[i].y)) + "\n")
       if turn in self.messages[i]:
         m = self.messages[i][turn]
         sys.stdout.write(str(i) + "," + str(turn) + "#" + m)

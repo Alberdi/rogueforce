@@ -80,7 +80,7 @@ class Ox(General):
 
   def start_battle(self):
     super(Ox, self).start_battle()
-    self.rand.seed(hash(self.name))
+    self.rand.seed(self.max_hp)
 
   def use_skill(self, i, x, y):
     if i == self.helix_index:

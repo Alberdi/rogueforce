@@ -139,7 +139,7 @@ class Jumping(Status):
     self.power = power
     self.power_delta = power_delta
     self.rand = random.Random()
-    self.rand.seed(hash(name))
+    self.rand.seed(duration)
     self.already_hit = []
     if entity:
       self.attack_effect = effect.TempEffect(entity.bg, char='-', color=owner.color if owner else libtcod.white)
