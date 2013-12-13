@@ -16,6 +16,8 @@ KEYMAP_TACTICS = "ZXCVBNM"
 FLAG_PATTERN = re.compile("flag \((-?\d+),(-?\d+)\)")
 SKILL_PATTERN = re.compile("skill(\d) \((-?\d+),(-?\d+)\)")
 
+DEBUG = False
+
 class BattleWindow(Window):
   def __init__(self, battleground, side, host = None, port = None, window_id = 1):
     for i in [0,1]:
@@ -83,10 +85,10 @@ class BattleWindow(Window):
 
   def process_messages(self, turn):
     for i in [0,1]:
-      sys.stdout.write(str(turn) + "#" + str((self.bg.generals[i].x, self.bg.generals[i].y)) + "\n")
       if turn in self.messages[i]:
         m = self.messages[i][turn]
-        sys.stdout.write(str(i) + "," + str(turn) + "#" + m)
+        if DEBUG:
+          sys.stdout.write(str(i) + "," + str(turn) + "#" + m)
         if m.startswith("stop"):
           self.bg.generals[i].place_flag(-1, -1)
         elif m.startswith("tactic"):
