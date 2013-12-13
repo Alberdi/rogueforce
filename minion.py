@@ -8,8 +8,8 @@ import tactic
 from collections import defaultdict
 
 class Minion(Entity):
-  def __init__(self, battleground, side, x=-1, y=-1, name="minion", color=libtcod.white):
-    super(Minion, self).__init__(battleground, side, x, y, name[0], color)
+  def __init__(self, battleground, side, x=-1, y=-1, name="minion", char='m', color=libtcod.white):
+    super(Minion, self).__init__(battleground, side, x, y, char, color)
     self.name = name
     self.max_hp = 30
     self.hp = 30
@@ -23,7 +23,7 @@ class Minion(Entity):
 
   def clone(self, x, y):
     if self.bg.is_inside(x, y) and self.bg.tiles[(x, y)].entity is None and self.bg.tiles[(x, y)].is_passable(self):
-      return self.__class__(self.bg, self.side, x, y, self.name, self.original_color)
+      return self.__class__(self.bg, self.side, x, y, self.name, self.char, self.original_color)
     return None
 
   def die(self):

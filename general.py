@@ -13,13 +13,13 @@ import math
 
 class General(Minion):
   def __init__(self, battleground, side, x=-1, y=-1, name="General", color=libtcod.orange):
-    super(General, self).__init__(battleground, side, x, y, name, color)
+    super(General, self).__init__(battleground, side, x, y, name, name[0], color)
     self.max_hp = 300
     self.cost = 250
     self.death_quote = "..."
     self.flag = None
     self.formation = Rows(self)
-    self.minion = Minion(self.bg, self.side)
+    self.minion = Minion(self.bg, self.side, char='b' if side else 'd')
     self.skills = []
     self.starting_minions = 101
     self.tactics = [tactic.stop, tactic.forward, tactic.backward, tactic.go_sides, tactic.go_center, tactic.attack_general, tactic.defend_general]
