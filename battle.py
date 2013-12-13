@@ -7,6 +7,7 @@ import libtcodpy as libtcod
 
 import copy
 import re
+import sys
 
 KEYMAP_SKILLS = "QWERTYUIOP"
 KEYMAP_SWAP = "123456789"
@@ -14,6 +15,8 @@ KEYMAP_TACTICS = "ZXCVBNM"
 
 FLAG_PATTERN = re.compile("flag \((-?\d+),(-?\d+)\)")
 SKILL_PATTERN = re.compile("skill(\d) \((-?\d+),(-?\d+)\)")
+
+DEBUG = False
 
 class BattleWindow(Window):
   def __init__(self, battleground, side, host = None, port = None, window_id = 1):
@@ -36,7 +39,6 @@ class BattleWindow(Window):
     if chr(key.c).upper() == 'S':
       return "stop\n"
     if mouse.rbutton_pressed:
-      self.bg.generals[self.side].place_flag(x, y)
       return "flag ({0},{1})\n".format(x, y)
     n = self.keymap_swap.find(chr(key.c)) # Number of the swap pressed
     if n != -1: 
@@ -85,6 +87,8 @@ class BattleWindow(Window):
     for i in [0,1]:
       if turn in self.messages[i]:
         m = self.messages[i][turn]
+        if DEBUG:
+          sys.stdout.write(str(i) + "," + str(turn) + "#" + m)
         if m.startswith("stop"):
           self.bg.generals[i].place_flag(-1, -1)
         elif m.startswith("tactic"):
