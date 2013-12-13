@@ -37,7 +37,6 @@ class BattleWindow(Window):
     if chr(key.c).upper() == 'S':
       return "stop\n"
     if mouse.rbutton_pressed:
-      self.bg.generals[self.side].place_flag(x, y)
       return "flag ({0},{1})\n".format(x, y)
     n = self.keymap_swap.find(chr(key.c)) # Number of the swap pressed
     if n != -1: 
