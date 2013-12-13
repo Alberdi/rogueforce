@@ -1,4 +1,5 @@
 from entity import Entity
+import area
 import effect
 import skill
 import tactic
@@ -180,6 +181,39 @@ class Lifted(Status):
   def end(self):
     if self.land_status:
       self.skill.use(self.entity.x, self.entity.y)
+
+class Linked(Status):
+  def __init__(self, entity=None, owner=None, duration=9999, name="Linked", x=-1, y=-1,
+               power=10, radius=4, status=None):
+    super(Linked, self).__init__(entity, owner, duration, name)
+    self.power = power
+    self.radius = radius
+    self.status = status
+    if entity:
+      self.tiles = area.Circle(entity.bg, radius=radius).get_tiles(x, y)
+      Stunned(entity, owner, 1, name + " stun")
+
+  def clone(self, entity):
+    return self.__class__(entity, self.owner, self.duration, self.name, self.x, self.y,
+                          self.power, self.radius, self.status)
+
+  def end(self):
+    super(Linked, self).end()
+    self.duration = -1
+    self.entity.bg.tiles[(self.entity.x, self.entity.y)].bg_color = libtcod.black
+    for t in self.tiles:
+      t.bg_color = libtcod.black
+    
+  def update(self):
+    super(Linked, self).update()
+    t = self.entity.bg.tiles[(self.entity.x, self.entity.y)]
+    if self.duration > 0:
+      if t not in self.tiles:
+        self.status.clone(self.entity)
+        self.entity.get_attacked(self)
+        self.end()
+      else:
+        t.bg_color = libtcod.color_lerp(libtcod.black, self.owner.original_color, 0.4)
 
 class Poison(Status):
   # tbt = time between ticks

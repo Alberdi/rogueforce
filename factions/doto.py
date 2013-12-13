@@ -98,24 +98,28 @@ class Ox(General):
 class Pock(General):
   def __init__(self, battleground, side, x=-1, y=-1, name="Pock", color=libtcod.sky):
     super(Pock, self).__init__(battleground, side, x, y, name, color)
-    self.max_hp = 200
+    self.max_hp = 250
     self.armor["physical"] = 1
     self.orb = Orb(self.bg, self.side, char='o', color=self.color)
     self.orb_index = 0
-    self.jaunt_index = 3
+    self.jaunt_index = 4
 
   def initialize_skills(self):
     self.skills = []
-    self.skills.append(Skill(self, place_entity, 60, [self.orb], "Illusory Orb",
+    self.skills.append(Skill(self, place_entity, 80, [self.orb], "Illusory Orb",
                        "Launches a magic orb that damages and might be teleported into",
                        SingleTarget(self.bg, general=self, reach_function=is_inrange_long, selfcentered=True)))
-    self.skills.append(Skill(self, nuke_statuses, 70, [15, TempEffect(self.bg, char='`', color=self.color),
+    self.skills.append(Skill(self, nuke_statuses, 60, [15, TempEffect(self.bg, char='`', color=self.color),
                        "magical", [FreezeCooldowns(None, self, 20, "Waning Rift silence")]],
                        "Waning Rift", "Deals damage and silences enemy units nearby",
                        Circle(self.bg, is_enemy, self, selfcentered=True, radius=2)))
     self.skills.append(Skill(self, apply_status, 25, [Phasing(None, 5)], "Phase Shift",
                        "Enter another dimension and get immune from harm",
                        SingleTarget(self.bg, general=self, selfcentered=True)))
+    self.skills.append(Skill(self, explosion, 140, [20, Circle(self.bg, is_enemy, self, radius=3),
+                       [Linked(None, self, 40, name="Dream Coil", power=40, radius=4, status=Stunned(duration=30))]],
+                       "Dream Coil", "Binds enemies to a single point and take damage if they leave it",
+                       SingleTarget(self.bg, general=self, reach_function=is_inrange_close)))
     self.skills.append(Skill(self, teleport, 20, [None, self], "Ethereal Jaunt", "Shifts into the Illusory Orb"))
 
   def use_skill(self, i, x, y):

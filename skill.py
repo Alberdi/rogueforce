@@ -136,6 +136,15 @@ def decapitate(general, tile, threshold=1.0):
       apply_status(general, t, status.Haste(None, 30, "Decapitation haste", 3))
   return True
 
+def explosion(general, tile, power, area, statuses=[]):
+  for s in statuses:
+    (s.x, s.y) = (tile.x, tile.y)
+  did_anything = False
+  for t in area.get_tiles(tile.x, tile.y):
+    nuke_statuses(general, t, power, statuses=statuses)
+    did_anything = True
+  return did_anything
+
 def heal(general, tile, amount):
   if tile.entity.hp == tile.entity.max_hp: return False
   tile.entity.get_healed(amount)

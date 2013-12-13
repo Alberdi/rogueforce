@@ -223,7 +223,7 @@ class Pathing(Effect):
 
 class Orb(Pathing):
   def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char='o', color=libtcod.white,
-               power=10, attack_type="magical"):
+               power=15, attack_type="magical"):
     super(Orb, self).__init__(battleground, side, x, y, char, color)
     self.power = power
     self.attack_type = attack_type
