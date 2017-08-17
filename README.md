@@ -22,9 +22,9 @@ Yeah, you can play against your friends. You only need to run your own copy of t
 
 How can I run it?
 -----------------
-You'll need to download all the files in this repository and add the required library files to the root folder from the [libtcod webpage](http://doryen.eptalys.net/libtcod/download/), version 1.5.1. For Linux systems this is simply the `libtcod.so` file.
+You'll need to download all the files in this repository and add the required library files to the root folder from the [libtcod webpage](https://bitbucket.org/libtcod/libtcod), version 1.6.3.
 
-After that, run `scenario.py` from the command line for the full experience or `battle.py` for a quick fight. The only one that supports network play at the moment is `battle.py`, you can try it with:
+After that, run `scenario.py` from the command line for the full (buggy) experience or `battle.py` for a quick fight. The only one that supports network play at the moment is `battle.py`, you can try it with:
 
     python battle.py [0|1] {address port}
 
