@@ -1,4 +1,5 @@
 from area import *
+from effect import *
 import formation
 from general import General
 from minion import Minion
@@ -11,8 +12,8 @@ import libtcodpy as libtcod
 import random
 
 class Slave(Minion):
-  def __init__(self, battleground, side, x=-1, y=-1, name="slave", color=libtcod.white):
-    super(Slave, self).__init__(battleground, side, x, y, name, color)
+  def __init__(self, battleground, side, x=-1, y=-1, name="slave", char='s', color=libtcod.white):
+    super(Slave, self).__init__(battleground, side, x, y, name, char, color)
     self.max_hp = 10
     self.hp = 10
     self.power = 3

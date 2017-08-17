@@ -245,7 +245,7 @@ class Orb(Pathing):
 
 class Slash(Effect):
   def __init__(self, battleground, side=entity.NEUTRAL_SIDE, x=-1, y=-1, char='|', color=libtcod.white, power=10, steps=8, goto=1, area=None):
-    super(Slash, self).__init__(battleground, side, x, y, color)
+    super(Slash, self).__init__(battleground, side, x, y, char, color)
     self.general = self.bg.generals[side]
     self.max_steps = steps
     self.step = 0;

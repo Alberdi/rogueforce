@@ -1,4 +1,5 @@
 from area import *
+from effect import *
 from general import General
 from minion import Minion, BigMinion
 from skill import *
