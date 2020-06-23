@@ -22,7 +22,7 @@ Yeah, you can play against your friends. You only need to run your own copy of t
 
 How can I run it?
 -----------------
-You'll need to download all the files in this repository and add the required library files to the root folder from the [libtcod webpage](https://bitbucket.org/libtcod/libtcod), version 1.6.3.
+You'll need to download all the files in this repository and install the [python-tcod library](https://github.com/libtcod/python-tcod).
 
 After that, run `scenario.py` from the command line for the full (buggy) experience or `battle.py` for a quick fight. The only one that supports network play at the moment is `battle.py`, you can try it with:
 
@@ -38,14 +38,14 @@ It will launch a TCP server based on sockets on the port included and the next o
     marce:~$ python battle.py 8888
      sito:~$ python battle.py 8889
 
-To customize your experience, such as choosing different generals for each side, you'll to edit the last lines of `battle.py`; and remember to do it on both sides of the network if you want to play the same game. Maybe it's a bit cumbersome, but the `scenario.py` will support network soon.
+To customize your experience, such as choosing different generals for each side, you'll to edit the last lines of `battle.py`; and remember to do it on both sides of the network if you want to play the same game. Maybe it's a bit cumbersome, but the `scenario.py` might support network play in the future too.
 
 Rogue Force will have ready to play packages for each major system in the future, but they're not provided yet.
 
 Can I help?
 -----------
-Probably. I'll appreciate most kinds of help, from code to game ideas for new generals or gameplay. If you want to get involved somehow, write to Marcelino Alberdi (marcelino.alberdi@gmail.com) explaining what would you like to do.
+Probably. I appreciate most kinds of help, from code to game ideas for new generals or gameplay. Feel free to open new issues, fork the code or anything else that you might fancy.
 
 License?
 --------
-I decided to use the free ISC license as you can check in the `LICENSE.txt` file. I really dislike the all caps legal text that goes with every single software license so I decided to strip it; I hope I won't get demanded when someone runs the hidden fork bomb in the code.
+The project uses the free ISC license as you can check in the `LICENSE.txt` file. I really dislike the all caps legal text that goes with every single software license so I decided to strip it.

@@ -110,12 +110,11 @@ class BattleWindow(Window):
   def render_msgs(self):
     y = 0
     for (line, color) in self.game_msgs:
-      libtcod.console_set_default_foreground(self.con_msgs, color)
-      libtcod.console_print(self.con_msgs, 0, y, line)
+      self.con_msgs.print(0, y, line, color)
       y += 1
 
   def render_info(self, x, y):
-    libtcod.console_print(self.con_info, 0, 0, " " * INFO_WIDTH)
+    self.con_info.print(0, 0, " " * INFO_WIDTH)
     nskills = len(self.bg.generals[1].skills)
     i=-1
     if -13 < x < -1:
@@ -126,14 +125,12 @@ class BattleWindow(Window):
     nskills = len(self.bg.generals[i].skills)
     if (5 + nskills * 2) > y > 3 and i is not -1:
       skill = self.bg.generals[i].skills[(y-5)/2]
-      libtcod.console_set_default_foreground(self.con_info, libtcod.white)
-      libtcod.console_print(self.con_info, 0, 0, skill.description)
+      self.con_info.print(0, 0, skill.description, libtcod.white)
     else:
       super(BattleWindow, self).render_info(x, y)
 
   def render_side_panel(self, i, bar_length, bar_offset_x):
     g = self.bg.generals[i]
-    libtcod.console_set_default_foreground(self.con_panels[i], libtcod.black)
     libtcod.console_put_char_ex(self.con_panels[i], bar_offset_x-1, 1, g.char, g.color, libtcod.black)
     self.render_bar(self.con_panels[i], bar_offset_x, 1, bar_length, g.hp, g.max_hp, libtcod.red, libtcod.yellow, libtcod.black)
     line = 3
@@ -143,11 +140,9 @@ class BattleWindow(Window):
       self.render_bar(self.con_panels[i], bar_offset_x, line, bar_length, skill.cd, skill.max_cd,
         libtcod.dark_blue, libtcod.sky, libtcod.black)
       line += 2
-    libtcod.console_set_default_foreground(self.con_panels[i], libtcod.white)
-    libtcod.console_print(self.con_panels[i], 3, line+1,
-                          str(self.bg.generals[i].minions_alive) + " " + self.bg.generals[i].minion.name + "s  ")
+    self.con_panels[i].print(3, line+1, str(self.bg.generals[i].minions_alive) + " " + self.bg.generals[i].minion.name + "s  ",
+      libtcod.white)
     line = self.render_tactics(i) + 1
-    libtcod.console_set_default_foreground(self.con_panels[i], libtcod.black)
     swap_ready = g.swap_cd >= g.swap_max_cd
     for r in self.bg.reserves[i]:
       libtcod.console_put_char_ex(self.con_panels[i], bar_offset_x-1, line, r.char, r.color, libtcod.black)
@@ -163,9 +158,8 @@ class BattleWindow(Window):
     bar_offset_x = 3
     line = 7 + len(self.bg.generals[i].skills)*2
     for s in range(0, len(self.bg.generals[i].tactics)):
-      libtcod.console_set_default_foreground(self.con_panels[i],
-        libtcod.red if self.bg.generals[i].tactics[s] == self.bg.generals[i].selected_tactic else libtcod.white)
-      libtcod.console_print(self.con_panels[i], bar_offset_x, line, KEYMAP_TACTICS[s] + ": " + self.bg.generals[i].tactic_quotes[s])
+      fg_color = libtcod.red if self.bg.generals[i].tactics[s] == self.bg.generals[i].selected_tactic else libtcod.white
+      self.con_panels[i].print(bar_offset_x, line, KEYMAP_TACTICS[s] + ": " + self.bg.generals[i].tactic_quotes[s], fg = fg_color)
       line += 2
     return line
 

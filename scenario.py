@@ -121,16 +121,13 @@ class Scenario(Window):
                   return
 
   def render_side_panel(self, i, bar_length, bar_offset_x):
-    libtcod.console_set_default_foreground(self.con_panels[i], libtcod.white)
-    libtcod.console_print(self.con_panels[i], bar_offset_x-1, 0, " Requisition")
-    libtcod.console_set_default_foreground(self.con_panels[i], libtcod.black)
+    self.con_panels[i].print(bar_offset_x-1, 0, " Requisition", libtcod.white)
     self.render_bar(self.con_panels[i], bar_offset_x, 1, bar_length, self.requisition[i], self.max_requisition, libtcod.dark_blue, libtcod.sky, libtcod.black)
     line = 4
     for j in range(0, len(self.factions[i].generals)):
       g = self.factions[i].generals[j]
-      libtcod.console_set_default_foreground(self.con_panels[i], g.color if g == self.selected_general else libtcod.white)
-      libtcod.console_print(self.con_panels[i], bar_offset_x-1, line, " " + g.name)
-      libtcod.console_set_default_foreground(self.con_panels[i], libtcod.black)
+      fg_color = g.color if g == self.selected_general else libtcod.white
+      self.con_panels[i].print(bar_offset_x-1, line, " " + g.name, fg_color)
       libtcod.console_put_char_ex(self.con_panels[i], bar_offset_x-1, line+1, KEYMAP_GENERALS[j], g.color, libtcod.black)
       if not g.deployed:
         self.render_bar(self.con_panels[i], bar_offset_x, line+1, bar_length, g.requisition, g.cost, libtcod.dark_blue, libtcod.sky, libtcod.black)

@@ -45,11 +45,12 @@ class Window(object):
 
     self.messages = [{}, {}]
 
-    self.con_root = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
-    self.con_bg = libtcod.console_new(BG_WIDTH, BG_HEIGHT)
-    self.con_info = libtcod.console_new(INFO_WIDTH, INFO_HEIGHT)
-    self.con_msgs = libtcod.console_new(MSG_WIDTH, MSG_HEIGHT)
-    self.con_panels = [libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT), libtcod.console_new(PANEL_WIDTH, PANEL_HEIGHT)]
+    self.con_root = libtcod.console.Console(SCREEN_WIDTH, SCREEN_HEIGHT)
+    self.con_bg = libtcod.console.Console(BG_WIDTH, BG_HEIGHT)
+    self.con_info = libtcod.console.Console(INFO_WIDTH, INFO_HEIGHT)
+    self.con_msgs = libtcod.console.Console(MSG_WIDTH, MSG_HEIGHT)
+    self.con_panels = [libtcod.console.Console(PANEL_WIDTH, PANEL_HEIGHT),
+                       libtcod.console.Console(PANEL_WIDTH, PANEL_HEIGHT)]
 
     self.game_msgs = []
     self.game_over = False
@@ -148,11 +149,11 @@ class Window(object):
     self.render_info(x, y)
     self.render_msgs()
     self.render_panels()
-    libtcod.console_blit(self.con_bg, 0, 0, BG_WIDTH, BG_HEIGHT, self.con_root, BG_OFFSET_X, BG_OFFSET_Y)
+    self.con_bg.blit(0, 0, BG_WIDTH, BG_HEIGHT, self.con_root, BG_OFFSET_X, BG_OFFSET_Y)
     for i in [0,1]:
       libtcod.console_blit(self.con_panels[i], 0, 0, PANEL_WIDTH, PANEL_HEIGHT, self.con_root, (PANEL_WIDTH+BG_WIDTH)*i, PANEL_OFFSET_Y)
-    libtcod.console_blit(self.con_info, 0, 0, MSG_WIDTH, MSG_HEIGHT, self.con_root, INFO_OFFSET_X, INFO_OFFSET_Y)
-    libtcod.console_blit(self.con_msgs, 0, 0, MSG_WIDTH, MSG_HEIGHT, self.con_root, MSG_OFFSET_X, MSG_OFFSET_Y)
+    self.con_info.blit(0, 0, MSG_WIDTH, MSG_HEIGHT, self.con_root, INFO_OFFSET_X, INFO_OFFSET_Y)
+    self.con_msgs.blit(0, 0, MSG_WIDTH, MSG_HEIGHT, self.con_root, MSG_OFFSET_X, MSG_OFFSET_Y)
     libtcod.console_blit(self.con_root, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
     libtcod.console_flush()
 
@@ -163,32 +164,24 @@ class Window(object):
     libtcod.console_set_default_background(con, bar_bg_color)
     libtcod.console_rect(con, x+ratio, y, w-ratio, 1, False, libtcod.BKGND_SET)
     libtcod.console_set_default_background(con, text_color)
-    libtcod.console_print_rect(con, x+1, y, w, 1, "%03d / %03d" % (value, max_value))
+    con.print_box(x+1, y, w, 1, "%03d / %03d" % (value, max_value), text_color)
  
   def render_info(self, x, y):
-    libtcod.console_print(self.con_info, 0, 0, " " * INFO_WIDTH)
+    self.con_info.print(0, 0, " " * INFO_WIDTH)
     if self.bg.is_inside(x, y):
-      libtcod.console_set_default_foreground(self.con_info, libtcod.white)
-      libtcod.console_print(self.con_info, INFO_WIDTH-7, 0, "%02d/%02d" % (x, y))
+      self.con_info.print(INFO_WIDTH-7, 0, "%02d/%02d" % (x, y), libtcod.white)
       entity = self.bg.tiles[(x, y)].entity
       if entity:
-        libtcod.console_set_default_foreground(self.con_info, entity.original_color)
         if(hasattr(entity, 'hp')):
-          libtcod.console_print(self.con_info, 0, 0, entity.name.capitalize() + ": HP %02d/%02d, PW %d" %
-            (entity.hp, entity.max_hp, entity.power))
+          self.con_info.print(0, 0, entity.name.capitalize() + ": HP %02d/%02d, PW %d" %
+            (entity.hp, entity.max_hp, entity.power), entity.original_color)
         else:
-          libtcod.console_print(self.con_info, 0, 0, entity.name.capitalize())
-    """
-    else:
-      libtcod.console_set_default_foreground(self.con_info, libtcod.white)
-      libtcod.console_print(self.con_info, INFO_WIDTH-7, 0, "%02d/%02d" % (x, y))
-    """
+          self.con_info.print(0, 0, entity.name.capitalize())
     
   def render_msgs(self):
     y = 0
     for (line, color) in self.game_msgs:
-      libtcod.console_set_default_foreground(self.con_msgs, color)
-      libtcod.console_print(self.con_msgs, 0, y, line)
+      self.con_msgs.print(0, y, line, color)
       y += 1
 
   def render_panels(self):
