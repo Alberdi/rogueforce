@@ -123,7 +123,7 @@ class BattleWindow(Window):
       i = 1
     
     nskills = len(self.bg.generals[i].skills)
-    if (5 + nskills * 2) > y > 3 and i is not -1:
+    if (5 + nskills * 2) > y > 3 and i != -1:
       skill = self.bg.generals[i].skills[(y-5)/2]
       self.con_info.print(0, 0, skill.description, libtcod.white)
     else:

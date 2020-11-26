@@ -22,21 +22,25 @@ Yeah, you can play against your friends. You only need to run your own copy of t
 
 How can I run it?
 -----------------
-You'll need to download all the files in this repository and install the [python-tcod library](https://github.com/libtcod/python-tcod).
+You'll need to download all the files in this repository and install the requirements:
 
-After that, run `scenario.py` from the command line for the full (buggy) experience or `battle.py` for a quick fight. The only one that supports network play at the moment is `battle.py`, you can try it with:
+    python3 -m venv env
+    source env/bin/activate
+    pip3 install -r requirements.txt
 
-    python battle.py [0|1] {address port}
+After that, run `scenario.py` from the command line for the full experience or `battle.py` for a quick fight. The only one that supports network play at the moment is `battle.py`, you can try it with:
 
-The first argument is the side on which you are playing (0 is left). The game features a dumb AI that does nothing, so you can try the game against it; just leave empty the last pair of parameters. If you want to play a networked game someone has to run the server included, `server.py`, as follows:
+    python3 battle.py [0|1] {address port}
 
-    python server.py port
+The first argument is the side on which you are playing (0 is left). The game features a dumb AI that does nothing, so you can try the game against it; just leave empty the last pair of parameters. If you want to play a networked game someone has to run the included server, `server.py`, as follows:
+
+    python3 server.py port
 
 It will launch a TCP server based on sockets on the port included and the next one (port+1). Then each player needs to connect to it in the proper order, first the one going in the port specified and then the other one. Here is an example of the workflow to play a single game of 60 seconds.
 
-    marce:~$ python server.py 8888
-    marce:~$ python battle.py 8888
-     sito:~$ python battle.py 8889
+    marce:~$ python3 server.py 8888
+    marce:~$ python3 battle.py 8888
+     sito:~$ python3 battle.py 8889
 
 To customize your experience, such as choosing different generals for each side, you'll to edit the last lines of `battle.py`; and remember to do it on both sides of the network if you want to play the same game. Maybe it's a bit cumbersome, but the `scenario.py` might support network play in the future too.
 
